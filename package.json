@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@caistech/ghl-client": "^0.1.2",
+    "@supabase/ssr": "^0.5.0",
     "@supabase/supabase-js": "^2.47.0",
     "mapbox-gl": "^3.23.1",
     "next": "^14.2.0",

@@ -590,3 +590,65 @@ CREATE POLICY "service_role_all_hemp_homes_waitlist"
 
 COMMENT ON TABLE hemp_homes_waitlist IS
   'Registration of interest for Hemp Homes for Eco-Communities program. Purchaser-side, real estate marketing only.';
+
+-- =====================================================================
+-- ADMIN USERS (Uwe, Dennis, Tanveer, Lennie — purchaser portal admins)
+-- =====================================================================
+--
+-- Setup workflow per admin:
+--   1. Invite via Supabase Dashboard → Authentication → Users → Invite User
+--      (sends a magic-link email; user sets a password on first sign-in).
+--   2. After they accept and an auth.users row exists, run:
+--        INSERT INTO admin_users (auth_user_id, email, role, full_name)
+--        SELECT id, email, 'super_admin', '<full name>'
+--        FROM auth.users WHERE email = '<email>'
+--        ON CONFLICT (email) DO NOTHING;
+--
+-- Currently seeded as commented-out templates below — uncomment after
+-- each invite is accepted, OR run the SELECT-INSERT above per user.
+
+CREATE TABLE IF NOT EXISTS admin_users (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  auth_user_id    UUID UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
+  email           TEXT NOT NULL UNIQUE,
+  role            TEXT NOT NULL CHECK (role IN ('super_admin', 'fund_manager', 'compliance', 'read_only')),
+  full_name       TEXT,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_admin_users_auth ON admin_users (auth_user_id);
+
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "service_role_all_admin_users" ON admin_users;
+CREATE POLICY "service_role_all_admin_users"
+  ON admin_users
+  FOR ALL
+  USING (true)
+  WITH CHECK (true);
+
+-- After inviting Dennis, Uwe, Tanveer, Lennie via Supabase Dashboard,
+-- run the four templates below (uncomment + replace full_name if needed):
+--
+-- INSERT INTO admin_users (auth_user_id, email, role, full_name)
+--   SELECT id, 'dennis@factory2key.com.au', 'super_admin', 'Dennis McMahon'
+--   FROM auth.users WHERE email = 'dennis@factory2key.com.au'
+--   ON CONFLICT (email) DO NOTHING;
+--
+-- INSERT INTO admin_users (auth_user_id, email, role, full_name)
+--   SELECT id, 'uwe@factory2key.com.au', 'super_admin', 'Uwe Jacobs'
+--   FROM auth.users WHERE email = 'uwe@factory2key.com.au'
+--   ON CONFLICT (email) DO NOTHING;
+--
+-- INSERT INTO admin_users (auth_user_id, email, role, full_name)
+--   SELECT id, 'tanveer@factory2key.com.au', 'super_admin', 'Tanveer'
+--   FROM auth.users WHERE email = 'tanveer@factory2key.com.au'
+--   ON CONFLICT (email) DO NOTHING;
+--
+-- INSERT INTO admin_users (auth_user_id, email, role, full_name)
+--   SELECT id, 'lennie@factory2key.com.au', 'super_admin', 'Lennie'
+--   FROM auth.users WHERE email = 'lennie@factory2key.com.au'
+--   ON CONFLICT (email) DO NOTHING;
+
+COMMENT ON TABLE admin_users IS
+  'Admin users authorised to manage Factory2Key Projects allocations and registrations. Linked to auth.users via auth_user_id. Insert AFTER inviting the user via Supabase Auth.';

@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display, Archivo, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import ProjectsHeader from "@/components/ProjectsHeader";
-import ProjectsFooter from "@/components/ProjectsFooter";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -45,11 +43,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${playfair.variable} ${archivo.variable} ${ibmMono.variable}`}
     >
-      <body className="min-h-screen font-sans bg-off-white flex flex-col">
-        <ProjectsHeader />
-        <main className="flex-1">{children}</main>
-        <ProjectsFooter />
-      </body>
+      <body className="min-h-screen font-sans">{children}</body>
     </html>
   );
 }

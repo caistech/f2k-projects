@@ -1,0 +1,274 @@
+import { createSupabaseService } from "@/lib/supabase-service";
+
+export const dynamic = "force-dynamic";
+
+type ProjectFilter = "all" | "seafields" | "branscombe" | "hemp";
+
+interface UnifiedRegistration {
+  id: string;
+  project: "seafields" | "branscombe" | "hemp";
+  created_at: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  items: string[];
+  buyer_type: string | null;
+  purchase_timeline: string | null;
+  finance_status: string | null;
+}
+
+async function loadRegistrations(filter: ProjectFilter, search: string): Promise<UnifiedRegistration[]> {
+  const supabase = createSupabaseService();
+  const out: UnifiedRegistration[] = [];
+
+  if (filter === "all" || filter === "seafields") {
+    const { data } = await (supabase.from("seafields_registrations") as any)
+      .select("*")
+      .order("created_at", { ascending: false });
+    for (const r of (data as any[]) || []) {
+      out.push({
+        id: r.id,
+        project: "seafields",
+        created_at: r.created_at,
+        name: `${r.first_name} ${r.last_name}`.trim(),
+        email: r.email,
+        phone: r.phone,
+        items: r.lots_selected || [],
+        buyer_type: r.buyer_type,
+        purchase_timeline: r.purchase_timeline,
+        finance_status: r.finance_status,
+      });
+    }
+  }
+
+  if (filter === "all" || filter === "branscombe") {
+    const { data } = await (supabase.from("branscombe_registrations") as any)
+      .select("*")
+      .order("created_at", { ascending: false });
+    for (const r of (data as any[]) || []) {
+      out.push({
+        id: r.id,
+        project: "branscombe",
+        created_at: r.created_at,
+        name: `${r.first_name} ${r.last_name}`.trim(),
+        email: r.email,
+        phone: r.phone,
+        items: r.units_selected || [],
+        buyer_type: r.buyer_type,
+        purchase_timeline: r.purchase_timeline,
+        finance_status: r.finance_status,
+      });
+    }
+  }
+
+  if (filter === "all" || filter === "hemp") {
+    try {
+      const { data } = await (supabase.from("hemp_homes_waitlist") as any)
+        .select("*")
+        .order("created_at", { ascending: false });
+      for (const r of (data as any[]) || []) {
+        out.push({
+          id: r.id,
+          project: "hemp",
+          created_at: r.created_at,
+          name: r.full_name,
+          email: r.email,
+          phone: r.phone,
+          items: r.regions_of_interest || [],
+          buyer_type: r.i_am_a,
+          purchase_timeline: r.timeframe,
+          finance_status: r.finance_status,
+        });
+      }
+    } catch {
+      // table may not exist yet — skip silently
+    }
+  }
+
+  out.sort((a, b) => b.created_at.localeCompare(a.created_at));
+
+  if (search) {
+    const q = search.toLowerCase();
+    return out.filter(
+      (r) =>
+        r.name.toLowerCase().includes(q) ||
+        r.email.toLowerCase().includes(q) ||
+        r.items.some((i) => i.toLowerCase().includes(q)),
+    );
+  }
+  return out;
+}
+
+const PROJECT_LABEL: Record<UnifiedRegistration["project"], string> = {
+  seafields: "Seafields",
+  branscombe: "Branscombe",
+  hemp: "Hemp Homes",
+};
+
+const PROJECT_COLOR: Record<UnifiedRegistration["project"], string> = {
+  seafields: "bg-cyan-100 text-cyan-800",
+  branscombe: "bg-amber-100 text-amber-800",
+  hemp: "bg-emerald-100 text-emerald-800",
+};
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleString("en-AU", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+
+export default async function RegistrationsPage({
+  searchParams,
+}: {
+  searchParams: { type?: string; q?: string };
+}) {
+  const filter = (searchParams.type ?? "all") as ProjectFilter;
+  const search = searchParams.q ?? "";
+  const registrations = await loadRegistrations(filter, search);
+
+  const filters: { label: string; value: ProjectFilter }[] = [
+    { label: "All", value: "all" },
+    { label: "Seafields", value: "seafields" },
+    { label: "Branscombe", value: "branscombe" },
+    { label: "Hemp Homes", value: "hemp" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-slate-900 mb-1">Registrations</h2>
+        <p className="text-sm text-slate-500">
+          {registrations.length}{" "}
+          {registrations.length === 1 ? "registration" : "registrations"}{" "}
+          {filter !== "all"
+            ? `for ${PROJECT_LABEL[filter as UnifiedRegistration["project"]]}`
+            : "across all projects"}
+          {search ? ` matching "${search}"` : ""}.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex gap-1 text-sm">
+          {filters.map((f) => {
+            const isActive = filter === f.value;
+            const params = new URLSearchParams();
+            if (f.value !== "all") params.set("type", f.value);
+            if (search) params.set("q", search);
+            const href = params.toString()
+              ? `?${params.toString()}`
+              : "/admin/registrations";
+            return (
+              <a
+                key={f.value}
+                href={href}
+                className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors ${
+                  isActive
+                    ? "bg-slate-900 text-white"
+                    : "bg-white border border-slate-200 text-slate-700 hover:border-slate-400"
+                }`}
+              >
+                {f.label}
+              </a>
+            );
+          })}
+        </div>
+        <form className="flex-1 max-w-md flex gap-2">
+          {filter !== "all" && (
+            <input type="hidden" name="type" value={filter} />
+          )}
+          <input
+            type="search"
+            name="q"
+            defaultValue={search}
+            placeholder="Search name, email, or lot/unit ID…"
+            className="flex-1 px-3 py-1.5 text-sm border border-slate-200 rounded focus:border-slate-400 outline-none"
+          />
+          <button
+            type="submit"
+            className="px-3 py-1.5 text-xs font-semibold bg-slate-900 text-white rounded hover:bg-slate-700"
+          >
+            Search
+          </button>
+        </form>
+      </div>
+
+      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+            <tr className="text-left">
+              <th className="px-4 py-2 font-semibold">When</th>
+              <th className="px-4 py-2 font-semibold">Project</th>
+              <th className="px-4 py-2 font-semibold">Name</th>
+              <th className="px-4 py-2 font-semibold">Email</th>
+              <th className="px-4 py-2 font-semibold">Items</th>
+              <th className="px-4 py-2 font-semibold">Buyer</th>
+              <th className="px-4 py-2 font-semibold">Timeline</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {registrations.length === 0 ? (
+              <tr>
+                <td className="px-4 py-8 text-center text-slate-500" colSpan={7}>
+                  No registrations match these filters.
+                </td>
+              </tr>
+            ) : (
+              registrations.map((r) => (
+                <tr key={`${r.project}-${r.id}`} className="hover:bg-slate-50">
+                  <td className="px-4 py-2 text-xs text-slate-500 whitespace-nowrap">
+                    {formatDate(r.created_at)}
+                  </td>
+                  <td className="px-4 py-2">
+                    <span
+                      className={`inline-block px-2 py-0.5 rounded text-[0.65rem] font-semibold uppercase tracking-wider ${PROJECT_COLOR[r.project]}`}
+                    >
+                      {PROJECT_LABEL[r.project]}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2 font-semibold text-slate-900">
+                    {r.name}
+                  </td>
+                  <td className="px-4 py-2 text-slate-600">
+                    <a
+                      href={`mailto:${r.email}`}
+                      className="text-[#00B5AD] hover:underline"
+                    >
+                      {r.email}
+                    </a>
+                    {r.phone && (
+                      <div className="text-xs text-slate-500">
+                        <a
+                          href={`tel:${r.phone}`}
+                          className="hover:underline"
+                        >
+                          {r.phone}
+                        </a>
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-4 py-2 text-xs">
+                    {r.items.length === 0 ? (
+                      <span className="text-slate-400">—</span>
+                    ) : (
+                      <span className="font-mono">
+                        {r.items.slice(0, 4).join(", ")}
+                        {r.items.length > 4 ? "…" : ""}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2 text-xs text-slate-600">
+                    {r.buyer_type ?? "—"}
+                  </td>
+                  <td className="px-4 py-2 text-xs text-slate-600">
+                    {r.purchase_timeline ?? "—"}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
