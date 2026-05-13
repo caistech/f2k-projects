@@ -267,7 +267,7 @@ export default function SeafieldsEstatePage() {
             {[
               {
                 title: "Vacant Serviced Land",
-                desc: "Titled, serviced lots ready to build. Bring your own builder or hold as an investment.",
+                desc: "Titled, serviced lots ready to build. Bring your own builder or hold as an investment. Priced from $150,000.",
               },
               {
                 title: "House & Land Package",
