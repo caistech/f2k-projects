@@ -1,0 +1,120 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+
+const navItems = [
+  { href: "/", label: "Projects" },
+  { href: "/seafields-estate", label: "Seafields" },
+  { href: "/branscombe-estate", label: "Branscombe" },
+  { href: "/hemp-homes-for-eco-communities", label: "Hemp Homes" },
+  { href: "https://www.factory2key.com.au", label: "About F2K", external: true },
+];
+
+export default function ProjectsHeader() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  return (
+    <header className="border-b border-slate-200 bg-white sticky top-0 z-50 backdrop-blur-xl bg-white/90">
+      {/* Purchaser disclaimer banner */}
+      <div className="bg-[#1A2744] text-white/80 text-xs font-archivo text-center py-2 px-4 leading-relaxed">
+        <strong className="text-white">REGISTRATION OF INTEREST ONLY</strong> —
+        No deposit is required or accepted. Registering does not create any
+        legal or financial obligation.
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <Link href="/" className="flex items-center gap-3 group no-underline">
+            <div className="w-8 h-8 bg-[#22c55e] rounded-lg flex items-center justify-center text-white font-bold text-sm group-hover:bg-[#4ade80] transition-colors">
+              F2K
+            </div>
+            <div className="flex items-baseline">
+              <span className="font-semibold text-lg text-slate-900">
+                Factory2Key Projects
+              </span>
+              <span className="text-xs ml-2 hidden sm:inline text-slate-500">
+                Australian Housing Developments
+              </span>
+            </div>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map((item) =>
+              item.external ? (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 rounded-lg text-sm transition-colors duration-200 text-slate-500 hover:text-slate-900 no-underline"
+                >
+                  {item.label} ↗
+                </a>
+              ) : (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="px-4 py-2 rounded-lg text-sm transition-colors duration-200 text-slate-500 hover:text-slate-900 no-underline"
+                >
+                  {item.label}
+                </Link>
+              ),
+            )}
+          </nav>
+
+          <button
+            type="button"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            className="md:hidden p-2 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              {menuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+              )}
+            </svg>
+          </button>
+        </div>
+
+        {menuOpen && (
+          <nav className="md:hidden border-t border-slate-200 py-2">
+            {navItems.map((item) =>
+              item.external ? (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-3 text-base no-underline transition-colors text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                >
+                  {item.label} ↗
+                </a>
+              ) : (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-3 text-base no-underline transition-colors text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                >
+                  {item.label}
+                </Link>
+              ),
+            )}
+          </nav>
+        )}
+      </div>
+    </header>
+  );
+}
