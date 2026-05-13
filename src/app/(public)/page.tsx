@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 const currentDevelopments = [
   {
@@ -39,7 +40,21 @@ const currentDevelopments = [
   },
 ];
 
-export default function HomePage() {
+export default function HomePage({
+  searchParams,
+}: {
+  searchParams: { code?: string };
+}) {
+  // Supabase invitation magic-links redirect to the Site URL with ?code=...
+  // appended. Forward the code to our auth callback handler so the session
+  // cookie is set. (Backstop in case Supabase Site URL is configured to /
+  // instead of /api/auth/callback.)
+  if (searchParams.code) {
+    redirect(
+      `/api/auth/callback?code=${encodeURIComponent(searchParams.code)}&next=/admin`,
+    );
+  }
+
   return (
     <>
       <section className="bg-off-white py-16 md:py-20 px-4 border-b border-black/5">
