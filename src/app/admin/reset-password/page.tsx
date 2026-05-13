@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { createBrowserClient } from "@supabase/ssr";
+import { useCanonicalOrigin } from "@/lib/use-canonical-origin";
 
 export default function ResetPasswordPage() {
+  useCanonicalOrigin();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);

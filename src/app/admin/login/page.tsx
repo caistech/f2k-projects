@@ -3,8 +3,10 @@
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
+import { useCanonicalOrigin } from "@/lib/use-canonical-origin";
 
 function LoginInner() {
+  useCanonicalOrigin();
   const searchParams = useSearchParams();
   const initialError = searchParams?.get("error") ?? null;
 
