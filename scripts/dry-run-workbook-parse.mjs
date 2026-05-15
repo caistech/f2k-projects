@@ -3,7 +3,9 @@
 import { readFile } from 'node:fs/promises';
 import * as XLSX from 'xlsx';
 
-const buf = await readFile('docs/Seafields_Lot_Allocation_Master_V1.xlsx');
+const path = process.argv[2] || 'docs/Seafields_Lot_Allocation_Master_V1.xlsx';
+console.log(`Inspecting ${path}\n`);
+const buf = await readFile(path);
 const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
 
 function sheetRows(name) {
