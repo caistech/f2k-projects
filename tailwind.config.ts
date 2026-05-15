@@ -20,7 +20,6 @@ const config: Config = {
         "deep-blue": "#1A2744",
         "off-white": "#FAF7F2",
         "warm-grey": "#E8E2D8",
-        slate: "#4A5568",
         forest: "#1B4332",
         blood: "#8B1A1A",
       },
