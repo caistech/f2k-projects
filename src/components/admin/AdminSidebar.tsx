@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PreviewModeToggle } from "./PreviewModeToggle";
 
 interface NavItem {
   href: string;
@@ -77,6 +78,7 @@ export function AdminSidebar({ email }: { email?: string | null }) {
       </nav>
 
       <div className="pt-4 border-t border-white/10 space-y-2 text-xs">
+        <PreviewModeToggle />
         {email && (
           <p className="px-3 text-slate-400 truncate" title={email}>
             {email}
