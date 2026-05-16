@@ -114,6 +114,19 @@ async function applyMigration(client, filename) {
 
   try {
     await client.query("BEGIN");
+    // Stamp the audit trigger with the script identity so any back-fill
+    // writes inside the migration get attributed to the apply-script
+    // instead of falling through to 'system'. Migrations that set their
+    // own app.actor_email (e.g. 0007) override these per migration 0008's
+    // request-headers fallback ordering.
+    await client.query(
+      "SELECT set_config('app.actor_email', $1, true)",
+      ["apply-seafields-migrations"],
+    );
+    await client.query(
+      "SELECT set_config('app.audit_reason', $1, true)",
+      [`Re-apply of ${filename}`],
+    );
     await client.query(sql);
     await client.query("COMMIT");
     const ms = Date.now() - started;
