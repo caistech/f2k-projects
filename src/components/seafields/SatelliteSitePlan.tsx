@@ -13,25 +13,22 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import {
   LOTS,
   STAGE_INFO,
-  type LotData,
   type LotStage,
 } from "@/data/seafields";
+import type { PublicLotRow } from "@/app/api/seafields/allocations/route";
 import geojsonData from "@/data/seafields/geojson.json";
-
-interface Allocation {
-  lot_number: number;
-  allocated_to: string | null;
-  dwelling_type: string | null;
-  stage: string | null;
-}
 
 interface Props {
   selectedLots: string[];
   counts: Record<string, number>;
-  allocations: Record<number, Allocation>;
+  publicLots: Record<number, PublicLotRow>;
   hoveredLot: string | null;
   setHoveredLot: (id: string | null) => void;
   onOpenLot: (id: string) => void;
+}
+
+function isReservedStatus(status: string | undefined | null): boolean {
+  return status === "reserved" || status === "sold" || status === "withheld";
 }
 
 type FeatureCollection = {
@@ -71,7 +68,7 @@ function enrichGeoJSON(
   fc: FeatureCollection,
   selected: Set<string>,
   counts: Record<string, number>,
-  allocations: Record<number, Allocation>,
+  publicLots: Record<number, PublicLotRow>,
 ): FeatureCollection {
   const lotById = new globalThis.Map(LOTS.map((l) => [l.id, l] as const));
   return {
@@ -86,10 +83,12 @@ function enrichGeoJSON(
           props.stageBorder = info.border;
           props.stageLabel = info.label;
         }
-        const alloc = lot ? allocations[lot.lotNumber] : undefined;
+        const row = lot ? publicLots[lot.lotNumber] : undefined;
         const count = counts[f.properties.lotId] || 0;
         props.isSelected = selected.has(f.properties.lotId);
-        props.isReserved = !!alloc?.allocated_to;
+        props.isReserved = !!row && isReservedStatus(row.status);
+        props.isComingSoon =
+          !!row && !row.is_open_for_registration && !props.isReserved;
         props.interestCount = count;
       }
       return { ...f, properties: props as typeof f.properties };
@@ -100,7 +99,7 @@ function enrichGeoJSON(
 export default function SatelliteSitePlan({
   selectedLots,
   counts,
-  allocations,
+  publicLots,
   hoveredLot,
   setHoveredLot,
   onOpenLot,
@@ -109,8 +108,8 @@ export default function SatelliteSitePlan({
   const [styleLoaded, setStyleLoaded] = useState(false);
 
   const data = useMemo(
-    () => enrichGeoJSON(GEOJSON, new Set(selectedLots), counts, allocations),
-    [selectedLots, counts, allocations],
+    () => enrichGeoJSON(GEOJSON, new Set(selectedLots), counts, publicLots),
+    [selectedLots, counts, publicLots],
   );
 
   // Fit bounds on first style load
@@ -227,6 +226,8 @@ export default function SatelliteSitePlan({
                   "#1A2744",
                   ["==", ["get", "isReserved"], true],
                   "#64748B",
+                  ["==", ["get", "isComingSoon"], true],
+                  "#B4B4B4",
                   [">=", ["coalesce", ["get", "interestCount"], 0], 3],
                   "#E85D4A",
                   ["==", ["coalesce", ["get", "interestCount"], 0], 2],
@@ -239,6 +240,8 @@ export default function SatelliteSitePlan({
                   "case",
                   ["==", ["get", "isSelected"], true],
                   0.85,
+                  ["==", ["get", "isComingSoon"], true],
+                  0.35,
                   0.55,
                 ],
               }}

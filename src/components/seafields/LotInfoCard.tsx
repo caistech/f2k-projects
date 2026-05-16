@@ -6,17 +6,15 @@ import {
   STAGE_INFO,
   type LotData,
 } from "@/data/seafields";
-
-interface AllocationDetail {
-  allocated_to: string | null;
-  dwelling_type: string | null;
-  stage: string | null;
-}
+import type { PublicLotRow } from "@/app/api/seafields/allocations/route";
 
 interface LotInfoCardProps {
   lot: LotData;
   registrationCount: number;
-  allocation?: AllocationDetail;
+  publicRow?: PublicLotRow;
+  /** Set to false when this lot cannot be added to the registration —
+   * reserved, sold, withheld, non-public bucket, or stage not yet open. */
+  canSelect: boolean;
   isSelected: boolean;
   bg: string;
   border: string;
@@ -24,10 +22,19 @@ interface LotInfoCardProps {
   onToggle: () => void;
 }
 
+function isReservedStatus(status: string | undefined | null): boolean {
+  return status === "reserved" || status === "sold" || status === "withheld";
+}
+
+function formatPrice(n: number): string {
+  return `$${Math.round(n).toLocaleString()}`;
+}
+
 export default function LotInfoCard({
   lot,
   registrationCount,
-  allocation,
+  publicRow,
+  canSelect,
   isSelected,
   bg,
   border,
@@ -42,15 +49,19 @@ export default function LotInfoCard({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const isAllocated = !!allocation?.allocated_to;
+  const isReserved = !!publicRow && isReservedStatus(publicRow.status);
+  const isComingSoon =
+    !!publicRow && !publicRow.is_open_for_registration && !isReserved;
 
-  const statusText = isAllocated
+  const statusText = isReserved
     ? "Reserved"
-    : registrationCount > 0
-    ? `${registrationCount} ${
-        registrationCount === 1 ? "person interested" : "interested"
-      }`
-    : "Available";
+    : isComingSoon
+      ? `Coming soon — Stage ${publicRow?.stage_number ?? "?"}`
+      : registrationCount > 0
+        ? `${registrationCount} ${
+            registrationCount === 1 ? "person interested" : "interested"
+          }`
+        : "Available";
 
   return (
     <div
@@ -76,7 +87,11 @@ export default function LotInfoCard({
 
         <div className="p-6 text-white">
           <p className="font-ibm-mono text-[0.6rem] tracking-[0.4em] uppercase text-white/60 mb-1">
-            {lot.stage ? STAGE_INFO[lot.stage].title : "Stage TBD"}
+            {publicRow?.stage_label
+              ? publicRow.stage_label
+              : lot.stage
+                ? STAGE_INFO[lot.stage].title
+                : "Stage TBD"}
           </p>
           <h3 className="font-playfair text-3xl font-black mb-4 leading-none">
             Lot {lot.lotNumber}
@@ -90,6 +105,26 @@ export default function LotInfoCard({
             />
             <Row label="Zone" value={lot.zone} />
             <Row label="Status" value={statusText} />
+            {publicRow?.effective_rate_per_sqm != null && (
+              <Row
+                label="Rate"
+                value={`${formatPrice(publicRow.effective_rate_per_sqm)} / m²`}
+              />
+            )}
+            {publicRow?.total_price != null && publicRow.total_price > 0 && (
+              <Row
+                label="House + Land"
+                value={`From ${formatPrice(publicRow.total_price)}`}
+              />
+            )}
+            {publicRow?.land_total != null &&
+              publicRow.land_total > 0 &&
+              (publicRow.land_only || publicRow.total_price == null) && (
+                <Row
+                  label="Land Only"
+                  value={`From ${formatPrice(publicRow.land_total)}`}
+                />
+              )}
           </dl>
 
           {lot.geometryPending && (
@@ -109,9 +144,20 @@ export default function LotInfoCard({
           </div>
 
           <div className="mt-6">
-            {isAllocated ? (
+            {isReserved ? (
               <div className="bg-white/10 border border-white/20 px-4 py-3 text-xs text-white/80 leading-relaxed">
                 This lot is reserved and is not available for registration.
+              </div>
+            ) : isComingSoon ? (
+              <div className="bg-white/10 border border-white/20 px-4 py-3 text-xs text-white/80 leading-relaxed">
+                Stage {publicRow?.stage_number ?? "?"} is not yet open for
+                registration. We&apos;re launching Stage 1 first — registrations
+                for later stages will open once each stage&apos;s allocation
+                threshold is met.
+              </div>
+            ) : !canSelect && !isSelected ? (
+              <div className="bg-white/10 border border-white/20 px-4 py-3 text-xs text-white/80 leading-relaxed">
+                This lot is not currently available for public registration.
               </div>
             ) : (
               <button

@@ -6,28 +6,26 @@ import {
   type LotData,
   type LotStage,
 } from "@/data/seafields";
+import type { PublicLotRow } from "@/app/api/seafields/allocations/route";
 import polygonsData from "@/data/seafields/polygons.json";
-
-interface Allocation {
-  lot_number: number;
-  allocated_to: string | null;
-  dwelling_type: string | null;
-  stage: string | null;
-}
 
 interface PlanViewProps {
   selectedLots: string[];
   counts: Record<string, number>;
-  allocations: Record<number, Allocation>;
+  publicLots: Record<number, PublicLotRow>;
   hoveredLot: string | null;
   setHoveredLot: (id: string | null) => void;
   onOpenLot: (id: string) => void;
   statusFor: (
     count: number,
     isSelected: boolean,
-    allocatedTo: string | null | undefined,
+    row: PublicLotRow | undefined,
   ) => { bg: string; border: string };
   byStage: Map<string, LotData[]>;
+}
+
+function isReservedStatus(status: string | undefined | null): boolean {
+  return status === "reserved" || status === "sold" || status === "withheld";
 }
 
 type Polygons = {
@@ -65,11 +63,10 @@ function centroid(pts: number[][]): { x: number; y: number } {
 export default function PlanView({
   selectedLots,
   counts,
-  allocations,
+  publicLots,
   hoveredLot,
   setHoveredLot,
   onOpenLot,
-  statusFor,
 }: PlanViewProps) {
   const lotById = new Map<string, LotData>();
   for (const l of LOTS) lotById.set(l.id, l);
@@ -192,10 +189,12 @@ export default function PlanView({
           const stage = lot.stage as Exclude<LotStage, null>;
           const stageInfo = stage ? STAGE_INFO[stage] : null;
           const count = counts[id] || 0;
-          const allocation = allocations[lot.lotNumber];
+          const row = publicLots[lot.lotNumber];
           const isSelected = selectedLots.includes(id);
           const isHovered = hoveredLot === id;
-          const isReserved = !!allocation?.allocated_to;
+          const isReserved = !!row && isReservedStatus(row.status);
+          const isComingSoon =
+            !!row && !row.is_open_for_registration && !isReserved;
 
           // Default fill is the stage colour at low opacity; status colour overrides
           let fill = stageInfo?.color || "#E8E2D4";
@@ -210,6 +209,10 @@ export default function PlanView({
             fill = "rgba(100, 116, 139, 0.85)";
             stroke = "#475569";
             strokeWidth = 0.5;
+          } else if (isComingSoon) {
+            fill = "rgba(180, 180, 180, 0.45)";
+            stroke = "#999999";
+            strokeWidth = 0.4;
           } else if (count >= 3) {
             fill = "rgba(232, 93, 74, 0.78)";
           } else if (count === 2) {
@@ -226,9 +229,11 @@ export default function PlanView({
           const c = centroid(pts);
           const ariaLabel = isReserved
             ? `Reserved — Lot ${lot.lotNumber} (${lot.area} sqm)`
-            : `Lot ${lot.lotNumber} — ${lot.area} sqm${
-                count > 0 ? ` · ${count} interested` : " · available"
-              }`;
+            : isComingSoon
+              ? `Coming soon — Lot ${lot.lotNumber} (${lot.area} sqm, Stage ${row?.stage_number ?? "?"})`
+              : `Lot ${lot.lotNumber} — ${lot.area} sqm${
+                  count > 0 ? ` · ${count} interested` : " · available"
+                }`;
 
           return (
             <g

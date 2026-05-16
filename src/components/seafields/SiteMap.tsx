@@ -9,6 +9,7 @@ import {
   type LotData,
   type LotStage,
 } from "@/data/seafields";
+import type { PublicLotRow } from "@/app/api/seafields/allocations/route";
 import LotBadge from "./LotBadge";
 import LotInfoCard from "./LotInfoCard";
 import PlanView from "./PlanView";
@@ -27,16 +28,22 @@ const SatelliteSitePlan = dynamic(() => import("./SatelliteSitePlan"), {
 type StageFilter = "all" | Exclude<LotStage, null>;
 type ViewMode = "schematic" | "plan" | "satellite" | "drawing";
 
-interface Allocation {
-  lot_number: number;
-  allocated_to: string | null;
-  dwelling_type: string | null;
-  stage: string | null;
-}
-
 interface SiteMapProps {
   selectedLots: string[];
   onToggleLot: (lotId: string) => void;
+}
+
+function isReservedStatus(status: string | undefined | null): boolean {
+  return status === "reserved" || status === "sold" || status === "withheld";
+}
+
+function isOpenForPublic(row: PublicLotRow | undefined): boolean {
+  if (!row) return false;
+  return (
+    row.allocation_bucket === "public" &&
+    row.is_open_for_registration &&
+    row.status === "available"
+  );
 }
 
 // Spatial arrangement of stages on the schematic — rows of stage panels,
@@ -54,16 +61,18 @@ const STATUS_COLORS = {
   two:       { bg: "rgba(200, 169, 81, 0.88)", border: "#B8941A" },
   three:     { bg: "rgba(232, 93, 74, 0.88)",  border: "#C0392B" },
   reserved:  { bg: "rgba(100, 116, 139, 0.92)", border: "#475569" }, // slate
+  comingSoon:{ bg: "rgba(180, 180, 180, 0.55)", border: "#999999" }, // future stage
   selected:  { bg: "rgba(26, 39, 68, 0.95)",   border: "#FFFFFF" },
 };
 
 function statusFor(
   count: number,
   isSelected: boolean,
-  allocatedTo: string | null | undefined,
+  row: PublicLotRow | undefined,
 ) {
-  if (allocatedTo) return STATUS_COLORS.reserved;
   if (isSelected) return STATUS_COLORS.selected;
+  if (row && isReservedStatus(row.status)) return STATUS_COLORS.reserved;
+  if (row && !row.is_open_for_registration) return STATUS_COLORS.comingSoon;
   if (count >= 3) return STATUS_COLORS.three;
   if (count === 2) return STATUS_COLORS.two;
   if (count === 1) return STATUS_COLORS.one;
@@ -72,7 +81,7 @@ function statusFor(
 
 export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
   const [counts, setCounts] = useState<Record<string, number>>({});
-  const [allocations, setAllocations] = useState<Record<number, Allocation>>({});
+  const [publicLots, setPublicLots] = useState<Record<number, PublicLotRow>>({});
   const [loaded, setLoaded] = useState(false);
   const [hoveredLot, setHoveredLot] = useState<string | null>(null);
   const [openLotId, setOpenLotId] = useState<string | null>(null);
@@ -82,7 +91,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
   useEffect(() => {
     (async () => {
       try {
-        const [countsRes, allocRes] = await Promise.all([
+        const [countsRes, lotsRes] = await Promise.all([
           fetch("/api/seafields/lots"),
           fetch("/api/seafields/allocations"),
         ]);
@@ -90,11 +99,11 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
           const d = await countsRes.json();
           setCounts(d.counts || {});
         }
-        if (allocRes.ok) {
-          const d = await allocRes.json();
-          const byNum: Record<number, Allocation> = {};
-          for (const a of d.allocations || []) byNum[a.lot_number] = a;
-          setAllocations(byNum);
+        if (lotsRes.ok) {
+          const d = (await lotsRes.json()) as { lots?: PublicLotRow[] };
+          const byNum: Record<number, PublicLotRow> = {};
+          for (const a of d.lots || []) byNum[a.lot_number] = a;
+          setPublicLots(byNum);
         }
       } finally {
         setLoaded(true);
@@ -115,12 +124,14 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
   }, []);
 
   const hoveredData = hoveredLot ? LOTS.find((l) => l.id === hoveredLot) : null;
-  const hoveredAlloc = hoveredData
-    ? allocations[hoveredData.lotNumber]
+  const hoveredRow = hoveredData
+    ? publicLots[hoveredData.lotNumber]
     : undefined;
 
   const totalLots = LOTS.length;
-  const allocatedCount = Object.keys(allocations).length;
+  const reservedCount = Object.values(publicLots).filter((r) =>
+    isReservedStatus(r.status),
+  ).length;
 
   return (
     <div className="w-full">
@@ -135,6 +146,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
           { k: "two", label: "2 interested" },
           { k: "three", label: "3+ interested" },
           { k: "reserved", label: "Reserved" },
+          { k: "comingSoon", label: "Coming soon" },
           { k: "selected", label: "Your selection" },
         ].map((item) => {
           const c = STATUS_COLORS[item.k as keyof typeof STATUS_COLORS];
@@ -170,7 +182,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
           );
         })}
         <div className="ml-auto text-xs text-slate/60">
-          {totalLots} lots · {allocatedCount} allocated
+          {totalLots} lots · {reservedCount} reserved
         </div>
       </div>
 
@@ -266,7 +278,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
           <PlanView
             selectedLots={selectedLots}
             counts={counts}
-            allocations={allocations}
+            publicLots={publicLots}
             hoveredLot={hoveredLot}
             setHoveredLot={setHoveredLot}
             onOpenLot={(id) => setOpenLotId(id)}
@@ -320,7 +332,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
           <SatelliteSitePlan
             selectedLots={selectedLots}
             counts={counts}
-            allocations={allocations}
+            publicLots={publicLots}
             hoveredLot={hoveredLot}
             setHoveredLot={setHoveredLot}
             onOpenLot={(id) => setOpenLotId(id)}
@@ -378,22 +390,21 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
                     >
                       {lots.map((lot) => {
                         const count = counts[lot.id] || 0;
-                        const allocation = allocations[lot.lotNumber];
-                        const isAllocated = !!allocation?.allocated_to;
+                        const row = publicLots[lot.lotNumber];
+                        const isAllocated = !!row && isReservedStatus(row.status);
                         const isSelected = selectedLots.includes(lot.id);
                         const isHovered = hoveredLot === lot.id;
-                        const { bg, border } = statusFor(
-                          count,
-                          isSelected,
-                          allocation?.allocated_to,
-                        );
+                        const { bg, border } = statusFor(count, isSelected, row);
+                        const isComingSoon = !!row && !row.is_open_for_registration && !isAllocated;
                         const ariaLabel = isAllocated
                           ? `Reserved — Lot ${lot.lotNumber} (${lot.area} sqm)`
-                          : `Lot ${lot.lotNumber} — ${lot.area} sqm${
-                              count > 0
-                                ? ` · ${count} interested`
-                                : " · available"
-                            }`;
+                          : isComingSoon
+                            ? `Coming soon — Lot ${lot.lotNumber} (${lot.area} sqm, Stage ${row?.stage_number ?? "?"})`
+                            : `Lot ${lot.lotNumber} — ${lot.area} sqm${
+                                count > 0
+                                  ? ` · ${count} interested`
+                                  : " · available"
+                              }`;
                         return (
                           <LotBadge
                             key={lot.id}
@@ -403,7 +414,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
                             border={border}
                             isSelected={isSelected}
                             isHovered={isHovered}
-                            isAllocated={isAllocated}
+                            isAllocated={isAllocated || isComingSoon}
                             registrationCount={count}
                             onClick={() => setOpenLotId(lot.id)}
                             onMouseEnter={() => setHoveredLot(lot.id)}
@@ -427,18 +438,15 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
           const lot = LOTS.find((l) => l.id === openLotId);
           if (!lot) return null;
           const count = counts[lot.id] || 0;
-          const allocation = allocations[lot.lotNumber];
+          const row = publicLots[lot.lotNumber];
           const isSelected = selectedLots.includes(lot.id);
-          const { bg, border } = statusFor(
-            count,
-            isSelected,
-            allocation?.allocated_to,
-          );
+          const { bg, border } = statusFor(count, isSelected, row);
           return (
             <LotInfoCard
               lot={lot}
               registrationCount={count}
-              allocation={allocation}
+              publicRow={row}
+              canSelect={isOpenForPublic(row) || isSelected}
               isSelected={isSelected}
               bg={bg}
               border={border}
@@ -457,7 +465,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
           {hoveredData.stage
             ? ` | ${STAGE_INFO[hoveredData.stage].title}`
             : ""}
-          {hoveredAlloc?.allocated_to ? (
+          {hoveredRow && isReservedStatus(hoveredRow.status) ? (
             <>
               {" | "}
               <span
@@ -465,6 +473,16 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
                 style={{ color: STATUS_COLORS.reserved.border }}
               >
                 Reserved
+              </span>
+            </>
+          ) : hoveredRow && !hoveredRow.is_open_for_registration ? (
+            <>
+              {" | "}
+              <span
+                className="font-semibold"
+                style={{ color: STATUS_COLORS.comingSoon.border }}
+              >
+                Coming soon
               </span>
             </>
           ) : (
@@ -476,6 +494,15 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
                   ? "person interested"
                   : "interested"}
               </span>
+              {hoveredRow?.total_price ? (
+                <span className="text-slate/60 ml-3">
+                  ${Math.round(hoveredRow.total_price).toLocaleString()}
+                </span>
+              ) : hoveredRow?.land_total ? (
+                <span className="text-slate/60 ml-3">
+                  ${Math.round(hoveredRow.land_total).toLocaleString()} (land)
+                </span>
+              ) : null}
             </>
           )}
         </div>

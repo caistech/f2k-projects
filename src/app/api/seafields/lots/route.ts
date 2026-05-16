@@ -1,26 +1,36 @@
 import { NextResponse } from "next/server";
 import { createSupabaseService } from "@/lib/supabase-service";
 
+export const dynamic = "force-dynamic";
+
+/**
+ * Public registration heat counts. Reads the seafields_registration_lots
+ * join table (one row per registrant × lot) so position-in-queue and
+ * status-aware filtering are honoured. F2KSFLDS-8: previously aggregated
+ * seafields_registrations.lots_selected[], which double-counted nothing
+ * but missed the active/locked-in filter and ignored the backup_list
+ * distinction.
+ *
+ * Response shape kept identical: { counts: Record<"L<n>", number> }.
+ */
 export async function GET() {
   const supabase = createSupabaseService();
 
   try {
     const { data, error } = await (supabase
-      .from("seafields_registrations") as any)
-      .select("lots_selected");
+      .from("seafields_registration_lots") as any)
+      .select("lot_number")
+      .in("status", ["active", "locked_in"])
+      .eq("registration_type", "primary");
 
     if (error) {
-      // Table may not exist yet — return empty counts gracefully
       return NextResponse.json({ counts: {} });
     }
 
-    // Aggregate registration count per lot
     const counts: Record<string, number> = {};
-    for (const row of data || []) {
-      const lots: string[] = row.lots_selected || [];
-      for (const lotId of lots) {
-        counts[lotId] = (counts[lotId] || 0) + 1;
-      }
+    for (const row of (data || []) as Array<{ lot_number: number }>) {
+      const key = `L${row.lot_number}`;
+      counts[key] = (counts[key] || 0) + 1;
     }
 
     return NextResponse.json({ counts });

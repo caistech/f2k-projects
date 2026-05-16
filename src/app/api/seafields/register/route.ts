@@ -60,38 +60,126 @@ export async function POST(request: Request) {
   const d = parsed.data;
   const supabase = createSupabaseService();
 
-  const { error } = await (supabase.from("seafields_registrations") as any).insert({
-    first_name: d.first_name,
-    last_name: d.last_name,
-    email: d.email,
-    phone: d.phone ?? null,
-    lots_selected: d.lots_selected,
-    interest_type: d.interest_type ?? null,
-    price_preferences: d.price_preferences ?? {},
-    dwelling_preferences: d.dwelling_preferences ?? {},
-    suburb: d.suburb ?? null,
-    postcode: d.postcode ?? null,
-    buyer_type: d.buyer_type ?? null,
-    buyer_profile: d.buyer_profile ?? null,
-    current_housing: d.current_housing ?? null,
-    purchase_timeline: d.purchase_timeline ?? null,
-    finance_status: d.finance_status ?? null,
-    how_heard: d.how_heard ?? null,
-    referrer_type: d.referrer_type ?? null,
-    referrer_name: d.referrer_name ?? null,
-    referrer_company: d.referrer_company ?? null,
-    referrer_contact: d.referrer_contact ?? null,
-    notes: d.notes ?? null,
-    consent: true,
-    source: "web-roi",
-  } as never);
+  // F2KSFLDS-8: server-side Stage-1 launch gate. The seafields_public_lots
+  // view filters out non-public stages; we additionally require the lot
+  // to live in the public bucket and to belong to a stage that is open
+  // for registration. Reserved (but public-bucket) lots are allowed so
+  // backup_list registrations can be recorded for future release flows.
+  const lotNumbers = d.lots_selected.map((l) => parseInt(l.slice(1), 10));
+  const { data: viewRows, error: viewErr } = await (supabase
+    .from("seafields_public_lots") as any)
+    .select(
+      "lot_number, status, allocation_bucket, is_open_for_registration, stage_id",
+    )
+    .in("lot_number", lotNumbers);
 
-  if (error) {
+  if (viewErr) {
+    console.error("Seafields registration lot-lookup error:", viewErr);
+    return NextResponse.json(
+      { error: "Registration failed. Please try again." },
+      { status: 500 },
+    );
+  }
+
+  type ViewRow = {
+    lot_number: number;
+    status: string;
+    allocation_bucket: string | null;
+    is_open_for_registration: boolean;
+    stage_id: string | null;
+  };
+  const viewByNumber = new Map<number, ViewRow>(
+    ((viewRows as ViewRow[]) || []).map((r) => [r.lot_number, r]),
+  );
+
+  for (const n of lotNumbers) {
+    const r = viewByNumber.get(n);
+    if (!r) {
+      return NextResponse.json(
+        { error: `Lot ${n} is not available for registration.` },
+        { status: 400 },
+      );
+    }
+    if (r.allocation_bucket !== "public" || !r.is_open_for_registration) {
+      return NextResponse.json(
+        { error: `Lot ${n} is not open for public registration yet.` },
+        { status: 400 },
+      );
+    }
+    if (r.status === "sold" || r.status === "withheld") {
+      return NextResponse.json(
+        { error: `Lot ${n} is not available.` },
+        { status: 400 },
+      );
+    }
+  }
+
+  const { data: insertedReg, error } = await (supabase.from("seafields_registrations") as any)
+    .insert({
+      first_name: d.first_name,
+      last_name: d.last_name,
+      email: d.email,
+      phone: d.phone ?? null,
+      lots_selected: d.lots_selected,
+      interest_type: d.interest_type ?? null,
+      price_preferences: d.price_preferences ?? {},
+      dwelling_preferences: d.dwelling_preferences ?? {},
+      suburb: d.suburb ?? null,
+      postcode: d.postcode ?? null,
+      buyer_type: d.buyer_type ?? null,
+      buyer_profile: d.buyer_profile ?? null,
+      current_housing: d.current_housing ?? null,
+      purchase_timeline: d.purchase_timeline ?? null,
+      finance_status: d.finance_status ?? null,
+      how_heard: d.how_heard ?? null,
+      referrer_type: d.referrer_type ?? null,
+      referrer_name: d.referrer_name ?? null,
+      referrer_company: d.referrer_company ?? null,
+      referrer_contact: d.referrer_contact ?? null,
+      notes: d.notes ?? null,
+      consent: true,
+      source: "web-roi",
+    } as never)
+    .select("id")
+    .single();
+
+  if (error || !insertedReg?.id) {
     console.error("Seafields registration insert error:", error);
     return NextResponse.json(
       { error: "Registration failed. Please try again." },
       { status: 500 }
     );
+  }
+
+  const registrationId: string = insertedReg.id;
+
+  // F2KSFLDS-8: dual-write into the registration_lots join table. One row
+  // per (registration × lot). registration_type is derived from the lot's
+  // current status — Reserved lots become 'backup_list', everything else
+  // is 'primary'. stage_at_registration_id captures which stage the lot
+  // was in at the moment of submission so later price-protection emails
+  // can fan out correctly.
+  const joinRows = lotNumbers.map((lotNumber) => {
+    const row = viewByNumber.get(lotNumber)!;
+    const isReserved = row.status === "reserved";
+    return {
+      registration_id: registrationId,
+      lot_number: lotNumber,
+      registration_type: isReserved ? "backup_list" : "primary",
+      status: "active",
+      stage_at_registration_id: row.stage_id,
+    };
+  });
+
+  if (joinRows.length > 0) {
+    const { error: joinErr } = await (supabase.from("seafields_registration_lots") as any)
+      .upsert(joinRows, { onConflict: "registration_id,lot_number", ignoreDuplicates: true });
+    if (joinErr) {
+      console.error("Seafields registration_lots dual-write error:", joinErr);
+      // Non-fatal: the registration row itself succeeded. Migration 0004's
+      // back-fill (or a future repair pass) can reconcile gaps. Don't fail
+      // the user-facing submission.
+    }
   }
 
   // Audit log
