@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import { useCanonicalOrigin } from "@/lib/use-canonical-origin";
+import { PasswordField } from "@/components/admin/PasswordField";
 
 function LoginInner() {
   useCanonicalOrigin();
@@ -120,19 +121,13 @@ function LoginInner() {
               className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-f2k-blue outline-none"
             />
           </div>
-          <div>
-            <label htmlFor="login-password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              id="login-password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-f2k-blue outline-none"
-            />
-          </div>
+          <PasswordField
+            id="login-password"
+            label="Password"
+            value={password}
+            onChange={setPassword}
+            autoComplete="current-password"
+          />
 
           {error && <p className="text-red-600 text-sm">{error}</p>}
           {info && <p className="text-green-700 text-sm">{info}</p>}
