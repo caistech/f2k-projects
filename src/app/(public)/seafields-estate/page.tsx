@@ -181,50 +181,53 @@ export default function SeafieldsEstatePage() {
             Development Staging
           </p>
           <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
-            Tranche 1 Release — 81 of 143 Lots
+            Stage 1 Open Now — SW Block, 20 Lots
           </h2>
           <p className="text-slate font-archivo leading-relaxed mb-8 max-w-[700px]">
-            The initial Tranche 1 release covers Stages 1–3 plus three
-            lots fronting Sutcliffe Road — a total of 81 lots. The remaining
-            62 lots will release in subsequent stages as infrastructure works
-            progress.
+            Seafields Estate releases in seven stages on a price-escalation
+            ladder. Only <strong>Stage 1 (the 20 SW Block lots)</strong> is
+            open for registration at launch — Stage 2 opens automatically once
+            Stage 1 hits its threshold, at a higher per-m² rate. Every Stage 1
+            registrant gets price-protection notification when that fires.
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
             {[
-              {
-                stage: "Stage 1",
-                lots: "43+3",
-                area: "SW Block",
-                timeline: "From Q3 2026",
-              },
-              {
-                stage: "Stage 2",
-                lots: "14",
-                area: "Pepper Gate Central",
-                timeline: "From Q4 2026",
-              },
-              {
-                stage: "Stage 3",
-                lots: "23",
-                area: "Central",
-                timeline: "From Q1 2027",
-              },
-              {
-                stage: "Sutcliffe Rd",
-                lots: "3",
-                area: "Lots 236–238",
-                timeline: "From Q3 2026",
-              },
+              { stage: "Stage 1", lots: "20", area: "SW Block — Launch", rate: "$250/m²", state: "OPEN" },
+              { stage: "Stage 2", lots: "1",  area: "Central Heritage", rate: "$265/m²", state: "LOCKED" },
+              { stage: "Stage 3", lots: "23", area: "Central",          rate: "$280/m²", state: "LOCKED" },
+              { stage: "Stage 4", lots: "12", area: "East",             rate: "$295/m²", state: "LOCKED" },
+              { stage: "Stage 5", lots: "25", area: "North",            rate: "$310/m²", state: "LOCKED" },
+              { stage: "Stage 6", lots: "35", area: "Central Upper",    rate: "$325/m²", state: "LOCKED" },
+              { stage: "Stage 7", lots: "29", area: "NW Premium",       rate: "$340/m²", state: "LOCKED" },
             ].map((t) => (
               <div
                 key={t.stage}
-                className="bg-off-white p-4 border border-black/5 text-center"
+                className={`p-4 border text-center ${
+                  t.state === "OPEN"
+                    ? "bg-[#E6F8F7] border-[#00B5AD]"
+                    : "bg-off-white border-black/5"
+                }`}
               >
-                <div className="font-playfair text-base font-black text-deep-blue">
-                  {t.stage}
+                <div className="flex items-center justify-center gap-1.5">
+                  <div className="font-playfair text-base font-black text-deep-blue">
+                    {t.stage}
+                  </div>
+                  <span
+                    className={`font-ibm-mono text-[0.45rem] tracking-[0.2em] px-1.5 py-0.5 rounded ${
+                      t.state === "OPEN"
+                        ? "bg-[#00B5AD] text-white"
+                        : "bg-slate/15 text-slate/70"
+                    }`}
+                  >
+                    {t.state}
+                  </span>
                 </div>
-                <div className="font-archivo text-2xl font-bold text-[#00B5AD] mt-1">
+                <div
+                  className={`font-archivo text-2xl font-bold mt-1 ${
+                    t.state === "OPEN" ? "text-[#00B5AD]" : "text-slate/60"
+                  }`}
+                >
                   {t.lots}
                 </div>
                 <div className="font-ibm-mono text-[0.55rem] tracking-wider text-slate/60 mt-1">
@@ -234,7 +237,7 @@ export default function SeafieldsEstatePage() {
                   {t.area}
                 </div>
                 <div className="font-archivo text-xs text-slate mt-1">
-                  {t.timeline}
+                  {t.rate}
                 </div>
               </div>
             ))}
@@ -242,12 +245,11 @@ export default function SeafieldsEstatePage() {
 
           <div className="bg-off-white border border-black/5 p-4 text-center">
             <div className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-slate/60 mb-1">
-              Future Tranches
+              Total Estate
             </div>
             <div className="font-archivo text-sm text-deep-blue">
-              <strong>62 further lots</strong> &middot; Stages 4–7
-              (Pepper Gate Inner, Central Upper, Collins Road) &middot; release
-              schedule to be advised
+              <strong>145 freehold lots</strong> &middot; CLE Plan 3027-08B-01,
+              WAPC 202888 &middot; price ladder $250 → $340/m² across Stages 1–7
             </div>
           </div>
         </div>
