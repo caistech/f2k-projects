@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminUser, hasPermission, auditLog } from "@/lib/admin-auth";
-import { createSupabaseService } from "@/lib/supabase-service";
+import { getAdminUser, hasPermission } from "@/lib/admin-auth";
+import { createSupabaseServiceWithActor } from "@/lib/supabase-service";
 
 const updateSchema = z.object({
   code: z
@@ -55,7 +55,9 @@ export async function PATCH(
     return NextResponse.json({ error: "No fields to update" }, { status: 400 });
   }
 
-  const supabase = createSupabaseService();
+  // Attributed write — audit trigger (migration 0008) writes one row per
+  // changed field with actor_email stamped from the x-actor-email header.
+  const supabase = createSupabaseServiceWithActor(admin.email, null);
   const { data, error } = await (supabase.from("dwelling_types") as any)
     .update(updates)
     .eq("id", params.id)
@@ -76,15 +78,6 @@ export async function PATCH(
     }
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-
-  await auditLog(
-    admin.id,
-    admin.email,
-    "dwelling_type_updated",
-    "dwelling_type",
-    params.id,
-    { code: data.code, patch: updates },
-  );
 
   return NextResponse.json({ dwelling_type: data });
 }

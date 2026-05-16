@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getAdminUser, hasPermission, auditLog } from "@/lib/admin-auth";
-import { createSupabaseService } from "@/lib/supabase-service";
+import {
+  createSupabaseService,
+  createSupabaseServiceWithActor,
+} from "@/lib/supabase-service";
 import { forwardAllocationToGHL } from "@/lib/ghl";
 
 const updateSchema = z.object({
@@ -108,7 +111,11 @@ export async function PATCH(
     .eq("lot_number", lotNumber)
     .maybeSingle();
 
-  const { data: updated, error } = await (supabase
+  // Write through an attributed client so the audit trigger (migration 0008)
+  // records actor_email on every per-field row. Reason field is added by the
+  // Lot Editor extension (F2KSFLDS-4); for now reason stays null.
+  const attributed = createSupabaseServiceWithActor(admin.email, null);
+  const { data: updated, error } = await (attributed
     .from("seafields_lot_allocations") as any)
     .update(updates)
     .eq("lot_number", lotNumber)
@@ -118,15 +125,6 @@ export async function PATCH(
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-
-  await auditLog(
-    admin.id,
-    admin.email,
-    "seafields_lot_allocation_updated",
-    "seafields_lot_allocation",
-    null,
-    { lot_number: lotNumber, ...updates }
-  );
 
   // Forward allocation state to GHL if a registrant is identifiable.
   // (Bulk WACHS / GROH allocations have no FK and are skipped — they're

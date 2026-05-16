@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminUser, hasPermission, auditLog } from "@/lib/admin-auth";
-import { createSupabaseService } from "@/lib/supabase-service";
+import { getAdminUser, hasPermission } from "@/lib/admin-auth";
+import {
+  createSupabaseService,
+  createSupabaseServiceWithActor,
+} from "@/lib/supabase-service";
 
 const updateSchema = z.object({
   stage_label: z.string().trim().min(1).max(200).optional(),
@@ -87,34 +90,17 @@ export async function PATCH(
     );
   }
 
-  // Perform the update. The DB trigger (trg_audit_stages) will fire and write
-  // one audit_log row per changed field — BUT with NULL actor/reason until
-  // session-variable plumbing lands in a follow-up session.
-  // To avoid losing the actor + reason for now, also write an "intent" audit
-  // row at the app layer that carries them explicitly.
-  const { error: updateErr } = await (supabase.from("stages") as any)
+  // Perform the update through an attributed client — x-actor-email +
+  // x-audit-reason headers feed audit_entity_change() per migration 0008
+  // so trigger rows carry full actor + reason.
+  const attributed = createSupabaseServiceWithActor(admin.email, reason ?? null);
+  const { error: updateErr } = await (attributed.from("stages") as any)
     .update(updates)
     .eq("id", params.stageId);
 
   if (updateErr) {
     return NextResponse.json({ error: updateErr.message }, { status: 500 });
   }
-
-  // App-level intent log carrying actor + reason. Trigger rows still capture
-  // the per-field diff; this row gives them a sibling with attribution until
-  // request-header plumbing wires actor/reason into the trigger.
-  await auditLog(
-    admin.id,
-    admin.email,
-    touchesMaterial ? "stage_material_update" : "stage_label_update",
-    "stage",
-    params.stageId,
-    {
-      stage_number: priorRow.stage_number,
-      patch: updates,
-      reason: reason ?? null,
-    },
-  );
 
   // Return the fresh row via the view so the UI gets the recomputed
   // escalation_pct in the same response.

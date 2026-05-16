@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 import { getAdminUser, hasPermission, auditLog } from "@/lib/admin-auth";
-import { createSupabaseService } from "@/lib/supabase-service";
+import {
+  createSupabaseService,
+  createSupabaseServiceWithActor,
+} from "@/lib/supabase-service";
 
 // ---------------------------------------------------------------------------
 // Phase 4.2 — Seafields workbook merge endpoint.
@@ -323,6 +326,11 @@ export async function POST(request: Request) {
   };
 
   const supabase = createSupabaseService();
+  // Attributed writes — audit trigger (migration 0008) reads x-actor-email
+  // and x-audit-reason from the headers and stamps every per-field audit row.
+  // The summary auditLog at the end of this handler is separate: it captures
+  // the atomic "an import happened" event across all rows in a single record.
+  const attributed = createSupabaseServiceWithActor(admin.email, reason || null);
 
   // -------------------------------------------------------------------------
   // Stages — workbook owns stage_label + rate_per_sqm; gating fields untouched.
@@ -372,7 +380,7 @@ export async function POST(request: Request) {
       summary.stages.upserted.push({ stage_number: stageNumber, changes: patch });
 
       if (!dryRun) {
-        const { error: updErr } = await (supabase.from("stages") as any)
+        const { error: updErr } = await (attributed.from("stages") as any)
           .update(patch)
           .eq("id", existing.id);
         if (updErr) summary.errors.push(`stage ${stageNumber}: ${updErr.message}`);
@@ -420,7 +428,7 @@ export async function POST(request: Request) {
       if (!existing) {
         summary.dwelling_types.inserted.push({ code });
         if (!dryRun) {
-          const { error } = await (supabase.from("dwelling_types") as any).insert({
+          const { error } = await (attributed.from("dwelling_types") as any).insert({
             code,
             plan_name: planName,
             bedrooms,
@@ -450,7 +458,7 @@ export async function POST(request: Request) {
       }
       summary.dwelling_types.upserted.push({ code, changes: patch });
       if (!dryRun) {
-        const { error } = await (supabase.from("dwelling_types") as any)
+        const { error } = await (attributed.from("dwelling_types") as any)
           .update(patch)
           .eq("id", existing.id);
         if (error) summary.errors.push(`dwelling update ${code}: ${error.message}`);
@@ -597,7 +605,7 @@ export async function POST(request: Request) {
       summary.lots.updated.push({ lot_number: lotNumber, changes: patch });
 
       if (!dryRun) {
-        const { error } = await (supabase.from("seafields_lot_allocations") as any)
+        const { error } = await (attributed.from("seafields_lot_allocations") as any)
           .update(patch)
           .eq("lot_number", lotNumber);
         if (error) summary.errors.push(`lot ${lotNumber}: ${error.message}`);

@@ -36,6 +36,7 @@ const MIGRATIONS = [
   "0005_audit_log_trigger.sql",
   "0006_seafields_public_views.sql",
   "0007_db_v6_reconciliation.sql",
+  "0008_audit_trigger_reads_request_headers.sql",
 ];
 
 const VERIFICATION_QUERIES = [

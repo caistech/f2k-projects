@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminUser, hasPermission, auditLog } from "@/lib/admin-auth";
-import { createSupabaseService } from "@/lib/supabase-service";
+import { getAdminUser, hasPermission } from "@/lib/admin-auth";
+import {
+  createSupabaseService,
+  createSupabaseServiceWithActor,
+} from "@/lib/supabase-service";
 
 export const dynamic = "force-dynamic";
 
@@ -56,7 +59,10 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = createSupabaseService();
+  // Attributed write — audit trigger (migration 0008) reads x-actor-email
+  // from the headers and stamps it on the INSERT_dwelling_types row.
+  // No mandatory reason for catalogue edits.
+  const supabase = createSupabaseServiceWithActor(admin.email, null);
   const { data, error } = await (supabase.from("dwelling_types") as any)
     .insert(parsed.data)
     .select(
@@ -65,7 +71,6 @@ export async function POST(request: Request) {
     .single();
 
   if (error) {
-    // 23505 = unique violation
     if (error.code === "23505") {
       return NextResponse.json(
         { error: `Dwelling type code "${parsed.data.code}" already exists` },
@@ -74,15 +79,6 @@ export async function POST(request: Request) {
     }
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-
-  await auditLog(
-    admin.id,
-    admin.email,
-    "dwelling_type_created",
-    "dwelling_type",
-    data.id,
-    { code: data.code, plan_name: data.plan_name },
-  );
 
   return NextResponse.json({ dwelling_type: data }, { status: 201 });
 }
