@@ -18,6 +18,7 @@ const NAV: NavItem[] = [
   { href: "/admin/seafields-import", label: "Seafields Workbook Import", group: "Seafields" },
   { href: "/admin/branscombe-units", label: "Branscombe Units", group: "Branscombe" },
   { href: "/admin/branscombe-pipeline", label: "Branscombe Pipeline", group: "Branscombe" },
+  { href: "/admin/email-templates", label: "Email Templates", group: "Compliance" },
   { href: "/admin/audit-log", label: "Audit Log", group: "Compliance" },
 ];
 

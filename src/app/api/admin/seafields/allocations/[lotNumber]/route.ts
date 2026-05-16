@@ -5,6 +5,7 @@ import {
   createSupabaseService,
   createSupabaseServiceWithActor,
 } from "@/lib/supabase-service";
+import { sendTemplated } from "@/lib/email/send";
 import { forwardAllocationToGHL } from "@/lib/ghl";
 
 const ALLOCATION_BUCKETS = [
@@ -205,9 +206,10 @@ export async function PATCH(
   const { data: priorRow } = await (
     supabase.from("seafields_lot_allocations") as any
   )
-    .select("intent_locked_to_registration_id, allocated_to")
+    .select("intent_locked_to_registration_id, allocated_to, status")
     .eq("lot_number", lotNumber)
     .maybeSingle();
+  const priorStatus: string | null = priorRow?.status ?? null;
 
   // Attributed write — audit trigger (migration 0008) records actor_email
   // and reason on every per-field row.
@@ -283,6 +285,107 @@ export async function PATCH(
     }
   } catch (err) {
     console.error("GHL allocation forward threw:", err);
+  }
+
+  // F2KSFLDS-9: lot-status transition email fan-out. Best-effort — never
+  // blocks the admin response. Status changes from available→reserved
+  // notify every registrant on the lot (primary + backup_list); changes
+  // from reserved→available notify backup_list only with their queue
+  // position so they know they can convert.
+  try {
+    const newStatus = (updates.status as string | undefined) ?? null;
+    if (newStatus && newStatus !== priorStatus) {
+      const fromAvailable = priorStatus === "available";
+      const fromReserved = priorStatus === "reserved";
+      const toReserved = newStatus === "reserved";
+      const toAvailable = newStatus === "available";
+
+      if (fromAvailable && toReserved) {
+        // Fan out lot_reserved_notice to every registrant on this lot.
+        const { data: rows } = await (
+          supabase.from("seafields_registration_lots") as any
+        )
+          .select(
+            "registration_type, seafields_registrations!inner(first_name, email)",
+          )
+          .eq("lot_number", lotNumber)
+          .eq("status", "active");
+
+        for (const row of (rows as Array<{
+          registration_type: string;
+          seafields_registrations: { first_name: string; email: string };
+        }> | null) ?? []) {
+          const isBackup = row.registration_type === "backup_list";
+          const msg = isBackup
+            ? "You are on the backup list for this lot — if it becomes available again, we will notify you in queue order."
+            : "If your interest was as a primary registrant, please reach out so we can help you explore alternative lots in the same release.";
+          await sendTemplated({
+            slug: "lot_reserved_notice",
+            to: row.seafields_registrations.email,
+            variables: {
+              first_name: row.seafields_registrations.first_name,
+              lot_number: lotNumber,
+              registration_type_message: msg,
+            },
+            audit: {
+              actorEmail: admin.email,
+              entityType: "seafields_lot_allocation",
+              entityId: null,
+            },
+          });
+        }
+        await auditLog(
+          admin.id,
+          admin.email,
+          "lot_reserved_notifications_sent",
+          "seafields_lot_allocation",
+          null,
+          { lot_number: lotNumber, count: (rows ?? []).length },
+        );
+      } else if (fromReserved && toAvailable) {
+        // Notify backup_list with their current queue position.
+        const { data: rows } = await (
+          supabase.from("seafields_registration_lots") as any
+        )
+          .select(
+            "position_in_queue, seafields_registrations!inner(first_name, email)",
+          )
+          .eq("lot_number", lotNumber)
+          .eq("status", "active")
+          .eq("registration_type", "backup_list")
+          .order("position_in_queue", { ascending: true });
+
+        for (const row of (rows as Array<{
+          position_in_queue: number | null;
+          seafields_registrations: { first_name: string; email: string };
+        }> | null) ?? []) {
+          await sendTemplated({
+            slug: "lot_released_notice",
+            to: row.seafields_registrations.email,
+            variables: {
+              first_name: row.seafields_registrations.first_name,
+              lot_number: lotNumber,
+              position_in_queue: row.position_in_queue ?? 1,
+            },
+            audit: {
+              actorEmail: admin.email,
+              entityType: "seafields_lot_allocation",
+              entityId: null,
+            },
+          });
+        }
+        await auditLog(
+          admin.id,
+          admin.email,
+          "lot_released_notifications_sent",
+          "seafields_lot_allocation",
+          null,
+          { lot_number: lotNumber, count: (rows ?? []).length },
+        );
+      }
+    }
+  } catch (err) {
+    console.error("Seafields lot-status email fan-out threw:", err);
   }
 
   return NextResponse.json({ allocation: updated });

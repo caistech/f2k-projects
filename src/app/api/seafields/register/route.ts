@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseService } from "@/lib/supabase-service";
 import { escapeHtml } from "@/lib/html-escape";
+import { sendTemplated } from "@/lib/email/send";
 import { forwardRegistrationToGHL } from "@/lib/ghl";
 import { z } from "zod";
 
@@ -299,52 +300,36 @@ export async function POST(request: Request) {
       `,
     });
 
-    // Registrant confirmation
-    await resend.emails.send({
-      from:
-        process.env.RESEND_FROM_EMAIL ||
-        "Seafields Estate <onboarding@resend.dev>",
-      to: d.email,
-      subject: "Seafields Estate — Registration of Interest Confirmed",
-      html: `
-        <div style="max-width:600px;font-family:sans-serif">
-          <div style="background:#1A2744;padding:24px 32px">
-            <h1 style="color:#FFFFFF;margin:0;font-size:24px">Seafields Estate</h1>
-            <p style="color:#00B5AD;margin:4px 0 0;font-size:13px">A Factory2Key Development</p>
-          </div>
-          <div style="padding:32px;background:#FFFFFF">
-            <p style="font-size:16px;color:#1A2744">Hi ${e.first_name},</p>
-            <p style="font-size:14px;color:#4A5568;line-height:1.6">
-              Thank you for registering your interest in Seafields Estate, Waggrakine WA.
-              We've noted your interest in the following lot(s):
-            </p>
-            <div style="background:#F5F3EE;padding:16px 20px;margin:16px 0;font-size:16px;font-weight:bold;color:#1A2744">
-              ${lotList}
-            </div>
-            ${d.interest_type ? `<p style="font-size:14px;color:#4A5568;line-height:1.6">Interest type: <strong>${e.interest_type}</strong></p>` : ""}
-            <p style="font-size:14px;color:#4A5568;line-height:1.6">
-              This is a registration of interest only — no deposit or commitment is required.
-              We'll keep you informed as the project progresses.
-            </p>
-            <p style="font-size:14px;color:#4A5568;line-height:1.6">
-              If you have any questions, contact Dennis McMahon at
-              <a href="mailto:dennis@factory2key.com.au">dennis@factory2key.com.au</a>
-              or +61 402 612 471.
-            </p>
-            <p style="font-size:14px;color:#1A2744;margin-top:24px">
-              Kind regards,<br>
-              <strong>Factory2Key Pty Ltd</strong>
-            </p>
-          </div>
-          <div style="background:#F5F3EE;padding:16px 32px;font-size:11px;color:#999">
-            Seafields Estate — Pepper Gate, Waggrakine WA 6530<br>
-            A Factory2Key residential development
-          </div>
-        </div>
-      `,
-    });
   } catch (err) {
-    console.error("Failed to send Seafields ROI emails:", err);
+    console.error("Failed to send Seafields ROI admin notification:", err);
+  }
+
+  // Registrant confirmation — F2KSFLDS-9: now driven by the
+  // email_templates.registration_confirmation row. lot_list is built from
+  // the validated lot_selected array (zod-checked, so safe), and the
+  // template renderer HTML-escapes every variable when substituting.
+  try {
+    const lotListPlain = d.lots_selected
+      .map((l) => l.replace("L", "Lot "))
+      .join(", ");
+    const result = await sendTemplated({
+      slug: "registration_confirmation",
+      to: d.email,
+      variables: {
+        first_name: d.first_name,
+        lot_list: lotListPlain,
+      },
+      audit: {
+        actorEmail: d.email,
+        entityType: "seafields_registration",
+        entityId: registrationId,
+      },
+    });
+    if (result.error) {
+      console.error("registration_confirmation send failed:", result.error);
+    }
+  } catch (err) {
+    console.error("registration_confirmation send threw:", err);
   }
 
   // Forward to GHL CRM (best-effort — never blocks registration response).

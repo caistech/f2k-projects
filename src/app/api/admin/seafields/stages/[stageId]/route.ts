@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminUser, hasPermission } from "@/lib/admin-auth";
+import { getAdminUser, hasPermission, auditLog } from "@/lib/admin-auth";
 import {
   createSupabaseService,
   createSupabaseServiceWithActor,
 } from "@/lib/supabase-service";
+import { sendTemplated } from "@/lib/email/send";
 
 const updateSchema = z.object({
   stage_label: z.string().trim().min(1).max(200).optional(),
@@ -115,6 +116,98 @@ export async function PATCH(
 
   if (freshErr) {
     return NextResponse.json({ error: freshErr.message }, { status: 500 });
+  }
+
+  // F2KSFLDS-9: stage-opens-for-registration email fan-out. Fires only on
+  // the false→true edge of is_open_for_registration. Notifies every active
+  // primary registrant whose lot belongs to an EARLIER stage so they know
+  // their locked rate is now below the new ladder rate. Best-effort —
+  // never blocks the admin response.
+  try {
+    const opened =
+      priorRow.is_open_for_registration === false &&
+      updates.is_open_for_registration === true;
+    if (opened) {
+      const newStageNumber: number = fresh.stage_number;
+      const newStageLabel: string = fresh.stage_label;
+
+      // Earlier stages whose registrants get price-protected.
+      const { data: earlierStages } = await (supabase.from("stages") as any)
+        .select("id, stage_number, rate_per_sqm")
+        .lt("stage_number", newStageNumber);
+
+      const earlierStageById = new Map<
+        string,
+        { stage_number: number; rate_per_sqm: number | null }
+      >(
+        ((earlierStages as Array<{
+          id: string;
+          stage_number: number;
+          rate_per_sqm: number | null;
+        }> | null) || []).map((s) => [s.id, s]),
+      );
+
+      if (earlierStageById.size > 0) {
+        const { data: rows } = await (
+          supabase.from("seafields_registration_lots") as any
+        )
+          .select(
+            "stage_at_registration_id, seafields_registrations!inner(first_name, email)",
+          )
+          .eq("status", "active")
+          .eq("registration_type", "primary")
+          .in(
+            "stage_at_registration_id",
+            Array.from(earlierStageById.keys()),
+          );
+
+        // De-dupe by email — one registrant might hold multiple lots on
+        // the same earlier stage; send the stage-advance notice once.
+        const seen = new Set<string>();
+        let sent = 0;
+        for (const row of (rows as Array<{
+          stage_at_registration_id: string;
+          seafields_registrations: { first_name: string; email: string };
+        }> | null) ?? []) {
+          const key = `${row.seafields_registrations.email}|${row.stage_at_registration_id}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+
+          const lockedStage = earlierStageById.get(row.stage_at_registration_id);
+          const lockedRate =
+            lockedStage?.rate_per_sqm != null
+              ? `$${Number(lockedStage.rate_per_sqm).toLocaleString()}`
+              : "your registered rate";
+
+          await sendTemplated({
+            slug: "stage_advanced_notice",
+            to: row.seafields_registrations.email,
+            variables: {
+              first_name: row.seafields_registrations.first_name,
+              stage_number: newStageNumber,
+              stage_label: newStageLabel,
+              locked_rate: lockedRate,
+            },
+            audit: {
+              actorEmail: admin.email,
+              entityType: "stage",
+              entityId: params.stageId,
+            },
+          });
+          sent++;
+        }
+        await auditLog(
+          admin.id,
+          admin.email,
+          "stage_advanced_notifications_sent",
+          "stage",
+          params.stageId,
+          { stage_number: newStageNumber, count: sent },
+        );
+      }
+    }
+  } catch (err) {
+    console.error("Stage-advance email fan-out threw:", err);
   }
 
   return NextResponse.json({ stage: fresh });
