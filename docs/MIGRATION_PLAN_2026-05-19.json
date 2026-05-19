@@ -1,0 +1,489 @@
+{
+  "repoPath": "C:\\Users\\denni\\PycharmProjects\\F2K-Projects",
+  "timestamp": "2026-05-19T16:15:19.685Z",
+  "inspection": {
+    "repoPath": "C:\\Users\\denni\\PycharmProjects\\F2K-Projects",
+    "timestamp": "2026-05-19T16:15:19.676Z",
+    "packageName": "f2k-projects",
+    "framework": "next",
+    "gaps": [
+      {
+        "rule": "R13",
+        "migrationId": "install-portfolio-gate",
+        "message": "@caistech/portfolio-gate is not installed",
+        "severity": "fail",
+        "detail": "install via npm i -D @caistech/portfolio-gate (CI gate, smoke tests, errorResponse helper)"
+      },
+      {
+        "rule": "R13",
+        "migrationId": "scaffold-gate-workflow",
+        "message": ".github/workflows/gate.yml is missing",
+        "severity": "fail",
+        "file": ".github/workflows/gate.yml",
+        "detail": "GitHub Action that runs typecheck + lint + build + route + auth smoke"
+      },
+      {
+        "rule": "R13",
+        "migrationId": "scaffold-routes-config",
+        "message": "routes.config.json (or .ts) is missing",
+        "severity": "fail",
+        "file": "routes.config.json",
+        "detail": "per-product route list consumed by portfolio-gate-smoke-routes"
+      },
+      {
+        "rule": "R1",
+        "migrationId": "scaffold-auth-config",
+        "message": "auth.config.json (or .ts) is missing",
+        "severity": "fail",
+        "file": "auth.config.json",
+        "detail": "per-product auth path map consumed by portfolio-gate-smoke-auth"
+      },
+      {
+        "rule": "R1",
+        "migrationId": "upgrade-corporate-components",
+        "message": "@caistech/corporate-components is not installed",
+        "severity": "warn",
+        "detail": "install ^0.2.0 to get <AuthForm/> + <CorporateHeader vendor={false}/>"
+      },
+      {
+        "rule": "R9",
+        "migrationId": "rls-using-true-note",
+        "message": "RLS policy uses USING (true) — needs human review",
+        "severity": "fail",
+        "file": "supabase/migrations/0001_purchaser_schema.sql",
+        "line": 42,
+        "detail": "USING (true)"
+      },
+      {
+        "rule": "R9",
+        "migrationId": "rls-using-true-note",
+        "message": "RLS policy uses USING (true) — needs human review",
+        "severity": "fail",
+        "file": "supabase/migrations/0001_purchaser_schema.sql",
+        "line": 88,
+        "detail": "USING (true)"
+      },
+      {
+        "rule": "R9",
+        "migrationId": "rls-using-true-note",
+        "message": "RLS policy uses USING (true) — needs human review",
+        "severity": "fail",
+        "file": "supabase/migrations/0001_purchaser_schema.sql",
+        "line": 138,
+        "detail": "USING (true)"
+      },
+      {
+        "rule": "R9",
+        "migrationId": "rls-using-true-note",
+        "message": "RLS policy uses USING (true) — needs human review",
+        "severity": "fail",
+        "file": "supabase/migrations/0001_purchaser_schema.sql",
+        "line": 204,
+        "detail": "USING (TRUE);"
+      },
+      {
+        "rule": "R9",
+        "migrationId": "rls-using-true-note",
+        "message": "RLS policy uses USING (true) — needs human review",
+        "severity": "fail",
+        "file": "supabase/migrations/0001_purchaser_schema.sql",
+        "line": 211,
+        "detail": "USING (TRUE)"
+      },
+      {
+        "rule": "R9",
+        "migrationId": "rls-using-true-note",
+        "message": "RLS policy uses USING (true) — needs human review",
+        "severity": "fail",
+        "file": "supabase/migrations/0001_purchaser_schema.sql",
+        "line": 468,
+        "detail": "USING (TRUE);"
+      },
+      {
+        "rule": "R9",
+        "migrationId": "rls-using-true-note",
+        "message": "RLS policy uses USING (true) — needs human review",
+        "severity": "fail",
+        "file": "supabase/migrations/0001_purchaser_schema.sql",
+        "line": 475,
+        "detail": "USING (TRUE)"
+      },
+      {
+        "rule": "R9",
+        "migrationId": "rls-using-true-note",
+        "message": "RLS policy uses USING (true) — needs human review",
+        "severity": "fail",
+        "file": "supabase/migrations/0001_purchaser_schema.sql",
+        "line": 588,
+        "detail": "USING (true)"
+      },
+      {
+        "rule": "R9",
+        "migrationId": "rls-using-true-note",
+        "message": "RLS policy uses USING (true) — needs human review",
+        "severity": "fail",
+        "file": "supabase/migrations/0001_purchaser_schema.sql",
+        "line": 627,
+        "detail": "USING (true)"
+      },
+      {
+        "rule": "R9",
+        "migrationId": "rls-using-true-note",
+        "message": "RLS policy uses USING (true) — needs human review",
+        "severity": "fail",
+        "file": "supabase/migrations/0002_seafields_stages_dwelling_types.sql",
+        "line": 53,
+        "detail": "USING (TRUE) WITH CHECK (TRUE);"
+      },
+      {
+        "rule": "R9",
+        "migrationId": "rls-using-true-note",
+        "message": "RLS policy uses USING (true) — needs human review",
+        "severity": "fail",
+        "file": "supabase/migrations/0002_seafields_stages_dwelling_types.sql",
+        "line": 109,
+        "detail": "USING (TRUE) WITH CHECK (TRUE);"
+      },
+      {
+        "rule": "R9",
+        "migrationId": "rls-using-true-note",
+        "message": "RLS policy uses USING (true) — needs human review",
+        "severity": "fail",
+        "file": "supabase/migrations/0004_seafields_registration_lots.sql",
+        "line": 96,
+        "detail": "USING (TRUE) WITH CHECK (TRUE);"
+      },
+      {
+        "rule": "R9",
+        "migrationId": "rls-using-true-note",
+        "message": "RLS policy uses USING (true) — needs human review",
+        "severity": "fail",
+        "file": "supabase/migrations/0005_audit_log_trigger.sql",
+        "line": 61,
+        "detail": "USING (TRUE);"
+      },
+      {
+        "rule": "R9",
+        "migrationId": "rls-using-true-note",
+        "message": "RLS policy uses USING (true) — needs human review",
+        "severity": "fail",
+        "file": "supabase/migrations/0009_email_templates.sql",
+        "line": 38,
+        "detail": "USING (TRUE) WITH CHECK (TRUE);"
+      },
+      {
+        "rule": "R11",
+        "migrationId": "vendor-identity-scrub",
+        "message": "vendor identity leak: operator-mobile (suggest env var NEXT_PUBLIC_VENDOR_PHONE)",
+        "severity": "fail",
+        "file": "docs/NAIVE_TESTER_REMEDIATION_2026-05-19.md",
+        "line": 218,
+        "detail": "+61402612471"
+      },
+      {
+        "rule": "R11",
+        "migrationId": "vendor-identity-scrub",
+        "message": "vendor identity leak: operator-mobile (suggest env var NEXT_PUBLIC_VENDOR_PHONE)",
+        "severity": "fail",
+        "file": "src/app/(public)/branscombe-estate/page.tsx",
+        "line": 304,
+        "detail": "+61402612471"
+      },
+      {
+        "rule": "R11",
+        "migrationId": "vendor-identity-scrub",
+        "message": "vendor identity leak: operator-mobile (suggest env var NEXT_PUBLIC_VENDOR_PHONE)",
+        "severity": "fail",
+        "file": "src/app/(public)/branscombe-estate/page.tsx",
+        "line": 307,
+        "detail": "+61 402 612 471"
+      },
+      {
+        "rule": "R11",
+        "migrationId": "vendor-identity-scrub",
+        "message": "vendor identity leak: operator-mobile (suggest env var NEXT_PUBLIC_VENDOR_PHONE)",
+        "severity": "fail",
+        "file": "src/app/(public)/page.tsx",
+        "line": 132,
+        "detail": "+61402612471"
+      },
+      {
+        "rule": "R11",
+        "migrationId": "vendor-identity-scrub",
+        "message": "vendor identity leak: operator-mobile (suggest env var NEXT_PUBLIC_VENDOR_PHONE)",
+        "severity": "fail",
+        "file": "src/app/(public)/page.tsx",
+        "line": 135,
+        "detail": "+61 402 612 471"
+      },
+      {
+        "rule": "R11",
+        "migrationId": "vendor-identity-scrub",
+        "message": "vendor identity leak: operator-mobile (suggest env var NEXT_PUBLIC_VENDOR_PHONE)",
+        "severity": "fail",
+        "file": "src/app/(public)/privacy/page.tsx",
+        "line": 127,
+        "detail": "+61 402 612 471"
+      },
+      {
+        "rule": "R11",
+        "migrationId": "vendor-identity-scrub",
+        "message": "vendor identity leak: operator-mobile (suggest env var NEXT_PUBLIC_VENDOR_PHONE)",
+        "severity": "fail",
+        "file": "src/app/(public)/seafields-estate/page.tsx",
+        "line": 383,
+        "detail": "+61402612471"
+      },
+      {
+        "rule": "R11",
+        "migrationId": "vendor-identity-scrub",
+        "message": "vendor identity leak: operator-mobile (suggest env var NEXT_PUBLIC_VENDOR_PHONE)",
+        "severity": "fail",
+        "file": "src/app/(public)/seafields-estate/page.tsx",
+        "line": 386,
+        "detail": "+61 402 612 471"
+      },
+      {
+        "rule": "R11",
+        "migrationId": "vendor-identity-scrub",
+        "message": "vendor identity leak: operator-mobile (suggest env var NEXT_PUBLIC_VENDOR_PHONE)",
+        "severity": "fail",
+        "file": "src/app/api/branscombe/register/route.ts",
+        "line": 223,
+        "detail": "+61402612471"
+      },
+      {
+        "rule": "R11",
+        "migrationId": "vendor-identity-scrub",
+        "message": "vendor identity leak: operator-mobile (suggest env var NEXT_PUBLIC_VENDOR_PHONE)",
+        "severity": "fail",
+        "file": "src/components/ProjectsFooter.tsx",
+        "line": 41,
+        "detail": "+61402612471"
+      },
+      {
+        "rule": "R11",
+        "migrationId": "vendor-identity-scrub",
+        "message": "vendor identity leak: operator-mobile (suggest env var NEXT_PUBLIC_VENDOR_PHONE)",
+        "severity": "fail",
+        "file": "src/components/ProjectsFooter.tsx",
+        "line": 44,
+        "detail": "+61 402 612 471"
+      },
+      {
+        "rule": "R11",
+        "migrationId": "vendor-identity-env-defaults",
+        "message": ".env.example needs vendor placeholder defaults",
+        "severity": "warn",
+        "file": ".env.example",
+        "detail": "add NEXT_PUBLIC_VENDOR_NAME, NEXT_PUBLIC_VENDOR_EMAIL, NEXT_PUBLIC_VENDOR_PHONE, NEXT_PUBLIC_VENDOR_CALENDLY placeholders"
+      }
+    ],
+    "compliance": {
+      "rulesChecked": 11,
+      "rulesPassed": 7,
+      "percentage": 64,
+      "perRule": [
+        {
+          "rule": "R1",
+          "passed": false,
+          "gapsCount": 2,
+          "description": "Auth pages use <AuthForm/> (no raw <input type=\"password\">)"
+        },
+        {
+          "rule": "R3",
+          "passed": true,
+          "gapsCount": 0,
+          "description": "Every page has an explanatory header (WHAT / DO / MATTERS)"
+        },
+        {
+          "rule": "R6",
+          "passed": true,
+          "gapsCount": 0,
+          "description": "RESEND_FROM_EMAIL is set in .env.example with verified subdomain"
+        },
+        {
+          "rule": "R9",
+          "passed": false,
+          "gapsCount": 14,
+          "description": "No RLS policy uses USING (true) on data-bearing tables"
+        },
+        {
+          "rule": "R11",
+          "passed": false,
+          "gapsCount": 12,
+          "description": "No hardcoded vendor identity (handle, mobile, Calendly, email)"
+        },
+        {
+          "rule": "R13",
+          "passed": false,
+          "gapsCount": 3,
+          "description": "CI gate is wired (@caistech/portfolio-gate + gate.yml + routes.config.*)"
+        },
+        {
+          "rule": "R2",
+          "passed": true,
+          "gapsCount": 0,
+          "description": "UI is responsive (mobile + laptop) — placeholder until v0.2"
+        },
+        {
+          "rule": "R10",
+          "passed": true,
+          "gapsCount": 0,
+          "description": "API routes use errorResponse() helper — placeholder until v0.2"
+        },
+        {
+          "rule": "R12",
+          "passed": true,
+          "gapsCount": 0,
+          "description": "Public-API endpoints opt-in — placeholder until v0.2"
+        },
+        {
+          "rule": "R14",
+          "passed": true,
+          "gapsCount": 0,
+          "description": "Public sample artefact reachable without signup — placeholder until v0.2"
+        },
+        {
+          "rule": "R15",
+          "passed": true,
+          "gapsCount": 0,
+          "description": "TrustPanel present on REGULATED-tier products — placeholder until v0.2"
+        }
+      ]
+    }
+  },
+  "steps": [
+    {
+      "kind": "patch",
+      "id": "install-portfolio-gate",
+      "rule": "R13",
+      "title": "Update package.json — add @caistech/portfolio-gate ^0.2.0 (devDependencies) + add / upgrade @caistech/corporate-components to ^0.2.0 (dependencies)",
+      "description": "Single package.json rewrite. add @caistech/portfolio-gate ^0.2.0 (devDependencies). add / upgrade @caistech/corporate-components to ^0.2.0 (dependencies).\n\nPortfolio-gate (R13) brings the CI smoke tests, errorResponse helper, and static audits. Corporate-components (R1) ships <AuthForm/> in 0.2.0 — required for the R1 swap migration.",
+      "files": [
+        {
+          "path": "package.json",
+          "content": "{\n  \"name\": \"f2k-projects\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"scripts\": {\n    \"dev\": \"next dev --port 3001\",\n    \"build\": \"next build\",\n    \"start\": \"next start\",\n    \"lint\": \"next lint\",\n    \"typecheck\": \"tsc --noEmit\",\n    \"test\": \"vitest run\"\n  },\n  \"dependencies\": {\n    \"@caistech/corporate-components\": \"^0.2.0\",\n    \"@caistech/ghl-client\": \"^0.1.2\",\n    \"@supabase/ssr\": \"^0.5.0\",\n    \"@supabase/supabase-js\": \"^2.47.0\",\n    \"mapbox-gl\": \"^3.23.1\",\n    \"next\": \"^14.2.0\",\n    \"react\": \"^18.3.0\",\n    \"react-dom\": \"^18.3.0\",\n    \"react-map-gl\": \"^8.1.1\",\n    \"resend\": \"^6.9.3\",\n    \"xlsx\": \"^0.18.5\",\n    \"zod\": \"^3.24.0\"\n  },\n  \"devDependencies\": {\n    \"@caistech/portfolio-gate\": \"^0.2.0\",\n    \"@types/mapbox-gl\": \"^3.5.0\",\n    \"@types/node\": \"^22.0.0\",\n    \"@types/react\": \"^18.3.0\",\n    \"@types/react-dom\": \"^18.3.0\",\n    \"autoprefixer\": \"^10.4.0\",\n    \"eslint\": \"^8.57.0\",\n    \"eslint-config-next\": \"^14.2.0\",\n    \"pg\": \"^8.20.0\",\n    \"postcss\": \"^8.4.0\",\n    \"tailwindcss\": \"^3.4.0\",\n    \"typescript\": \"^5.7.0\",\n    \"vitest\": \"^1.6.0\"\n  }\n}\n"
+        }
+      ],
+      "followUpCommand": "npm install"
+    },
+    {
+      "kind": "patch",
+      "id": "scaffold-routes-config",
+      "rule": "R13",
+      "title": "Scaffold routes.config.json",
+      "description": "Default top-level route list (homepage, /pricing, /about, /contact, /login, /signup, /forgot-password, /privacy, /terms, /api/health). Edit to match your product's actual routes before running the smoke test.",
+      "files": [
+        {
+          "path": "routes.config.json",
+          "content": "{\n  \"baseUrl\": \"https://f2k-projects.vercel.app\",\n  \"routes\": [\n    {\n      \"path\": \"/\"\n    },\n    {\n      \"path\": \"/pricing\"\n    },\n    {\n      \"path\": \"/about\"\n    },\n    {\n      \"path\": \"/contact\"\n    },\n    {\n      \"path\": \"/login\"\n    },\n    {\n      \"path\": \"/signup\"\n    },\n    {\n      \"path\": \"/forgot-password\"\n    },\n    {\n      \"path\": \"/privacy\"\n    },\n    {\n      \"path\": \"/terms\"\n    },\n    {\n      \"path\": \"/api/health\",\n      \"expectedStatus\": 200\n    }\n  ]\n}\n",
+          "ifMissing": true
+        }
+      ]
+    },
+    {
+      "kind": "patch",
+      "id": "scaffold-auth-config",
+      "rule": "R1",
+      "title": "Scaffold auth.config.json",
+      "description": "Per-product auth path map used by portfolio-gate-smoke-auth. The four legs are wired against the conventional paths (/login, /signup, /forgot-password, /api/auth/*) — edit if your product diverges.",
+      "files": [
+        {
+          "path": "auth.config.json",
+          "content": "{\n  \"baseUrl\": \"__OVERRIDE_FROM_CI__\",\n  \"loginPath\": \"/login\",\n  \"signupPath\": \"/signup\",\n  \"forgotPasswordPath\": \"/forgot-password\",\n  \"magicLinkPath\": \"/login\",\n  \"loginActionPath\": \"/api/auth/login\",\n  \"signupActionPath\": \"/api/auth/signup\",\n  \"forgotPasswordActionPath\": \"/api/auth/forgot\",\n  \"magicLinkActionPath\": \"/api/auth/magic-link\"\n}\n",
+          "ifMissing": true
+        }
+      ]
+    },
+    {
+      "kind": "patch",
+      "id": "scaffold-gate-workflow",
+      "rule": "R13",
+      "title": "Scaffold .github/workflows/gate.yml",
+      "description": "GitHub Action template — runs typecheck + lint + build + route + auth smoke tests on PR + push to main. Requires GITHUB_PACKAGES_TOKEN secret and PORTFOLIO_GATE_PREVIEW_URL repo variable.",
+      "files": [
+        {
+          "path": ".github/workflows/gate.yml",
+          "content": "# Portfolio Standard gate — generated by @caistech/portfolio-migrator\n#\n# Runs typecheck + lint + build, then route + auth smoke tests against the\n# preview deploy URL. Fails the action (and blocks Vercel promotion) on any\n# non-zero exit.\n#\n# Closes Portfolio Standard:\n#   R1  — Auth four-leg pattern (auth smoke step)\n#   R10 — No verbatim Postgres errors (errorResponse helper, enforced at code level)\n#   R13 — Route smoke test on every deploy (route smoke step)\n\nname: portfolio-gate\n\non:\n  pull_request:\n    branches: [main, master]\n  push:\n    branches: [main, master]\n\njobs:\n  gate:\n    runs-on: ubuntu-latest\n    timeout-minutes: 15\n\n    env:\n      PORTFOLIO_GATE_PREVIEW_URL: ${{ vars.PORTFOLIO_GATE_PREVIEW_URL }}\n\n    steps:\n      - name: Checkout\n        uses: actions/checkout@v4\n\n      - name: Setup Node\n        uses: actions/setup-node@v4\n        with:\n          node-version: lts/*\n          cache: npm\n\n      - name: Install dependencies\n        run: |\n          if [ -f pnpm-lock.yaml ]; then\n            corepack enable\n            pnpm install --frozen-lockfile\n          elif [ -f package-lock.json ]; then\n            npm ci\n          else\n            npm install\n          fi\n        env:\n          GITHUB_PACKAGES_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}\n\n      - name: Typecheck\n        run: npm run typecheck --if-present\n\n      - name: Lint\n        run: npm run lint --if-present\n\n      - name: Build\n        run: npm run build --if-present\n\n      - name: Verify preview URL is set\n        run: |\n          if [ -z \"$PORTFOLIO_GATE_PREVIEW_URL\" ]; then\n            echo \"::error::PORTFOLIO_GATE_PREVIEW_URL is not set. Wire it via repo vars or a preview-deploy step.\"\n            exit 1\n          fi\n          echo \"Preview URL: $PORTFOLIO_GATE_PREVIEW_URL\"\n\n      - name: Route smoke test (Portfolio Standard R13)\n        run: |\n          npx --no-install portfolio-gate-smoke-routes \\\n            --config routes.config.json \\\n            --base-url \"$PORTFOLIO_GATE_PREVIEW_URL\"\n\n      - name: Auth smoke test (Portfolio Standard R1/R4)\n        run: |\n          npx --no-install portfolio-gate-smoke-auth \\\n            --config auth.config.json \\\n            --base-url \"$PORTFOLIO_GATE_PREVIEW_URL\"\n",
+          "ifMissing": true
+        }
+      ]
+    },
+    {
+      "kind": "note",
+      "id": "vendor-identity-scrub",
+      "rule": "R11",
+      "title": "Scrub vendor identity references",
+      "description": "Replace literal references to operator handle / mobile / Calendly / email with process.env.NEXT_PUBLIC_VENDOR_* references. Marked NOTE because the exact substitution depends on the call site — string template vs JSX text vs prop value all need slightly different syntax. Review each before applying.",
+      "body": "11 occurrences of vendor identity strings were detected. Replace each with a process.env reference and add the placeholder to .env.example.\n\n| File | Find | Replace with |\n|---|---|---|\n| `docs/NAIVE_TESTER_REMEDIATION_2026-05-19.md` | `+61402612471` | `${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}` |\n| `src/app/(public)/branscombe-estate/page.tsx` | `+61402612471` | `${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}` |\n| `src/app/(public)/branscombe-estate/page.tsx` | `+61 402 612 471` | `${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}` |\n| `src/app/(public)/page.tsx` | `+61402612471` | `${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}` |\n| `src/app/(public)/page.tsx` | `+61 402 612 471` | `${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}` |\n| `src/app/(public)/privacy/page.tsx` | `+61 402 612 471` | `${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}` |\n| `src/app/(public)/seafields-estate/page.tsx` | `+61402612471` | `${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}` |\n| `src/app/(public)/seafields-estate/page.tsx` | `+61 402 612 471` | `${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}` |\n| `src/app/api/branscombe/register/route.ts` | `+61402612471` | `${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}` |\n| `src/components/ProjectsFooter.tsx` | `+61402612471` | `${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}` |\n| `src/components/ProjectsFooter.tsx` | `+61 402 612 471` | `${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}` |\n\nThese are NOT auto-applied because the exact substitution depends on the call site:\n- Inside a string template: `\\${process.env.NEXT_PUBLIC_VENDOR_EMAIL ?? ''}`\n- Inside JSX text: `{process.env.NEXT_PUBLIC_VENDOR_EMAIL}`\n- Inside a prop value: `vendorEmail={process.env.NEXT_PUBLIC_VENDOR_EMAIL}`\n\nApply by hand, verify with `npx portfolio-gate-audit-vendor-leak`, then commit.",
+      "suggestedFiles": [
+        {
+          "path": "docs/NAIVE_TESTER_REMEDIATION_2026-05-19.md",
+          "content": "// Suggested replacement for line:\n// +61402612471\n// ↓\n// ${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}\n"
+        },
+        {
+          "path": "src/app/(public)/branscombe-estate/page.tsx",
+          "content": "// Suggested replacement for line:\n// +61402612471\n// ↓\n// ${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}\n"
+        },
+        {
+          "path": "src/app/(public)/branscombe-estate/page.tsx",
+          "content": "// Suggested replacement for line:\n// +61 402 612 471\n// ↓\n// ${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}\n"
+        },
+        {
+          "path": "src/app/(public)/page.tsx",
+          "content": "// Suggested replacement for line:\n// +61402612471\n// ↓\n// ${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}\n"
+        },
+        {
+          "path": "src/app/(public)/page.tsx",
+          "content": "// Suggested replacement for line:\n// +61 402 612 471\n// ↓\n// ${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}\n"
+        },
+        {
+          "path": "src/app/(public)/privacy/page.tsx",
+          "content": "// Suggested replacement for line:\n// +61 402 612 471\n// ↓\n// ${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}\n"
+        },
+        {
+          "path": "src/app/(public)/seafields-estate/page.tsx",
+          "content": "// Suggested replacement for line:\n// +61402612471\n// ↓\n// ${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}\n"
+        },
+        {
+          "path": "src/app/(public)/seafields-estate/page.tsx",
+          "content": "// Suggested replacement for line:\n// +61 402 612 471\n// ↓\n// ${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}\n"
+        },
+        {
+          "path": "src/app/api/branscombe/register/route.ts",
+          "content": "// Suggested replacement for line:\n// +61402612471\n// ↓\n// ${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}\n"
+        },
+        {
+          "path": "src/components/ProjectsFooter.tsx",
+          "content": "// Suggested replacement for line:\n// +61402612471\n// ↓\n// ${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}\n"
+        },
+        {
+          "path": "src/components/ProjectsFooter.tsx",
+          "content": "// Suggested replacement for line:\n// +61 402 612 471\n// ↓\n// ${process.env.NEXT_PUBLIC_VENDOR_PHONE ?? ''}\n"
+        }
+      ]
+    },
+    {
+      "kind": "patch",
+      "id": "vendor-identity-env-defaults",
+      "rule": "R11",
+      "title": "Update .env.example — add NEXT_PUBLIC_VENDOR_* placeholders (R11)",
+      "description": "Single .env.example rewrite. NEXT_PUBLIC_VENDOR_* placeholders (R11).",
+      "files": [
+        {
+          "path": ".env.example",
+          "content": "# Supabase (new f2k-projects project)\nNEXT_PUBLIC_SUPABASE_URL=https://earqebbwhklxadqawtex.supabase.co\nNEXT_PUBLIC_SUPABASE_ANON_KEY=\nSUPABASE_SERVICE_ROLE_KEY=\n\n# Resend (email notifications for purchaser ROIs)\nRESEND_API_KEY=\nRESEND_FROM_EMAIL=Factory2Key Projects <onboarding@resend.dev>\nRESEND_FROM_EMAIL_HEMP_HOMES=Hemp Homes <onboarding@resend.dev>\n\n# GHL CRM (optional — purchaser registrations forward as contacts)\nGHL_API_KEY=\nGHL_LOCATION_ID=\n\n# Mapbox (satellite view on Seafields + Branscombe site maps)\n# Page degrades gracefully if absent — \"Satellite view unavailable\" placeholder.\nNEXT_PUBLIC_MAPBOX_TOKEN=\n\n# IP hashing salt for hemp-homes waitlist rate-limit (optional, falls back to no rate-limit if unset)\nIP_HASH_SALT=\n\n# Canonical URL for admin auth flows — prevents PKCE \"code verifier not found\"\n# errors when users land on a different Vercel subdomain than the magic-link\n# redirect target. Set to one of:\n#   https://f2k-projects-git-main-corporate-ai-solutions.vercel.app\n#   https://f2k-projects-corporate-ai-solutions.vercel.app\n# Whichever you also set as Supabase Auth → URL Configuration → Site URL.\n# Leave unset for local dev.\nNEXT_PUBLIC_CANONICAL_URL=\n\n# Portfolio Standard R11 — vendor identity routed through env vars.\n# Replace the placeholders with the consuming brand's identity, or leave\n# them as-is for a vendor-neutral white-label deploy.\nNEXT_PUBLIC_VENDOR_NAME=\"Your Brand Here\"\nNEXT_PUBLIC_VENDOR_EMAIL=\"hello@yourbrand.com\"\nNEXT_PUBLIC_VENDOR_PHONE=\"\"\nNEXT_PUBLIC_VENDOR_CALENDLY=\"\"\nNEXT_PUBLIC_VENDOR_INSTAGRAM=\"\"\n"
+        }
+      ]
+    },
+    {
+      "kind": "note",
+      "id": "rls-using-true-note",
+      "rule": "R9",
+      "title": "Replace USING (true) RLS policies",
+      "description": "Migrations contain USING (true) on data-bearing tables. NOTE-only — the replacement owner column depends on the table's tenancy model.",
+      "body": "One or more migrations contain `USING (true)` against a data-bearing\ntable — this violates Portfolio Standard R9.\n\n`USING (true)` allows every authenticated row to read every other row's\ndata, which is a Privacy Act exposure on REGULATED and REVENUE tier\nproducts. The naive-tester sweep on 2026-05-19 found this exact pattern\non Connexions, Universal Interviews, Platform-Trust, and Longtail-AIVS.\n\n### How to fix\n\nFor each violation, write a new migration that:\n\n1. `DROP POLICY IF EXISTS <name> ON <table>;`\n2. `CREATE POLICY <name> ON <table> FOR <ops> TO <role>\n   USING (auth.uid() = <owner_column>);`\n\nThe owner column varies per table — `owner_id`, `user_id`, `org_id`,\n`tenant_id` are all common. The migrator cannot infer the correct column\nsafely, so this step is **note-only**.\n\n### Verify\n\nAfter applying, run:\n\n```bash\nnpx portfolio-gate-audit-rls\n```\n\nIt must report `PASS` before the deploy promotes.\n\n### Locations\n\n- `supabase/migrations/0001_purchaser_schema.sql:42`\n- `supabase/migrations/0001_purchaser_schema.sql:88`\n- `supabase/migrations/0001_purchaser_schema.sql:138`\n- `supabase/migrations/0001_purchaser_schema.sql:204`\n- `supabase/migrations/0001_purchaser_schema.sql:211`\n- `supabase/migrations/0001_purchaser_schema.sql:468`\n- `supabase/migrations/0001_purchaser_schema.sql:475`\n- `supabase/migrations/0001_purchaser_schema.sql:588`\n- `supabase/migrations/0001_purchaser_schema.sql:627`\n- `supabase/migrations/0002_seafields_stages_dwelling_types.sql:53`\n- `supabase/migrations/0002_seafields_stages_dwelling_types.sql:109`\n- `supabase/migrations/0004_seafields_registration_lots.sql:96`\n- `supabase/migrations/0005_audit_log_trigger.sql:61`\n- `supabase/migrations/0009_email_templates.sql:38`"
+    }
+  ]
+}

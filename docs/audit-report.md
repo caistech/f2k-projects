@@ -257,4 +257,142 @@ Per Section 0 of the directive, I am stopping here. I will not:
 
 Once Dennis answers the open questions above, the natural next move is Section 4.1 (schema migration plan, surfaced for review before any SQL runs against production).
 
+---
+
+## Addendum 2026-05-18 — V6 polygon register vs PDF 22-Apr-2026 area delta
+
+**Status:** Known, accepted, disclaimed. No code change required for Stage 1 launch.
+
+### What was checked
+A side-by-side comparison of the V6 lot register (`src/data/seafields/lots.ts` + `src/data/seafields/geojson.json`) against the two PDFs in `/docs/`:
+- `Seafields DA 3027-08B-01 (Sub).pdf` (DA submission package)
+- `Seafileds AA - Modified Plan (dated 22 April 2026) (1).pdf` (officially stamped Attachment A)
+
+Both PDFs are the **same drawing** (plan no `3027-08B-01`, date `22 April 2026`, WAPC `202888`, 145 residential lots, total `8.8356 ha`). The AA version carries the Dept of Planning, Lands and Heritage stamp; the DA version is unstamped. No schema or numbering difference between them.
+
+### Findings
+| Field | PDF | V6 polygons | Δ |
+|---|---|---|---|
+| Total residential lots | 145 | 145 | ✓ |
+| POS | 8,909 m² | 8,909 m² | ✓ |
+| Max lot | 1,522 m² | 1,522 m² | ✓ |
+| Avg lot | 610 m² | 613 m² | +3 |
+| Min lot | 445 m² | 462 m² | +17 |
+| Total subdivided area | 8.8356 ha | 8.6505 ha | **−1,851 m² (~2%)** |
+| 450–499 bucket | 5 | 3 | −2 |
+| 500–549 bucket | 25 | 29 | +4 |
+| 550–599 bucket | 49 | 50 | +1 |
+| 600–699 bucket | 54 | 49 | −5 |
+| 700–799 bucket | 7 | 8 | +1 |
+| 800–899 bucket | 4 | 5 | +1 |
+| 1500–1999 bucket | 1 | 1 | ✓ |
+
+Lot numbering note: PDF surface numbers in ranges 42–55, 79–112, 200–235, 426–442, plus 9000-series are **adjacent existing properties shown for context outside the Subject Area boundary**, not new Seafields lots. The 145 new Seafields lots use V6 cadastral numbers in the 236–380 range. Migration `0007_db_v6_reconciliation.sql` correctly evicts neighbour numbers (85–91, 109–111, 200–235, 426–434, 442) that were mistakenly seeded as Seafields lots in V1.
+
+### Root cause
+V5 used `frontage × depth` approximation. V6 was re-extracted from the 08B DWG using true polygon area, but the extractor produced a systematic ~2% undersize against the PDF-labelled per-lot areas. Likely projection/digitisation rounding inside the DWG → geojson pipeline (`scripts/v6-extract/`).
+
+### Stage 1 spot-check (20 lots, SW Block, what's launching)
+| Metric | Stage 1 V6 | Reference |
+|---|---|---|
+| Lot count | 20 | — |
+| Area sum | 12,201 m² (1.22 ha) | — |
+| Average | **610 m²** | PDF all-lot avg **610 m²** ✓ |
+| Min / Max | 537 / 690 m² | inside PDF 445–1522 envelope ✓ |
+| Area-share of total | 13.8% | Lot-share of total 13.8% ✓ |
+| Distribution | 1×537, 8×570, 1×596, 1×613, 1×643, 5×646, 2×666, 1×690 | Matches SW Block visual pattern (570/646/666 clusters + singleton outliers) ✓ |
+
+**Stage 1 verdict:** No concentration of the 2% area shortfall in Stage 1. Per-lot values match the SW Block visual pattern on the plan. Cleared for launch.
+
+### Why we accept this
+Three reasons documented for future reviewers:
+
+1. **No public inconsistency.** The seafields-estate page summary tile (`src/app/(public)/seafields-estate/page.tsx:153-154`) already quotes the PDF figures directly: `"445m² – 1,522m² (avg 610m²)"` and `"8.84 hectares saleable"`. The V6 polygon sum (8.65 ha) is only visible on internal admin surfaces and per-lot detail cards.
+
+2. **Disclaimer language covers it.** Every consumer-facing surface that quotes per-lot area is wrapped in "indicative", "approximate", "subject to final survey", and "subject to confirmation against the WAPC-approved plan" — see `RegistrationForm.tsx:307,360,365,616`, `LotInfoCard.tsx:141`, plus the sitewide disclaimer banner.
+
+3. **The certified plan owns contractual area.** A registrant who signs receives the WAPC-stamped plan at contract — the website's job is FOMO + registration, not contractual surveying.
+
+### What would trigger reopening this
+- A registrant complaint citing area discrepancy on a specific lot.
+- A Stage 2+ launch where the shortfall lands disproportionately on a stage being released next.
+- Uwe / CLE updates the 08B DWG (then re-extract and re-check).
+
+### Effort to fully reconcile (if ever needed)
+Targeted approach: for the ~22 amended-flagged lots and the handful where the V6 area diverges from a PDF label by >10 m², hand-edit `lots.ts` against the PDF per-lot labels. Estimated ~2 hours. Not justified for Stage 1.
+
+---
+
+## Addendum 2026-05-19 — Admin onboarding flow (Uwe, Tanveer, Lennie, future admins)
+
+**Status:** Canonical. Use this every time a new admin needs access to the F2K Projects admin console.
+
+### What broke (so we don't repeat it)
+Uwe's first invite was sent on 2026-05-13. He clicked it on 2026-05-19 (6 days later) and got `#error=access_denied&error_code=otp_expired` bouncing to the public site root at `https://f2k-projects-corporate-ai-solutions.vercel.app/`. Two root causes:
+
+1. **OTP expiry was default 3600s (1h).** Supabase invite links die fast; a busy founder won't always click within an hour, let alone six days.
+2. **Site URL was the marketing root, not `/admin/login`.** When an OTP is invalid/expired, Supabase bounces to Site URL — landing the admin on the public site with no path forward.
+
+### One-time Supabase Auth config (project `earqebbwhklxadqawtex`)
+
+Both are dashboard-only changes — Supabase doesn't ship a CLI for Auth URL config.
+
+**1. URL configuration** — `https://supabase.com/dashboard/project/earqebbwhklxadqawtex/auth/url-configuration`
+- **Site URL:** `https://f2k-projects.vercel.app/admin/login`
+- **Redirect URLs allowlist** (all of these):
+  - `https://f2k-projects.vercel.app/api/auth/callback`
+  - `https://f2k-projects.vercel.app/admin/login`
+  - `https://f2k-projects.vercel.app/admin/reset-password`
+  - `https://f2k-projects-corporate-ai-solutions.vercel.app/api/auth/callback`
+  - `https://f2k-projects-git-main-corporate-ai-solutions.vercel.app/api/auth/callback`
+  - `http://localhost:3000/api/auth/callback`
+
+**2. OTP expiry** — `https://supabase.com/dashboard/project/earqebbwhklxadqawtex/auth/providers` → Email provider → **Email OTP Expiration** → `86400` (24h).
+
+### Onboarding a new admin — three steps
+
+1. **Pre-seed the `admin_users` row** (if not already present). Migration `0001_purchaser_schema.sql` lines 668–670 already pre-seed Uwe, Dennis, Tanveer, Lennie with `auth_user_id = NULL`. For new admins beyond these four, add a row first:
+   ```sql
+   INSERT INTO admin_users (email, role, full_name)
+   VALUES ('<email>', 'super_admin', '<Full Name>');
+   ```
+   The `auth.users` INSERT trigger (`link_admin_user_trigger`, commit `dccce06`) will auto-link the FK when they accept the invite.
+
+2. **Send the invite from Supabase dashboard** — `https://supabase.com/dashboard/project/earqebbwhklxadqawtex/auth/users` → **Invite user** → enter their email.
+
+3. **Send them this email** alongside the auto-generated invite (so they have a fallback if the invite expires):
+
+   ```
+   Hi <Name>,
+
+   You'll get an invite email from F2K Projects shortly with a link to set
+   your password. That link is good for 24 hours.
+
+   If it expires before you click it, no drama — go straight here:
+   https://f2k-projects.vercel.app/admin/login
+
+   Then:
+   1. Enter <their-email> in the Email field
+   2. Click "Forgot password?" (small grey link near the bottom)
+   3. You'll get a fresh email — click the link in it
+   4. Set any password you'll remember
+   5. You'll be signed in to the admin dashboard
+
+   Same login URL every time after that.
+
+   Cheers,
+   Dennis
+   ```
+
+### Why "Forgot password?" works as the universal fallback
+- **Invite link expired:** forgot-password sends a fresh 24h-valid link that bypasses the broken invite entirely.
+- **Invite link still valid:** they'd be signed in with no password set. Forgot-password lets them set one for future logins.
+- **They forgot their password later:** same flow, same page, same button.
+
+Same five steps, no decision tree for the admin.
+
+### Why the PKCE flow needs the redirect allowlist exact
+
+`src/lib/use-canonical-origin.ts` redirects the admin to `NEXT_PUBLIC_CANONICAL_URL` on the login + reset-password pages so the PKCE code verifier cookie is set on the same subdomain the magic-link redirects back to. If a magic-link lands on a different Vercel preview subdomain than the one the verifier was set on, the exchange fails with "PKCE code verifier not found in storage". The redirect allowlist above intentionally includes all three Vercel subdomains so any of them can complete the callback if a stray invite ever points there.
+
 **End of audit report.**
