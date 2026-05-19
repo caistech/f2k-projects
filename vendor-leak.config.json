@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/caistech/cais-shared-services/main/packages/portfolio-gate/schemas/vendor-leak.config.schema.json",
+  "_comment": [
+    "Investor / funder marketing surfaces intentionally carry operator contact",
+    "for capital-raising enquiries (branscombe-estate, seafields-estate).",
+    "ProjectsFooter is the F2K-Projects branded footer (intentional, not the",
+    "generic CorporateFooter). Intent to keep."
+  ],
+  "allowlist": [
+    "src/app/(public)/branscombe-estate/",
+    "src/app/(public)/seafields-estate/",
+    "src/app/(public)/page.tsx",
+    "src/app/(public)/privacy/",
+    "src/components/ProjectsFooter.tsx",
+    "src/app/api/branscombe/register/"
+  ]
+}
