@@ -1,3 +1,4 @@
+// @explanatory-header-exempt — nested workflow page; entry-point header lives on the parent surface
 import { createSupabaseService } from "@/lib/supabase-service";
 
 export const dynamic = "force-dynamic";
