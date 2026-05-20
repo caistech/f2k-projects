@@ -53,3 +53,6 @@ Thumbs.db
 CLAUDE.local.md
 .gstack/
 .claude/
+
+.vercel
+.env*.local

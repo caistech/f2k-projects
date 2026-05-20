@@ -22,6 +22,7 @@ const NAV: NavItem[] = [
   { href: "/admin/branscombe-pipeline", label: "Branscombe Pipeline", group: "Branscombe" },
   { href: "/admin/email-templates", label: "Email Templates", group: "Compliance" },
   { href: "/admin/audit-log", label: "Audit Log", group: "Compliance" },
+  { href: "/admin/settings", label: "Settings", group: "Account" },
 ];
 
 export function AdminSidebar({ email }: { email?: string | null }) {

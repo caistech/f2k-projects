@@ -9,7 +9,14 @@ export interface AdminUser {
   email: string;
   role: AdminRole;
   full_name: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  phone: string | null;
+  company: string | null;
+  job_title: string | null;
+  email_marketing_opt_in: boolean;
   created_at: string;
+  updated_at?: string;
 }
 
 export async function getAdminUser(): Promise<AdminUser | null> {
