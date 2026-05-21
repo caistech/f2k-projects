@@ -56,3 +56,6 @@ CLAUDE.local.md
 
 .vercel
 .env*.local
+
+# local scratch (auth-config backups, payload drafts)
+.tmp/
