@@ -72,6 +72,9 @@ export function hasPermission(role: AdminRole, action: string): boolean {
     manage_seafields_dwelling_types: ["super_admin", "fund_manager"],
     manage_email_templates: ["super_admin", "fund_manager"],
     manage_branscombe_allocations: ["super_admin", "fund_manager"],
+    manage_hemp_homes_posts: ["super_admin", "fund_manager"],
+    manage_hemp_homes_media: ["super_admin", "fund_manager"],
+    manage_hemp_homes_journey: ["super_admin", "fund_manager"],
     manage_admin_users: ["super_admin"],
   };
 
