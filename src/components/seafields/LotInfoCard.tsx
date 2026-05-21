@@ -105,12 +105,6 @@ export default function LotInfoCard({
             />
             <Row label="Zone" value={lot.zone} />
             <Row label="Status" value={statusText} />
-            {publicRow?.effective_rate_per_sqm != null && (
-              <Row
-                label="Rate"
-                value={`${formatPrice(publicRow.effective_rate_per_sqm)} / m²`}
-              />
-            )}
             {publicRow?.total_price != null && publicRow.total_price > 0 && (
               <Row
                 label="House + Land"
@@ -126,6 +120,12 @@ export default function LotInfoCard({
                 />
               )}
           </dl>
+
+          {publicRow?.public_label && (
+            <div className="mt-4 bg-white/10 border border-white/25 px-3 py-2 text-[11px] text-white/90 leading-relaxed">
+              {publicRow.public_label}
+            </div>
+          )}
 
           {lot.geometryPending && (
             <div className="mt-4 bg-amber-400/15 border border-amber-300/40 px-3 py-2 text-[11px] text-amber-100 leading-relaxed">

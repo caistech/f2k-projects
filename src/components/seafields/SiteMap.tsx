@@ -235,10 +235,17 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
         )}
       </div>
 
-      {/* Stage filter tabs — schematic view only */}
+      {/* Stage filter tabs — schematic + plan views.
+          Plan view uses it to highlight a stage's lots in stage colour
+          (incl. allocated/coming-soon), per Uwe 2026-05-21 feedback. */}
       <div
         className="flex flex-wrap gap-1.5 mb-4"
-        style={{ display: viewMode === "schematic" ? undefined : "none" }}
+        style={{
+          display:
+            viewMode === "schematic" || viewMode === "plan"
+              ? undefined
+              : "none",
+        }}
       >
         {(["all", "1", "2", "3", "4", "5", "6", "7"] as const).map((key) => {
           const isActive = stageFilter === key;
@@ -284,6 +291,11 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
             onOpenLot={(id) => setOpenLotId(id)}
             statusFor={statusFor}
             byStage={byStage}
+            stageHighlight={
+              stageFilter === "all"
+                ? null
+                : (stageFilter as Exclude<LotStage, null>)
+            }
           />
         </div>
       )}

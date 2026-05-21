@@ -100,7 +100,8 @@ export const LOTS: LotData[] = [
   // Stage 2 — Carved-out heritage / house lot (1 lots)
   lot(323, 1522, CENTRAL, "2", { isHeritage: true }),  // heritage retention
 
-  // Stage 3 — Central (23 lots)
+  // Stage 3 — Central (24 lots) — Lot 307 moved here from Stage 6 per CLE/Uwe 2026-05-21 (spatially adjacent to 308; was misfiled in V6 reconciliation)
+  lot(307, 536, CENTRAL, "3", { isAmended: true }),  // NEW in 08B (V5 omitted); stage corrected 2026-05-21
   lot(308, 685, CENTRAL, "3", { isAmended: true }),  // NEW in 08B (V5 omitted)
   lot(309, 614, CENTRAL, "3", { isAmended: true }),  // amended in 08B (WAPC202888)
   lot(310, 510, CENTRAL, "3", { isAmended: true }),  // amended in 08B (WAPC202888)
@@ -166,7 +167,7 @@ export const LOTS: LotData[] = [
   lot(259, 559, NE_INNER, "5"),
   lot(260, 524, NE_INNER, "5"),
 
-  // Stage 6 — Central Upper (35 lots)
+  // Stage 6 — Central Upper (34 lots) — Lot 307 relocated to Stage 3 per CLE/Uwe 2026-05-21
   lot(273, 595, CENTRAL, "6"),
   lot(274, 525, CENTRAL, "6"),
   lot(275, 525, CENTRAL, "6"),
@@ -201,7 +202,6 @@ export const LOTS: LotData[] = [
   lot(304, 600, CENTRAL, "6"),
   lot(305, 610, CENTRAL, "6", { isAmended: true }),  // amended in 08B (WAPC202888)
   lot(306, 650, CENTRAL, "6", { isAmended: true }),  // amended in 08B (WAPC202888)
-  lot(307, 536, CENTRAL, "6", { isAmended: true }),  // NEW in 08B (V5 omitted)
 
   // Stage 7 — Collins Road (29 lots)
   lot(352, 593, COLLINS, "7"),

@@ -22,6 +22,10 @@ interface PlanViewProps {
     row: PublicLotRow | undefined,
   ) => { bg: string; border: string };
   byStage: Map<string, LotData[]>;
+  /** When non-null, lots in this stage keep their stage colour even when
+   * reserved/coming-soon, and lots in other stages are dimmed. Lets Uwe
+   * "click a stage and see its colour come back". */
+  stageHighlight: Exclude<LotStage, null> | null;
 }
 
 function isReservedStatus(status: string | undefined | null): boolean {
@@ -67,6 +71,7 @@ export default function PlanView({
   hoveredLot,
   setHoveredLot,
   onOpenLot,
+  stageHighlight,
 }: PlanViewProps) {
   const lotById = new Map<string, LotData>();
   for (const l of LOTS) lotById.set(l.id, l);
@@ -101,6 +106,40 @@ export default function PlanView({
               y2="6"
               stroke="#C7A877"
               strokeWidth="1.5"
+            />
+          </pattern>
+          <pattern
+            id="reservedHatch"
+            patternUnits="userSpaceOnUse"
+            width="5"
+            height="5"
+            patternTransform="rotate(45)"
+          >
+            <line
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="5"
+              stroke="#475569"
+              strokeWidth="1"
+              opacity="0.55"
+            />
+          </pattern>
+          <pattern
+            id="comingSoonHatch"
+            patternUnits="userSpaceOnUse"
+            width="6"
+            height="6"
+            patternTransform="rotate(45)"
+          >
+            <line
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="6"
+              stroke="#888"
+              strokeWidth="0.8"
+              opacity="0.4"
             />
           </pattern>
         </defs>
@@ -200,11 +239,25 @@ export default function PlanView({
           let fill = stageInfo?.color || "#E8E2D4";
           let stroke = stageInfo?.border || "#999";
           let strokeWidth = 0.4;
+          let opacity = 1;
+
+          // When a stage is highlighted (Uwe's "click a stage to see its
+          // colour come back"), lots in that stage keep their stage colour
+          // even if reserved/coming-soon; lots in other stages are dimmed.
+          const isInHighlightedStage =
+            stageHighlight !== null && stage === stageHighlight;
+          const isOutsideHighlightedStage =
+            stageHighlight !== null && stage !== stageHighlight;
 
           if (isSelected) {
             fill = "rgba(26, 39, 68, 0.92)";
             stroke = "#FFFFFF";
             strokeWidth = 1.2;
+          } else if (isInHighlightedStage) {
+            // Keep stage colour regardless of allocation status.
+            fill = stageInfo?.color || "#E8E2D4";
+            stroke = stageInfo?.border || "#999";
+            strokeWidth = 0.6;
           } else if (isReserved) {
             fill = "rgba(100, 116, 139, 0.85)";
             stroke = "#475569";
@@ -219,6 +272,10 @@ export default function PlanView({
             fill = "rgba(200, 169, 81, 0.78)";
           } else if (count === 1) {
             fill = "rgba(232, 165, 55, 0.75)";
+          }
+
+          if (isOutsideHighlightedStage && !isSelected) {
+            opacity = 0.25;
           }
 
           if (isHovered) {
@@ -257,7 +314,21 @@ export default function PlanView({
                 fill={fill}
                 stroke={stroke}
                 strokeWidth={strokeWidth}
+                opacity={opacity}
               />
+              {/* Diagonal hatch overlay marks reserved/coming-soon lots
+                  when their stage is highlighted so the allocation status
+                  is still visible behind the restored stage colour. */}
+              {isInHighlightedStage && (isReserved || isComingSoon) && (
+                <path
+                  d={pointsToD(pts)}
+                  fill={
+                    isReserved ? "url(#reservedHatch)" : "url(#comingSoonHatch)"
+                  }
+                  stroke="none"
+                  pointerEvents="none"
+                />
+              )}
               <text
                 x={c.x}
                 y={c.y}
