@@ -2,6 +2,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { HempHomesMedia } from "@/lib/hemp-homes/types";
 
 function fmtBytes(n: number | null): string {
@@ -11,17 +12,34 @@ function fmtBytes(n: number | null): string {
   return `${(n / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function fmtDate(iso: string): string {
+function fmtDate(iso: string | null): string {
+  if (!iso) return "—";
   return new Date(iso).toLocaleString("en-AU", {
     dateStyle: "medium",
     timeStyle: "short",
   });
 }
 
+interface DriveStatus {
+  connected: boolean;
+  connected_email: string | null;
+  folder_id: string | null;
+  paused: boolean;
+  last_sync_at: string | null;
+  last_sync_files_seen: number | null;
+  last_sync_files_new: number | null;
+  last_sync_files_skipped: number | null;
+  last_sync_message: string | null;
+  connected_at: string | null;
+}
+
 export default function HempHomesMediaPage() {
+  const search = useSearchParams();
   const [media, setMedia] = useState<HempHomesMedia[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [drive, setDrive] = useState<DriveStatus | null>(null);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [altText, setAltText] = useState("");
@@ -44,9 +62,31 @@ export default function HempHomesMediaPage() {
     }
   }, []);
 
+  const fetchDriveStatus = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/hemp-homes/drive/status");
+      if (!res.ok) return;
+      const data = await res.json();
+      setDrive(data);
+    } catch {
+      // Non-fatal — the rest of the page still works.
+    }
+  }, []);
+
   useEffect(() => {
     fetchMedia();
-  }, [fetchMedia]);
+    fetchDriveStatus();
+  }, [fetchMedia, fetchDriveStatus]);
+
+  // Surface OAuth callback status from the URL.
+  useEffect(() => {
+    if (!search) return;
+    if (search.get("connected") === "1") {
+      setMessage({ type: "success", text: "Google Drive connected — click Sync now to pull files." });
+    } else if (search.get("error")) {
+      setMessage({ type: "error", text: `Drive connect failed: ${search.get("error")}` });
+    }
+  }, [search]);
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -79,6 +119,30 @@ export default function HempHomesMediaPage() {
     }
   }
 
+  async function runSync() {
+    setSyncing(true);
+    setMessage(null);
+    try {
+      const res = await fetch("/api/admin/hemp-homes/drive/sync", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage({ type: "error", text: data.error ?? "Sync failed" });
+        return;
+      }
+      const errCount = (data.errors ?? []).length;
+      setMessage({
+        type: errCount > 0 ? "error" : "success",
+        text: data.message ?? "Sync complete",
+      });
+      fetchMedia();
+      fetchDriveStatus();
+    } catch {
+      setMessage({ type: "error", text: "Network error during sync" });
+    } finally {
+      setSyncing(false);
+    }
+  }
+
   const images = media.filter((m) => m.kind === "image");
   const videos = media.filter((m) => m.kind === "video");
 
@@ -88,9 +152,8 @@ export default function HempHomesMediaPage() {
         <h2 className="text-2xl font-bold text-slate-900 mb-1">Media Library</h2>
         <p className="text-sm text-slate-500 max-w-2xl">
           Photos and video that back posts, the public journey timeline, and the
-          gallery page. Direct upload now; Google Drive sync (from your shared
-          folder) ships next, alongside the LLM email generator that picks
-          relevant images per post.
+          gallery page. Drop a file directly here, or connect your Google Drive
+          folder and pull new files in bulk.
         </p>
       </div>
 
@@ -106,8 +169,76 @@ export default function HempHomesMediaPage() {
         </div>
       )}
 
+      {/* Drive sync section */}
+      <div className="bg-white border rounded-lg p-5 space-y-3">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <h3 className="font-semibold text-slate-900">Google Drive sync</h3>
+            <p className="text-xs text-slate-500 mt-0.5 max-w-xl">
+              Pull image + video files from your Drive folder into the library.
+              Files are mirrored into the <code className="text-[0.7rem]">hemp-homes-media</code> bucket
+              and tagged <span className="font-mono text-[0.65rem]">DRIVE</span>.
+              Sync is incremental — already-pulled files are skipped.
+            </p>
+            {drive?.folder_id && (
+              <p className="text-[0.65rem] font-mono text-slate-400 mt-1">
+                folder: {drive.folder_id}
+              </p>
+            )}
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {drive?.connected ? (
+              <>
+                <a
+                  href="/api/admin/hemp-homes/drive/connect"
+                  className="text-xs text-slate-600 hover:text-slate-900 underline"
+                >
+                  Re-authorise
+                </a>
+                <button
+                  type="button"
+                  onClick={runSync}
+                  disabled={syncing}
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded text-sm font-semibold disabled:opacity-50"
+                >
+                  {syncing ? "Syncing…" : "Sync now"}
+                </button>
+              </>
+            ) : (
+              <a
+                href="/api/admin/hemp-homes/drive/connect"
+                className="bg-slate-900 hover:bg-slate-700 text-white px-3 py-1.5 rounded text-sm font-semibold no-underline"
+              >
+                Connect Drive
+              </a>
+            )}
+          </div>
+        </div>
+        {drive?.connected && (
+          <div className="text-xs text-slate-600 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1 pt-2 border-t border-slate-100">
+            <div>
+              <span className="text-slate-500">Connected as:</span>{" "}
+              <span className="font-medium">{drive.connected_email ?? "—"}</span>
+            </div>
+            <div>
+              <span className="text-slate-500">Connected at:</span>{" "}
+              <span>{fmtDate(drive.connected_at)}</span>
+            </div>
+            <div>
+              <span className="text-slate-500">Last sync:</span>{" "}
+              <span>{fmtDate(drive.last_sync_at)}</span>
+            </div>
+            <div>
+              <span className="text-slate-500">Last run:</span>{" "}
+              <span>{drive.last_sync_message ?? "—"}</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Direct upload */}
       <div className="bg-white border rounded-lg p-5 space-y-4">
-        <h3 className="font-semibold text-slate-900">Upload</h3>
+        <h3 className="font-semibold text-slate-900">Direct upload</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
@@ -161,7 +292,9 @@ export default function HempHomesMediaPage() {
           <div className="text-2xl font-bold text-slate-900">
             {media.filter((m) => m.source === "drive").length}
           </div>
-          <div className="text-xs text-slate-500 mt-1">Sync route ships next</div>
+          <div className="text-xs text-slate-500 mt-1">
+            {drive?.connected ? "Use Sync now to pull more" : "Connect Drive above to enable"}
+          </div>
         </div>
       </div>
 
@@ -172,7 +305,7 @@ export default function HempHomesMediaPage() {
         {loading ? (
           <div className="p-6 text-slate-500">Loading media…</div>
         ) : media.length === 0 ? (
-          <div className="p-6 text-slate-500">No media yet. Upload above to seed the library.</div>
+          <div className="p-6 text-slate-500">No media yet. Upload above or sync from Drive.</div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-4">
             {media.map((m) => (

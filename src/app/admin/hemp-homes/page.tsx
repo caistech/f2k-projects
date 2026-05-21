@@ -88,19 +88,19 @@ export default async function HempHomesAdminIndex() {
       </div>
 
       <div className="bg-amber-50 border border-amber-200 rounded p-4 text-sm text-amber-900">
-        <p className="font-semibold mb-1">Phase 1 scaffold — what works now</p>
+        <p className="font-semibold mb-1">Phase 1 — what works now</p>
         <ul className="list-disc ml-5 space-y-0.5 text-amber-800">
-          <li>Create new posts (markdown overview + stage/state).</li>
+          <li>Create posts with hero image picker; edit, publish/unpublish, delete.</li>
           <li>Upload media (image + video, up to 500MB) directly from this admin.</li>
+          <li>Google Drive sync — connect your folder, pull files in bulk on demand.</li>
           <li>Read the journey timeline (DB-backed, was hard-coded).</li>
         </ul>
         <p className="font-semibold mt-3 mb-1">Coming next</p>
         <ul className="list-disc ml-5 space-y-0.5 text-amber-800">
-          <li>Post editing + delete, hero media picker, publish toggle.</li>
           <li>Journey inline edit + drag-to-reorder.</li>
           <li>LLM email generation from post overview + selected images.</li>
-          <li>Google Drive sync — folder reads pull straight into the media library.</li>
-          <li>Joey voice agent on the public page.</li>
+          <li>Send-to-subscribers with 2/week frequency cap (Phase 2 — nudge-core).</li>
+          <li>Joey voice agent on the public page (Phase 3).</li>
         </ul>
       </div>
     </div>

@@ -9,6 +9,7 @@ import {
   type HempHomesStage,
   type HempHomesState,
 } from "@/lib/hemp-homes/types";
+import { MediaPicker } from "@/components/admin/HempHomesMediaPicker";
 
 function fmtDate(iso: string | null): string {
   if (!iso) return "—";
@@ -37,10 +38,21 @@ function StateBadge({ state }: { state: HempHomesState }) {
   return <span className="inline-block bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-semibold">Scheduled</span>;
 }
 
+interface EditDraft {
+  id: string;
+  title: string;
+  overview: string;
+  stage: HempHomesStage;
+  state: HempHomesState;
+  hero_media_id: string | null;
+}
+
 export default function HempHomesPostsPage() {
   const [posts, setPosts] = useState<HempHomesPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [busyPostId, setBusyPostId] = useState<string | null>(null);
+  const [editing, setEditing] = useState<EditDraft | null>(null);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   // Create form state
@@ -48,6 +60,7 @@ export default function HempHomesPostsPage() {
   const [overview, setOverview] = useState("");
   const [stage, setStage] = useState<HempHomesStage>("design");
   const [state, setState] = useState<HempHomesState>("in_progress");
+  const [createHeroId, setCreateHeroId] = useState<string | null>(null);
 
   const fetchPosts = useCallback(async () => {
     setLoading(true);
@@ -78,7 +91,7 @@ export default function HempHomesPostsPage() {
       const res = await fetch("/api/admin/hemp-homes/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, overview, stage, state }),
+        body: JSON.stringify({ title, overview, stage, state, hero_media_id: createHeroId }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -90,6 +103,7 @@ export default function HempHomesPostsPage() {
       setOverview("");
       setStage("design");
       setState("in_progress");
+      setCreateHeroId(null);
       fetchPosts();
     } catch {
       setMessage({ type: "error", text: "Network error creating post" });
@@ -98,15 +112,95 @@ export default function HempHomesPostsPage() {
     }
   }
 
+  async function patchPost(id: string, body: Record<string, unknown>, busyMsg: string) {
+    setBusyPostId(id);
+    setMessage(null);
+    try {
+      const res = await fetch(`/api/admin/hemp-homes/posts/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage({ type: "error", text: data.error ?? `${busyMsg} failed` });
+        return false;
+      }
+      setMessage({ type: "success", text: `${busyMsg} succeeded.` });
+      fetchPosts();
+      return true;
+    } catch {
+      setMessage({ type: "error", text: "Network error" });
+      return false;
+    } finally {
+      setBusyPostId(null);
+    }
+  }
+
+  async function togglePublish(p: HempHomesPost) {
+    const isPublished = !!p.published_at;
+    if (isPublished && !confirm(`Unpublish "${p.title}"? It will disappear from the public page.`)) {
+      return;
+    }
+    await patchPost(p.id, { published_at: !isPublished }, isPublished ? "Unpublish" : "Publish");
+  }
+
+  async function deletePost(p: HempHomesPost) {
+    if (!confirm(`Delete "${p.title}"? This cannot be undone.`)) return;
+    setBusyPostId(p.id);
+    setMessage(null);
+    try {
+      const res = await fetch(`/api/admin/hemp-homes/posts/${p.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setMessage({ type: "error", text: data.error ?? "Delete failed" });
+        return;
+      }
+      setMessage({ type: "success", text: `Deleted "${p.title}".` });
+      fetchPosts();
+    } catch {
+      setMessage({ type: "error", text: "Network error" });
+    } finally {
+      setBusyPostId(null);
+    }
+  }
+
+  function startEdit(p: HempHomesPost) {
+    setEditing({
+      id: p.id,
+      title: p.title,
+      overview: p.overview,
+      stage: p.stage,
+      state: p.state,
+      hero_media_id: p.hero_media_id,
+    });
+  }
+
+  async function saveEdit() {
+    if (!editing) return;
+    const ok = await patchPost(
+      editing.id,
+      {
+        title: editing.title,
+        overview: editing.overview,
+        stage: editing.stage,
+        state: editing.state,
+        hero_media_id: editing.hero_media_id,
+      },
+      "Save edit",
+    );
+    if (ok) setEditing(null);
+  }
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-slate-900 mb-1">Hemp Homes Posts</h2>
         <p className="text-sm text-slate-500 max-w-2xl">
           Editorial posts about the Joey60 hemp design → test → build journey.
-          Create a draft here; once edit + media picker + LLM email generation
-          ship, you&apos;ll be able to send each post to the subscriber list capped
-          at 2 emails/week.
+          Create a draft, attach a hero image from the media library, edit, and
+          publish when ready. LLM email generation + send-to-subscribers
+          (capped at 2 emails/week) ships next.
         </p>
       </div>
 
@@ -150,7 +244,7 @@ export default function HempHomesPostsPage() {
             onChange={(e) => setOverview(e.target.value)}
             rows={6}
             className="w-full border border-slate-300 rounded px-3 py-2 text-sm font-mono"
-            placeholder="Tell the story. Photos can be linked from the media library in the next iteration."
+            placeholder="Tell the story. Attach a hero image below."
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -183,6 +277,16 @@ export default function HempHomesPostsPage() {
             </select>
           </div>
         </div>
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+            Hero image
+          </label>
+          <MediaPicker
+            value={createHeroId}
+            onChange={setCreateHeroId}
+            placeholder="Pick a hero image from the media library"
+          />
+        </div>
         <button
           type="submit"
           disabled={creating}
@@ -191,7 +295,7 @@ export default function HempHomesPostsPage() {
           {creating ? "Creating…" : "Create draft post"}
         </button>
         <p className="text-xs text-slate-500">
-          Drafts are not visible on the public page. Publishing toggle ships next.
+          Drafts are not visible on the public page. Click <strong>Publish</strong> on a row below when ready.
         </p>
       </form>
 
@@ -211,29 +315,163 @@ export default function HempHomesPostsPage() {
                 <th className="px-3 py-2 text-left">Title</th>
                 <th className="px-3 py-2 text-left">Stage</th>
                 <th className="px-3 py-2 text-left">State</th>
-                <th className="px-3 py-2 text-left">Published</th>
+                <th className="px-3 py-2 text-left">Status</th>
                 <th className="px-3 py-2 text-left">Email sent</th>
-                <th className="px-3 py-2 text-left">Created</th>
+                <th className="px-3 py-2 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {posts.map((p) => (
-                <tr key={p.id} className="border-t hover:bg-slate-50">
-                  <td className="px-3 py-2">
-                    <span className="font-medium text-slate-900">{p.title}</span>
-                    <span className="block text-xs text-slate-500 font-mono">{p.slug}</span>
-                  </td>
-                  <td className="px-3 py-2"><StageBadge stage={p.stage} /></td>
-                  <td className="px-3 py-2"><StateBadge state={p.state} /></td>
-                  <td className="px-3 py-2 text-xs">{p.published_at ? fmtDate(p.published_at) : <span className="text-slate-400">draft</span>}</td>
-                  <td className="px-3 py-2 text-xs">{p.email_sent_at ? fmtDate(p.email_sent_at) : "—"}</td>
-                  <td className="px-3 py-2 text-xs text-slate-500">{fmtDate(p.created_at)}</td>
-                </tr>
-              ))}
+              {posts.map((p) => {
+                const published = !!p.published_at;
+                const busy = busyPostId === p.id;
+                return (
+                  <tr key={p.id} className="border-t hover:bg-slate-50">
+                    <td className="px-3 py-2">
+                      <span className="font-medium text-slate-900">{p.title}</span>
+                      <span className="block text-xs text-slate-500 font-mono">{p.slug}</span>
+                    </td>
+                    <td className="px-3 py-2"><StageBadge stage={p.stage} /></td>
+                    <td className="px-3 py-2"><StateBadge state={p.state} /></td>
+                    <td className="px-3 py-2 text-xs">
+                      {published ? (
+                        <span className="text-emerald-700 font-semibold">Published</span>
+                      ) : (
+                        <span className="text-slate-400">Draft</span>
+                      )}
+                      {published && (
+                        <span className="block text-slate-500">{fmtDate(p.published_at)}</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-xs">{p.email_sent_at ? fmtDate(p.email_sent_at) : "—"}</td>
+                    <td className="px-3 py-2 text-right space-x-2 whitespace-nowrap">
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => startEdit(p)}
+                        className="text-xs text-slate-700 hover:text-slate-900 font-semibold disabled:opacity-50"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => togglePublish(p)}
+                        className={`text-xs font-semibold disabled:opacity-50 ${
+                          published ? "text-amber-700 hover:text-amber-900" : "text-emerald-700 hover:text-emerald-900"
+                        }`}
+                      >
+                        {busy ? "…" : published ? "Unpublish" : "Publish"}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => deletePost(p)}
+                        className="text-xs text-red-600 hover:text-red-800 font-semibold disabled:opacity-50"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
       </div>
+
+      {editing && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-start justify-center overflow-y-auto py-10 px-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+            <div className="px-5 py-3 border-b flex items-center justify-between">
+              <h3 className="font-semibold text-slate-900">Edit post</h3>
+              <button
+                type="button"
+                onClick={() => setEditing(null)}
+                className="text-slate-500 hover:text-slate-900 text-sm"
+              >
+                Close
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  value={editing.title}
+                  onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                  className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  Overview
+                </label>
+                <textarea
+                  value={editing.overview}
+                  onChange={(e) => setEditing({ ...editing, overview: e.target.value })}
+                  rows={8}
+                  className="w-full border border-slate-300 rounded px-3 py-2 text-sm font-mono"
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Stage</label>
+                  <select
+                    value={editing.stage}
+                    onChange={(e) => setEditing({ ...editing, stage: e.target.value as HempHomesStage })}
+                    className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+                  >
+                    {HEMP_HOMES_STAGES.map((s) => (
+                      <option key={s.value} value={s.value}>{s.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">State</label>
+                  <select
+                    value={editing.state}
+                    onChange={(e) => setEditing({ ...editing, state: e.target.value as HempHomesState })}
+                    className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+                  >
+                    {HEMP_HOMES_STATES.map((s) => (
+                      <option key={s.value} value={s.value}>{s.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  Hero image
+                </label>
+                <MediaPicker
+                  value={editing.hero_media_id}
+                  onChange={(id) => setEditing({ ...editing, hero_media_id: id })}
+                  placeholder="Pick a hero image from the media library"
+                />
+              </div>
+            </div>
+            <div className="px-5 py-3 border-t bg-slate-50 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setEditing(null)}
+                className="px-3 py-1.5 text-sm text-slate-700 hover:text-slate-900"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={busyPostId === editing.id}
+                onClick={saveEdit}
+                className="bg-slate-900 hover:bg-slate-700 text-white px-4 py-1.5 rounded text-sm font-semibold disabled:opacity-50"
+              >
+                {busyPostId === editing.id ? "Saving…" : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

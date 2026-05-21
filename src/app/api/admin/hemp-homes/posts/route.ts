@@ -49,6 +49,9 @@ export async function POST(request: Request) {
   const stage = String(body.stage ?? "").trim();
   const state = String(body.state ?? "in_progress").trim();
   const customSlug = String(body.slug ?? "").trim();
+  const heroMediaId = typeof body.hero_media_id === "string" && body.hero_media_id
+    ? body.hero_media_id
+    : null;
 
   if (!title || title.length < 3) {
     return NextResponse.json({ error: "Title is required (min 3 chars)" }, { status: 400 });
@@ -78,6 +81,7 @@ export async function POST(request: Request) {
       overview,
       stage,
       state,
+      hero_media_id: heroMediaId,
       created_by: admin.auth_user_id,
     })
     .select(
