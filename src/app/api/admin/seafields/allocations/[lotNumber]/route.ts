@@ -8,6 +8,12 @@ import {
 } from "@/lib/supabase-service";
 import { sendTemplated } from "@/lib/email/send";
 import { forwardAllocationToGHL } from "@/lib/ghl";
+import {
+  formatCurrency,
+  getActiveRecipients,
+  renderBrandedEmail,
+  escapeHtml as escapeHtmlNotify,
+} from "@/lib/seafields/notify";
 
 const ALLOCATION_BUCKETS = [
   "public",
@@ -207,7 +213,9 @@ export async function PATCH(
   const { data: priorRow } = await (
     supabase.from("seafields_lot_allocations") as any
   )
-    .select("intent_locked_to_registration_id, allocated_to, status")
+    .select(
+      "intent_locked_to_registration_id, allocated_to, status, allocation_bucket, stage, wholesale_price, retail_price, house_cost, land_rate_override_per_sqm, display_price_to_public, public_label",
+    )
     .eq("lot_number", lotNumber)
     .maybeSingle();
   const priorStatus: string | null = priorRow?.status ?? null;
@@ -387,6 +395,90 @@ export async function PATCH(
     }
   } catch (err) {
     console.error("Seafields lot-status email fan-out threw:", err);
+  }
+
+  // Admin-team notification on material lot changes. Best-effort — never
+  // blocks the save. Bundles every changed field into ONE email per save so
+  // a single click of "Save" doesn't trigger five separate emails.
+  try {
+    type Change = { label: string; before: string; after: string };
+    const changes: Change[] = [];
+
+    function fmt(v: unknown, kind: "text" | "currency" | "bool"): string {
+      if (v == null || v === "") return "—";
+      if (kind === "currency" && typeof v === "number")
+        return formatCurrency(v);
+      if (kind === "bool") return v ? "Yes" : "No";
+      return String(v);
+    }
+    function diff(
+      key: keyof typeof updates,
+      label: string,
+      kind: "text" | "currency" | "bool" = "text",
+    ) {
+      if (!(key in updates)) return;
+      const before = (priorRow as Record<string, unknown> | null)?.[key];
+      const after = (updates as Record<string, unknown>)[key];
+      if (before === after) return;
+      if (before == null && (after == null || after === "")) return;
+      changes.push({
+        label,
+        before: fmt(before, kind),
+        after: fmt(after, kind),
+      });
+    }
+
+    diff("status", "Status");
+    diff("allocated_to", "Allocated to");
+    diff("allocation_bucket", "Bucket");
+    diff("stage", "Stage");
+    diff("wholesale_price", "Wholesale price", "currency");
+    diff("retail_price", "Retail price", "currency");
+    diff("house_cost", "House cost", "currency");
+    diff("land_rate_override_per_sqm", "Land rate override $/m²", "currency");
+    diff("display_price_to_public", "Show price publicly", "bool");
+    diff("public_label", "Public label");
+
+    if (changes.length > 0) {
+      const { Resend } = await import("resend");
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const recipients = await getActiveRecipients();
+      const verb =
+        changes.length === 1
+          ? `${changes[0].label.toLowerCase()} changed`
+          : `${changes.length} fields changed`;
+      const rows = changes.map((c) => ({
+        label: c.label,
+        value: `<span style="color:#94A3B8">${escapeHtmlNotify(c.before)}</span> &rarr; <strong style="color:#0F172A">${escapeHtmlNotify(c.after)}</strong>`,
+      }));
+      rows.push({
+        label: "Changed by",
+        value: escapeHtmlNotify(admin.email),
+      });
+      if (reason) {
+        rows.push({ label: "Reason", value: escapeHtmlNotify(reason) });
+      }
+      const html = renderBrandedEmail({
+        preheader: `Lot ${lotNumber} ${verb} (${admin.email})`,
+        heading: `Lot ${lotNumber} — ${verb}`,
+        intro: `Admin update saved by <strong>${escapeHtmlNotify(admin.email)}</strong>${reason ? ` with reason: <em>${escapeHtmlNotify(reason)}</em>` : ""}.`,
+        rows,
+        ctaLabel: "Open lot in admin",
+        ctaHref: `https://f2k-projects.vercel.app/admin/seafields-lots`,
+        footer:
+          "Sent because you are on the Seafields admin-notification list. Manage at /admin/seafields-registrations.",
+      });
+      await resend.emails.send({
+        from:
+          process.env.RESEND_FROM_EMAIL ||
+          "Seafields Estate <onboarding@resend.dev>",
+        to: recipients,
+        subject: `Lot ${lotNumber} ${verb} (by ${admin.email})`,
+        html,
+      });
+    }
+  } catch (err) {
+    console.error("Seafields admin lot-change notify failed:", err);
   }
 
   // Bust the static cache so the public Seafields page picks up the change
