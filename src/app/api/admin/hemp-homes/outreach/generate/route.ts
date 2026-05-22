@@ -54,18 +54,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No contact email on this prospect — discover one before generating" }, { status: 422 });
   }
 
-  // Frequency cap (skipped when force=true).
+  // Frequency cap (skipped when force=true). Per-template so the
+  // 14-day follow-up isn't blocked by the recent intro.
   if (!force) {
     const sinceDate = new Date(Date.now() - FREQUENCY_CAP_DAYS * 86400 * 1000).toISOString();
     const { data: recent } = await (supabase.from("hemp_homes_prospect_outreach") as any)
       .select("id, generated_at, review_status")
       .eq("prospect_id", prospectId)
+      .eq("template_id", template.id)
       .gte("generated_at", sinceDate)
       .in("review_status", ["pending", "approved"])
       .limit(1);
     if ((recent ?? []).length > 0) {
       return NextResponse.json({
-        error: `Frequency cap: this prospect already has a draft/send within ${FREQUENCY_CAP_DAYS} days. Pass force=true to override.`,
+        error: `Frequency cap: this template already has a draft/send for this prospect within ${FREQUENCY_CAP_DAYS} days. Pass force=true to override.`,
       }, { status: 429 });
     }
   }

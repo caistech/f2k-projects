@@ -121,10 +121,14 @@ export async function GET(req: Request) {
         skips.no_contact++; continue;
       }
 
-      // ── Frequency cap (any draft/send within 21 days) ───────────────────
+      // ── Frequency cap (same template, same prospect, last 21 days) ─────
+      // Intentionally per-template so an intro + its 14-day follow-up
+      // (different templates) can fire inside the same 21-day window.
+      // Same-template repeats are blocked.
       const { data: recent } = await (supabase.from("hemp_homes_prospect_outreach") as any)
-        .select("id, generated_at, review_status, template_id")
+        .select("id, generated_at, review_status")
         .eq("prospect_id", p.id)
+        .eq("template_id", t.id)
         .gte("generated_at", sinceFreqCap)
         .in("review_status", ["pending", "approved"])
         .limit(1);
