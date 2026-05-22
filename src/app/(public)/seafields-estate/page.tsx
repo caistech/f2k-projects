@@ -325,6 +325,155 @@ export default function SeafieldsEstatePage() {
         </div>
       </section>
 
+      {/* ===== HOME DESIGNS ===== */}
+      <section className="py-16 px-4 bg-off-white">
+        <div className="max-w-[1100px] mx-auto">
+          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+            Factory2Key Home Designs
+          </p>
+          <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
+            Modular Homes Built to Plan
+          </h2>
+          <p className="text-slate font-archivo leading-relaxed mb-8 max-w-[760px]">
+            Every Factory2Key home is a factory-built modular dwelling delivered
+            to site as complete modules and assembled on a prepared slab. Five
+            base designs span ancillary dwellings through to large family
+            homes — pick a design at registration time and we&apos;ll quote you
+            against your selected lot. Indicative time-to-build from site
+            arrival is 12–14 weeks.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {[
+              {
+                name: "Joey",
+                size: "≈100m² overall",
+                beds: "2 bed · 1 bath",
+                detail: "Compact modular — bed × 2, single bath, carport + verandah. Ideal as a downsizer, holiday let, or second dwelling on a larger lot.",
+                hero: "/seafields/designs/joey-floor-plan.png",
+                plan: "/seafields/designs/joey-floor-plan.png",
+                elevations: "/seafields/designs/joey-elevations.png",
+                tag: "ANCILLARY / DOWNSIZER",
+              },
+              {
+                name: "Koala",
+                size: "≈110m² overall",
+                beds: "ADU configuration",
+                detail: "Ancillary dwelling unit — slightly larger footprint than Joey, suitable for granny flat / dual-occupancy use on lots ≥600m² under R20.",
+                hero: "/seafields/designs/joey-floor-plan.png",
+                plan: "/seafields/designs/koala-floor-plan.pdf",
+                elevations: "/seafields/designs/koala-option-2.pdf",
+                tag: "ANCILLARY / DUAL-OCC",
+              },
+              {
+                name: "3x2 Modular",
+                size: "158m²",
+                beds: "3 bed · 2 bath",
+                detail: "GROH-approved 3-bedroom 2-bathroom modular home. Government Regional Officer Housing eligible. Suitable for first-home buyers and small families.",
+                hero: "/seafields/designs/joey-elevations.png",
+                plan: "/seafields/designs/3x2-floor-plan.pdf",
+                tag: "GROH ELIGIBLE",
+              },
+              {
+                name: "4x2 Modular",
+                size: "162m²",
+                beds: "4 bed · 2 bath",
+                detail: "GROH-approved 4-bedroom 2-bathroom modular home. Larger family layout with the same modular delivery economics.",
+                hero: "/seafields/designs/joey-elevations.png",
+                plan: "/seafields/designs/4x2-floor-plan.pdf",
+                tag: "GROH ELIGIBLE",
+              },
+              {
+                name: "The Murchison",
+                size: "Premium",
+                beds: "4 bed · 2 bath + Theatre",
+                detail: "Premium 4-bed modular with dedicated theatre room and walk-in robes. Architect-designed kitchen feature. The flagship family home.",
+                hero: "/seafields/designs/murchison-floor-plan.png",
+                plan: "/seafields/designs/murchison-floor-plan.png",
+                tag: "PREMIUM",
+              },
+              {
+                name: "5x3 Modular",
+                size: "Coming soon",
+                beds: "5 bed · 3 bath",
+                detail: "Largest design in the range — 5-bedroom 3-bathroom modular for extended families or multi-generational living. Plans being finalised; contact Uwe for early-access details.",
+                hero: null,
+                plan: null,
+                tag: "LARGEST",
+                placeholder: true,
+              },
+            ].map((d) => (
+              <div
+                key={d.name}
+                className="bg-white border border-black/5 flex flex-col"
+              >
+                {d.hero && !d.placeholder ? (
+                  <div className="aspect-[4/3] bg-[#F0EDE6] border-b border-black/5 overflow-hidden flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={d.hero}
+                      alt={`${d.name} floor plan preview`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                ) : (
+                  <div className="aspect-[4/3] bg-[#F0EDE6] border-b border-black/5 flex items-center justify-center">
+                    <span className="font-archivo text-xs text-slate/50 uppercase tracking-wider">
+                      Floor plan pending
+                    </span>
+                  </div>
+                )}
+                <div className="p-5 flex-1 flex flex-col">
+                  <p className="font-ibm-mono text-[0.55rem] tracking-[0.3em] uppercase text-[#00B5AD] mb-2">
+                    {d.tag}
+                  </p>
+                  <h3 className="font-playfair text-xl font-black text-deep-blue mb-1">
+                    {d.name}
+                  </h3>
+                  <p className="font-archivo text-xs text-slate/70 uppercase tracking-wider mb-3">
+                    {d.beds} · {d.size}
+                  </p>
+                  <p className="font-archivo text-sm text-slate leading-relaxed mb-4 flex-1">
+                    {d.detail}
+                  </p>
+                  <div className="mt-auto pt-3 border-t border-black/5 flex items-center justify-between">
+                    <span className="font-archivo text-sm text-deep-blue">
+                      <span className="text-slate/50 text-xs">
+                        H&amp;L from
+                      </span>{" "}
+                      <strong>$485,000</strong>
+                    </span>
+                    {d.plan ? (
+                      <a
+                        href={d.plan}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-archivo text-xs text-[#00B5AD] hover:underline font-semibold"
+                      >
+                        View plan →
+                      </a>
+                    ) : (
+                      <span className="font-archivo text-xs text-slate/40">
+                        Plan pending
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="font-archivo text-xs text-slate/60 leading-relaxed">
+            Indicative pricing only. Final price depends on lot size,
+            site-works, finish selections, and any approved variations. Time-to-
+            build is from site delivery, not from contract — typical
+            contract-to-delivery is an additional 8–12 weeks for finance,
+            planning, and module manufacture.
+          </p>
+        </div>
+      </section>
+
       {/* ===== PURCHASE TERMS ===== */}
       <section className="py-16 px-4 bg-white">
         <div className="max-w-[900px] mx-auto">
