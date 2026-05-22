@@ -187,6 +187,10 @@ export default function HempHomesProspectsPage() {
         is_public_safe: editing.is_public_safe,
         notes: editing.notes,
         next_action: editing.next_action,
+        contact_emails: editing.contact_emails,
+        contact_form_url: editing.contact_form_url,
+        contact_phone: editing.contact_phone,
+        contact_discovery_notes: editing.contact_discovery_notes,
       },
       "Edit",
     );
@@ -340,6 +344,7 @@ export default function HempHomesProspectsPage() {
                   <th className="px-3 py-2 text-right">Members</th>
                   <th className="px-3 py-2 text-right">Lots</th>
                   <th className="px-3 py-2 text-right">Base $</th>
+                  <th className="px-3 py-2 text-left">Contact</th>
                   <th className="px-3 py-2 text-center">Public-safe</th>
                   <th className="px-3 py-2 text-right">Actions</th>
                 </tr>
@@ -363,6 +368,9 @@ export default function HempHomesProspectsPage() {
                     <td className="px-3 py-2 text-right text-xs">{fmtInt(p.current_members)}</td>
                     <td className="px-3 py-2 text-right text-xs font-semibold">{fmtInt(p.indicative_lot_potential)}</td>
                     <td className="px-3 py-2 text-right text-xs font-mono">{fmtMoney(p.base_revenue)}</td>
+                    <td className="px-3 py-2">
+                      <ContactSummary p={p} />
+                    </td>
                     <td className="px-3 py-2 text-center">
                       <button
                         type="button"
@@ -404,7 +412,7 @@ export default function HempHomesProspectsPage() {
                   <td className="px-3 py-2" colSpan={6}>Totals (filtered)</td>
                   <td className="px-3 py-2 text-right">{fmtInt(totals.lots)}</td>
                   <td className="px-3 py-2 text-right font-mono">{fmtMoney(totals.base)}</td>
-                  <td colSpan={2}></td>
+                  <td colSpan={3}></td>
                 </tr>
               </tfoot>
             </table>
@@ -486,6 +494,34 @@ export default function HempHomesProspectsPage() {
                   <span>This community has consented to being mentioned publicly</span>
                 </label>
               </Field>
+              <Field label="Contact emails (one per line)" full>
+                <textarea
+                  value={(editing.contact_emails ?? []).join("\n")}
+                  onChange={(e) => setEditing({ ...editing, contact_emails: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })}
+                  rows={3}
+                  className="w-full border border-slate-300 rounded px-3 py-2 text-xs font-mono"
+                  placeholder="info@example.com&#10;sales@example.com"
+                />
+              </Field>
+              <Field label="Contact form URL">
+                <input type="text" value={editing.contact_form_url ?? ""}
+                  onChange={(e) => setEditing({ ...editing, contact_form_url: e.target.value || null })}
+                  className="w-full border border-slate-300 rounded px-3 py-2 text-xs font-mono" />
+              </Field>
+              <Field label="Contact phone">
+                <input type="text" value={editing.contact_phone ?? ""}
+                  onChange={(e) => setEditing({ ...editing, contact_phone: e.target.value || null })}
+                  className="w-full border border-slate-300 rounded px-3 py-2 text-xs font-mono" />
+              </Field>
+              <Field label="Contact discovery notes" full>
+                <textarea
+                  value={editing.contact_discovery_notes ?? ""}
+                  onChange={(e) => setEditing({ ...editing, contact_discovery_notes: e.target.value || null })}
+                  rows={3}
+                  className="w-full border border-slate-300 rounded px-3 py-2 text-xs"
+                  placeholder="Discovery notes — labelled inboxes, verification flags, physical address, etc."
+                />
+              </Field>
             </div>
             <div className="px-5 py-3 border-t bg-slate-50 flex items-center justify-end gap-2">
               <button type="button" onClick={() => setEditing(null)} className="px-3 py-1.5 text-sm text-slate-700 hover:text-slate-900">Cancel</button>
@@ -496,6 +532,26 @@ export default function HempHomesProspectsPage() {
             </div>
           </div>
         </div>
+      )}
+    </div>
+  );
+}
+
+function ContactSummary({ p }: { p: HempHomesProspect }) {
+  const emailCount = p.contact_emails?.length ?? 0;
+  return (
+    <div className="space-y-0.5 text-xs">
+      {emailCount > 0 ? (
+        <div className="text-emerald-700 font-semibold">
+          {emailCount} email{emailCount === 1 ? "" : "s"}
+        </div>
+      ) : p.contact_form_url ? (
+        <div className="text-amber-700">Form only</div>
+      ) : (
+        <div className="text-slate-400 italic">No contact</div>
+      )}
+      {p.contact_phone && (
+        <div className="text-slate-500 font-mono text-[0.65rem]">{p.contact_phone}</div>
       )}
     </div>
   );

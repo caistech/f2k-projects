@@ -27,9 +27,26 @@ export async function PATCH(request: Request, { params }: RouteCtx) {
   const update: Record<string, unknown> = {};
   const allowedTextFields = [
     "name","location","region","website_url","source_basis","source_url","notes","next_action",
+    "contact_form_url","contact_phone","contact_discovery_notes",
   ];
   for (const f of allowedTextFields) {
     if (f in body) update[f] = body[f] === "" ? null : body[f];
+  }
+  if ("contact_emails" in body) {
+    if (!Array.isArray(body.contact_emails)) {
+      return NextResponse.json({ error: "contact_emails must be an array" }, { status: 400 });
+    }
+    // Trim + drop empties; validate basic shape (foo@bar).
+    const cleaned: string[] = [];
+    for (const e of body.contact_emails) {
+      const s = String(e ?? "").trim();
+      if (!s) continue;
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)) {
+        return NextResponse.json({ error: `Invalid email: ${s}` }, { status: 400 });
+      }
+      cleaned.push(s);
+    }
+    update.contact_emails = cleaned;
   }
 
   if ("state" in body) {

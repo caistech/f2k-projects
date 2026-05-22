@@ -121,6 +121,12 @@ export interface HempHomesProspect {
   last_contacted_at: string | null;
   next_action: string | null;
   next_action_due: string | null;
+  // Contact discovery (migration 0016)
+  contact_emails: string[];
+  contact_form_url: string | null;
+  contact_phone: string | null;
+  contact_discovery_notes: string | null;
+  contact_discovered_at: string | null;
   created_at: string;
   updated_at: string;
   // From the revenue view
