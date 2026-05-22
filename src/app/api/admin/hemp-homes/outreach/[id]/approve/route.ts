@@ -4,6 +4,7 @@ import {
   createSupabaseService,
   createSupabaseServiceWithActor,
 } from "@/lib/supabase-service";
+import { buildUnsubscribeUrl } from "@/lib/hemp-homes/unsubscribe-token";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -35,6 +36,23 @@ export async function POST(_request: Request, { params }: Ctx) {
     return NextResponse.json({ error: "No recipient addresses on this draft" }, { status: 422 });
   }
 
+  // Per-prospect unsubscribe URL — used both in the visible body (via the
+  // {{ unsubscribe_url }} substitution at draft time) AND in the
+  // List-Unsubscribe header so Gmail / Apple Mail render a native one-click
+  // unsubscribe button. RFC 8058.
+  let unsubscribeUrl: string | null = null;
+  try {
+    unsubscribeUrl = buildUnsubscribeUrl(outreach.prospect_id);
+  } catch (e) {
+    // If HEMP_HOMES_UNSUBSCRIBE_SECRET is not set we refuse to send — Spam
+    // Act 2003 requires a functional unsubscribe path on every commercial
+    // email. Better to block the send than send a non-compliant email.
+    return NextResponse.json(
+      { error: `Cannot send: ${(e as Error).message}. The unsubscribe token signer is not configured.` },
+      { status: 500 },
+    );
+  }
+
   // Send via Resend.
   let resendId: string | undefined;
   try {
@@ -47,6 +65,10 @@ export async function POST(_request: Request, { params }: Ctx) {
       html: outreach.drafted_body_html ?? `<pre>${outreach.drafted_body_md}</pre>`,
       text: outreach.drafted_body_md,
       replyTo: REPLY_TO_DEFAULT,
+      headers: {
+        "List-Unsubscribe": `<${unsubscribeUrl}>, <mailto:dennis@factory2key.com.au?subject=Unsubscribe>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
     });
     if (result.error) {
       return NextResponse.json({ error: result.error.message ?? String(result.error) }, { status: 502 });

@@ -53,6 +53,14 @@
       "description": "Canonical app URL used to construct OAuth redirect URIs + webhook endpoints (e.g. https://f2k-projects.vercel.app).",
       "scope": ["production", "preview", "development"],
       "where": "Set in Vercel env to match the canonical hostname"
+    },
+    {
+      "name": "HEMP_HOMES_UNSUBSCRIBE_SECRET",
+      "required": true,
+      "description": "HMAC secret for signing unsubscribe tokens in outreach emails. Rotating it invalidates every previously-sent unsubscribe link.",
+      "scope": ["production", "preview", "development"],
+      "where": "Generate locally and paste into Vercel env",
+      "generator": "random-32"
     }
   ],
   "external_setup": [

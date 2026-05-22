@@ -17,6 +17,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getClaudeClientConfig, resolveClaudeModel } from "@caistech/ai-client";
 import type { HempHomesOutreachTemplate, HempHomesProspect } from "./types";
+import { buildUnsubscribeUrl } from "./unsubscribe-token";
 
 export interface GeneratedDraft {
   subject: string;
@@ -48,6 +49,7 @@ function prospectVars(p: HempHomesProspect): Record<string, string | number | nu
     indicative_lot_potential: p.indicative_lot_potential ?? "",
     land_size_acres: p.land_size_acres ?? "",
     current_members: p.current_members ?? "",
+    unsubscribe_url: buildUnsubscribeUrl(p.id),
   };
 }
 
@@ -131,14 +133,39 @@ YOUR TASK
 - KEEP all factual claims (Wandara partnership, 60sqm, hemp panel, 2027 target if mentioned).
 - Australian English spelling throughout (organisation, recognise, programme).
 - Return ONLY the polished markdown body. NO subject line, NO preheader, NO commentary. Start with "Hi {community name} team," and end with "Dennis McMahon\\nFactory2Key" (or similar sign-off).
+- PRESERVE EVERY URL exactly as it appears in the templated draft — they are signed tokens (unsubscribe link, tracking) and MUST NOT be modified, shortened, or paraphrased. The unsubscribe footer in particular is legally required (Australia Spam Act 2003) — never remove or alter it.
 
 ADDITIONAL TEMPLATE INSTRUCTION
 ${template.llm_instruction ?? "(none provided)"}`;
 
+  // Enriched per-community context Claude can use to scale + personalise.
+  // Each field includes a hint about how to use it.
+  const lotHint = prospect.indicative_lot_potential != null
+    ? `${prospect.indicative_lot_potential} (our internal planning estimate — DO NOT cite this number as a sales target. Use only to gauge scale: 1-3 = small, 4-6 = mid, 7+ = substantial.)`
+    : "unknown";
+  const acresHint = prospect.land_size_acres != null
+    ? `${prospect.land_size_acres} acres (calibrate language: <50 acres = small infill; 50-200 = mid-size estate; 200+ = substantial estate)`
+    : "unknown";
+  const membersHint = prospect.current_members != null
+    ? `${prospect.current_members} (community size context — small/intimate <30, mid 30-150, large 150+)`
+    : "unknown";
+
   const userMessage = `Community: ${prospect.name} (${prospect.state ?? "—"})
 Wave: ${prospect.wave ?? "—"}
+Region / location: ${prospect.region ?? prospect.location ?? "—"}
+Land size: ${acresHint}
+Current members: ${membersHint}
+Possible Joey60 placements (internal estimate): ${lotHint}
+Public website: ${prospect.website_url ?? "(none)"}
 Source basis: ${prospect.source_basis ?? "(none)"}
 Notes on community: ${prospect.notes ?? "(none)"}
+
+Personalisation guidance:
+- Lean on source_basis + notes most heavily — those carry the strongest signal.
+- If the website_url is present and the source_basis references specific page content, you may say "we noticed on your site that..." — but only if source_basis actually backs the reference.
+- Scale your language to the community size (members + acres). A 12-household urban cohousing project needs different wording from a 700-acre rural ecovillage.
+- DO NOT cite the lot estimate as a sales pitch. It exists only to help you size the conversation.
+- DO NOT mention region/state explicitly unless it adds something genuine (e.g. "your Margaret River region" only if the source_basis ties it to something).
 
 Templated draft to polish:
 
