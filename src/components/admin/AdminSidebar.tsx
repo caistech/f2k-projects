@@ -23,6 +23,7 @@ const NAV: NavItem[] = [
   { href: "/admin/hemp-homes/posts", label: "Posts", group: "Hemp Homes" },
   { href: "/admin/hemp-homes/media", label: "Media Library", group: "Hemp Homes" },
   { href: "/admin/hemp-homes/journey", label: "Journey Timeline", group: "Hemp Homes" },
+  { href: "/admin/hemp-homes/prospects", label: "Community Prospects", group: "Hemp Homes" },
   { href: "/admin/email-templates", label: "Email Templates", group: "Compliance" },
   { href: "/admin/audit-log", label: "Audit Log", group: "Compliance" },
   { href: "/admin/settings", label: "Settings", group: "Account" },

@@ -65,6 +65,81 @@ export interface HempHomesMedia {
   created_at: string;
 }
 
+export type HempHomesProspectStatus =
+  | "researched"
+  | "outreach_sent"
+  | "in_conversation"
+  | "committed"
+  | "declined"
+  | "paused";
+
+export type HempHomesProspectSource = "workbook" | "llm_research" | "manual" | "inbound";
+
+export type AusState = "QLD" | "NSW" | "VIC" | "TAS" | "SA" | "WA" | "NT" | "ACT";
+
+export const HEMP_HOMES_PROSPECT_STATUSES: { value: HempHomesProspectStatus; label: string }[] = [
+  { value: "researched", label: "Researched" },
+  { value: "outreach_sent", label: "Outreach sent" },
+  { value: "in_conversation", label: "In conversation" },
+  { value: "committed", label: "Committed" },
+  { value: "declined", label: "Declined" },
+  { value: "paused", label: "Paused" },
+];
+
+export const AUS_STATES: { value: AusState; label: string }[] = [
+  { value: "QLD", label: "QLD" },
+  { value: "NSW", label: "NSW" },
+  { value: "VIC", label: "VIC" },
+  { value: "TAS", label: "TAS" },
+  { value: "SA", label: "SA" },
+  { value: "WA", label: "WA" },
+  { value: "NT", label: "NT" },
+  { value: "ACT", label: "ACT" },
+];
+
+export interface HempHomesProspect {
+  id: string;
+  name: string;
+  slug: string;
+  location: string | null;
+  region: string | null;
+  state: AusState | null;
+  country: string;
+  wave: 1 | 2 | 3 | null;
+  status: HempHomesProspectStatus;
+  website_url: string | null;
+  land_size_acres: number | null;
+  current_members: number | null;
+  indicative_lot_potential: number | null;
+  source: HempHomesProspectSource;
+  source_basis: string | null;
+  source_url: string | null;
+  is_public_safe: boolean;
+  notes: string | null;
+  added_by: string | null;
+  contact_owner: string | null;
+  last_contacted_at: string | null;
+  next_action: string | null;
+  next_action_due: string | null;
+  created_at: string;
+  updated_at: string;
+  // From the revenue view
+  conservative_revenue?: number | null;
+  base_revenue?: number | null;
+  optimistic_revenue?: number | null;
+}
+
+export interface HempHomesPricingAssumptions {
+  id: "singleton";
+  price_low: number;
+  price_mid: number;
+  price_high: number;
+  capture_conservative: number;
+  capture_base: number;
+  capture_optimistic: number;
+  updated_at: string;
+}
+
 export interface HempHomesJourneyEntry {
   id: string;
   slug: string;

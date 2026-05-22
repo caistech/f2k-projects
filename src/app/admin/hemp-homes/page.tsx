@@ -2,7 +2,7 @@ import { createSupabaseService } from "@/lib/supabase-service";
 
 async function getCounts() {
   const supabase = createSupabaseService();
-  const [posts, media, journey] = await Promise.all([
+  const [posts, media, journey, prospects] = await Promise.all([
     (supabase.from("hemp_homes_posts") as any)
       .select("id, published_at", { count: "exact" })
       .then((r: any) => ({
@@ -25,12 +25,22 @@ async function getCounts() {
         in_progress: (r.data ?? []).filter((j: any) => j.state === "in_progress").length,
       }))
       .catch(() => ({ total: 0, in_progress: 0 })),
+    (supabase.from("hemp_homes_community_prospects") as any)
+      .select("id, wave, indicative_lot_potential", { count: "exact" })
+      .then((r: any) => ({
+        total: r.count ?? 0,
+        wave1: (r.data ?? []).filter((p: any) => p.wave === 1).length,
+        wave2: (r.data ?? []).filter((p: any) => p.wave === 2).length,
+        wave3: (r.data ?? []).filter((p: any) => p.wave === 3).length,
+        lots: (r.data ?? []).reduce((s: number, p: any) => s + (p.indicative_lot_potential ?? 0), 0),
+      }))
+      .catch(() => ({ total: 0, wave1: 0, wave2: 0, wave3: 0, lots: 0 })),
   ]);
-  return { posts, media, journey };
+  return { posts, media, journey, prospects };
 }
 
 export default async function HempHomesAdminIndex() {
-  const { posts, media, journey } = await getCounts();
+  const { posts, media, journey, prospects } = await getCounts();
 
   const cards = [
     {
@@ -54,6 +64,13 @@ export default async function HempHomesAdminIndex() {
       href: "/admin/hemp-homes/journey",
       cta: "Edit timeline →",
     },
+    {
+      title: "Community Prospects",
+      number: prospects.total,
+      subline: `${prospects.wave1}/${prospects.wave2}/${prospects.wave3} W1/W2/W3 · ${prospects.lots} lots`,
+      href: "/admin/hemp-homes/prospects",
+      cta: "Open pipeline →",
+    },
   ];
 
   return (
@@ -68,7 +85,7 @@ export default async function HempHomesAdminIndex() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map((c) => (
           <a
             key={c.title}
