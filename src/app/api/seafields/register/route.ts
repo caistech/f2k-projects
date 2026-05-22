@@ -258,7 +258,11 @@ export async function POST(request: Request) {
       from:
         process.env.RESEND_FROM_EMAIL ||
         "Seafields Estate <onboarding@resend.dev>",
-      to: ["dennis@factory2key.com.au", "uwe@factory2key.com.au"],
+      to: [
+        "dennis@factory2key.com.au",
+        "uwe@factory2key.com.au",
+        "barryh@hld.com.au",
+      ],
       subject: `Seafields ROI: ${d.first_name} ${d.last_name} — ${d.lots_selected.map((l) => l.replace("L", "Lot ")).join(", ")}`,
       html: `
         <h2 style="color:#1A2744;font-family:sans-serif">New Seafields Estate Registration</h2>
