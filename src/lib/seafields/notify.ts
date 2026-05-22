@@ -1,7 +1,7 @@
 /**
- * Seafields notification helpers. Thin shim over the generic
- * property-launch-kit — pre-fills the Seafields branding and recipient
- * table name so callers don't have to repeat them.
+ * Seafields notification helpers. Thin shim over @caistech/property-
+ * launch-kit — pre-fills the Seafields branding, recipient table name,
+ * and Supabase client so callers don't have to repeat them.
  */
 
 import {
@@ -11,7 +11,8 @@ import {
   renderBrandedEmail as renderBrandedEmailShared,
   type Branding,
   type RenderArgs,
-} from "@/lib/property-launch-kit";
+} from "@caistech/property-launch-kit";
+import { createSupabaseService } from "@/lib/supabase-service";
 
 const BRANDING: Branding = {
   productName: "Seafields Estate",
@@ -27,6 +28,7 @@ const FALLBACK_RECIPIENTS = [
 
 export async function getActiveRecipients(): Promise<string[]> {
   return getActiveRecipientsShared({
+    supabase: createSupabaseService(),
     table: "seafields_notify_recipients",
     fallback: FALLBACK_RECIPIENTS,
   });

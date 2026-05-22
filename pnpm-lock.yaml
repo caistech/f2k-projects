@@ -20,6 +20,9 @@ importers:
       '@caistech/ghl-client':
         specifier: ^0.1.2
         version: 0.1.2
+      '@caistech/property-launch-kit':
+        specifier: ^0.1.0
+        version: 0.1.0(@supabase/supabase-js@2.105.4)(typescript@5.9.3)
       '@supabase/ssr':
         specifier: ^0.5.0
         version: 0.5.2(@supabase/supabase-js@2.105.4)
@@ -163,6 +166,12 @@ packages:
     peerDependenciesMeta:
       playwright:
         optional: true
+
+  '@caistech/property-launch-kit@0.1.0':
+    resolution: {integrity: sha512-sXK5T7/C1SijDI2gAXV6Bwg7yJM/eOGNJUPsbCrBPcGzRRLj2AQ78uthG3+C5a2wYmJfih/bzF/y8bTmVj36sw==, tarball: https://npm.pkg.github.com/download/@caistech/property-launch-kit/0.1.0/87d7637fdf3ebd29c9eca70cbc1ec6110f78d428}
+    peerDependencies:
+      '@supabase/supabase-js': ^2.0.0
+      typescript: '>=5.0.0'
 
   '@emnapi/core@1.10.0':
     resolution: {integrity: sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw==}
@@ -2937,6 +2946,11 @@ snapshots:
       typescript: 5.9.3
     optionalDependencies:
       playwright: 1.60.0
+
+  '@caistech/property-launch-kit@0.1.0(@supabase/supabase-js@2.105.4)(typescript@5.9.3)':
+    dependencies:
+      '@supabase/supabase-js': 2.105.4
+      typescript: 5.9.3
 
   '@emnapi/core@1.10.0':
     dependencies:
