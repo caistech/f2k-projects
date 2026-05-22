@@ -6,6 +6,10 @@
       "schedule": "0 0 * * *"
     },
     {
+      "path": "/api/cron/branscombe-daily-digest",
+      "schedule": "15 0 * * *"
+    },
+    {
       "path": "/api/cron/hemp-homes-outreach-evaluate",
       "schedule": "0 23 * * *"
     }
