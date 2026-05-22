@@ -41,6 +41,7 @@ export default function HempHomesMediaPage() {
   const [syncing, setSyncing] = useState(false);
   const [drive, setDrive] = useState<DriveStatus | null>(null);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [syncErrors, setSyncErrors] = useState<{ file: string; reason: string }[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const [altText, setAltText] = useState("");
   const [caption, setCaption] = useState("");
@@ -122,6 +123,7 @@ export default function HempHomesMediaPage() {
   async function runSync() {
     setSyncing(true);
     setMessage(null);
+    setSyncErrors([]);
     try {
       const res = await fetch("/api/admin/hemp-homes/drive/sync", { method: "POST" });
       const data = await res.json();
@@ -129,9 +131,10 @@ export default function HempHomesMediaPage() {
         setMessage({ type: "error", text: data.error ?? "Sync failed" });
         return;
       }
-      const errCount = (data.errors ?? []).length;
+      const errs = data.errors ?? [];
+      setSyncErrors(errs);
       setMessage({
-        type: errCount > 0 ? "error" : "success",
+        type: errs.length > 0 ? "error" : "success",
         text: data.message ?? "Sync complete",
       });
       fetchMedia();
@@ -233,6 +236,24 @@ export default function HempHomesMediaPage() {
               <span>{drive.last_sync_message ?? "—"}</span>
             </div>
           </div>
+        )}
+        {syncErrors.length > 0 && (
+          <details className="mt-2 border-t border-slate-100 pt-2" open>
+            <summary className="text-xs font-semibold text-red-700 cursor-pointer">
+              {syncErrors.length} file{syncErrors.length === 1 ? "" : "s"} failed — click to view
+            </summary>
+            <ul className="mt-2 space-y-1 text-xs">
+              {syncErrors.map((e, i) => (
+                <li key={i} className="flex gap-2 items-start">
+                  <span className="font-mono text-red-700 shrink-0">✗</span>
+                  <span className="flex-1 min-w-0">
+                    <span className="font-medium text-slate-900">{e.file}</span>
+                    <span className="block text-slate-600">{e.reason}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </details>
         )}
       </div>
 
