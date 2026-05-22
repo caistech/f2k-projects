@@ -26,6 +26,10 @@ interface PlanViewProps {
    * reserved/coming-soon, and lots in other stages are dimmed. Lets Uwe
    * "click a stage and see its colour come back". */
   stageHighlight: Exclude<LotStage, null> | null;
+  /** Lots that fail the buyer's active filter set. Dimmed (not hidden)
+   * so estate context stays visible. Selected lots remain at full
+   * opacity even when filtered out. */
+  dimmedLotIds?: Set<string>;
 }
 
 function isReservedStatus(status: string | undefined | null): boolean {
@@ -72,6 +76,7 @@ export default function PlanView({
   setHoveredLot,
   onOpenLot,
   stageHighlight,
+  dimmedLotIds,
 }: PlanViewProps) {
   const lotById = new Map<string, LotData>();
   for (const l of LOTS) lotById.set(l.id, l);
@@ -276,6 +281,9 @@ export default function PlanView({
 
           if (isOutsideHighlightedStage && !isSelected) {
             opacity = 0.25;
+          }
+          if (dimmedLotIds && dimmedLotIds.has(id) && !isSelected) {
+            opacity = 0.18;
           }
 
           if (isHovered) {

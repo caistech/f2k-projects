@@ -25,6 +25,9 @@ interface Props {
   hoveredLot: string | null;
   setHoveredLot: (id: string | null) => void;
   onOpenLot: (id: string) => void;
+  /** Lots that fail the buyer's active filters. Rendered at low opacity
+   * so estate context stays visible. Selected lots are never dimmed. */
+  dimmedLotIds?: Set<string>;
 }
 
 function isReservedStatus(status: string | undefined | null): boolean {
@@ -69,6 +72,7 @@ function enrichGeoJSON(
   selected: Set<string>,
   counts: Record<string, number>,
   publicLots: Record<number, PublicLotRow>,
+  dimmed: Set<string>,
 ): FeatureCollection {
   const lotById = new globalThis.Map(LOTS.map((l) => [l.id, l] as const));
   return {
@@ -85,11 +89,13 @@ function enrichGeoJSON(
         }
         const row = lot ? publicLots[lot.lotNumber] : undefined;
         const count = counts[f.properties.lotId] || 0;
-        props.isSelected = selected.has(f.properties.lotId);
+        const isSel = selected.has(f.properties.lotId);
+        props.isSelected = isSel;
         props.isReserved = !!row && isReservedStatus(row.status);
         props.isComingSoon =
           !!row && !row.is_open_for_registration && !props.isReserved;
         props.interestCount = count;
+        props.isDimmed = !isSel && dimmed.has(f.properties.lotId);
       }
       return { ...f, properties: props as typeof f.properties };
     }),
@@ -103,13 +109,21 @@ export default function SatelliteSitePlan({
   hoveredLot,
   setHoveredLot,
   onOpenLot,
+  dimmedLotIds,
 }: Props) {
   const mapRef = useRef<MapRef>(null);
   const [styleLoaded, setStyleLoaded] = useState(false);
 
   const data = useMemo(
-    () => enrichGeoJSON(GEOJSON, new Set(selectedLots), counts, publicLots),
-    [selectedLots, counts, publicLots],
+    () =>
+      enrichGeoJSON(
+        GEOJSON,
+        new Set(selectedLots),
+        counts,
+        publicLots,
+        dimmedLotIds ?? new Set<string>(),
+      ),
+    [selectedLots, counts, publicLots, dimmedLotIds],
   );
 
   // Fit bounds on first style load
@@ -240,6 +254,8 @@ export default function SatelliteSitePlan({
                   "case",
                   ["==", ["get", "isSelected"], true],
                   0.85,
+                  ["==", ["get", "isDimmed"], true],
+                  0.15,
                   ["==", ["get", "isComingSoon"], true],
                   0.35,
                   0.55,

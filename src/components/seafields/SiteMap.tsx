@@ -28,6 +28,57 @@ const SatelliteSitePlan = dynamic(() => import("./SatelliteSitePlan"), {
 type StageFilter = "all" | Exclude<LotStage, null>;
 type ViewMode = "schematic" | "plan" | "satellite" | "drawing";
 
+type PurchaseFilter = "any" | "land" | "hl";
+type SizeFilter = "any" | "s" | "m" | "l";
+type PriceFilter = "any" | "p1" | "p2" | "p3";
+
+/** Public-facing land-price for a lot. Prefers H&L total when the lot is
+ * an H&L package, falls back to bare land. Returns null when undisclosed
+ * (e.g. display_price_to_public=false in admin). */
+function publicPriceOf(row: PublicLotRow | undefined): number | null {
+  if (!row) return null;
+  return row.total_price ?? row.land_total ?? null;
+}
+
+function matchesSize(area: number, f: SizeFilter): boolean {
+  switch (f) {
+    case "s":
+      return area <= 500;
+    case "m":
+      return area > 500 && area <= 700;
+    case "l":
+      return area > 700;
+    default:
+      return true;
+  }
+}
+
+function matchesPrice(price: number | null, f: PriceFilter): boolean {
+  if (f === "any") return true;
+  if (price == null) return false; // unknown price excluded by an explicit price band
+  switch (f) {
+    case "p1":
+      return price <= 300_000;
+    case "p2":
+      return price > 300_000 && price <= 400_000;
+    case "p3":
+      return price > 400_000;
+    default:
+      return true;
+  }
+}
+
+function matchesPurchase(
+  row: PublicLotRow | undefined,
+  f: PurchaseFilter,
+): boolean {
+  if (f === "any") return true;
+  if (!row) return false;
+  if (f === "land") return row.land_only === true;
+  if (f === "hl") return row.land_only === false;
+  return true;
+}
+
 interface SiteMapProps {
   selectedLots: string[];
   onToggleLot: (lotId: string) => void;
@@ -87,6 +138,10 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
   const [openLotId, setOpenLotId] = useState<string | null>(null);
   const [stageFilter, setStageFilter] = useState<StageFilter>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("plan");
+  const [filterPurchase, setFilterPurchase] = useState<PurchaseFilter>("any");
+  const [filterSize, setFilterSize] = useState<SizeFilter>("any");
+  const [filterPrice, setFilterPrice] = useState<PriceFilter>("any");
+  const [availableOnly, setAvailableOnly] = useState<boolean>(true);
 
   useEffect(() => {
     (async () => {
@@ -122,6 +177,43 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
     for (const [, arr] of m) arr.sort((a, b) => a.lotNumber - b.lotNumber);
     return m;
   }, []);
+
+  // Lots that do NOT match the active public filters. Dimmed (not hidden)
+  // on the map so buyers still see estate context — they can tell roughly
+  // how many lots are filtered out vs available.
+  const dimmedLotIds = useMemo(() => {
+    const dimmed = new Set<string>();
+    const filtersActive =
+      filterPurchase !== "any" ||
+      filterSize !== "any" ||
+      filterPrice !== "any" ||
+      availableOnly;
+    if (!filtersActive) return dimmed;
+    for (const lot of LOTS) {
+      const row = publicLots[lot.lotNumber];
+      const isAvailable =
+        !!row && row.is_open_for_registration && !isReservedStatus(row.status);
+      if (availableOnly && !isAvailable) {
+        dimmed.add(lot.id);
+        continue;
+      }
+      if (!matchesPurchase(row, filterPurchase)) {
+        dimmed.add(lot.id);
+        continue;
+      }
+      if (!matchesSize(lot.area, filterSize)) {
+        dimmed.add(lot.id);
+        continue;
+      }
+      if (!matchesPrice(publicPriceOf(row), filterPrice)) {
+        dimmed.add(lot.id);
+        continue;
+      }
+    }
+    return dimmed;
+  }, [publicLots, filterPurchase, filterSize, filterPrice, availableOnly]);
+
+  const matchingCount = LOTS.length - dimmedLotIds.size;
 
   const hoveredData = hoveredLot ? LOTS.find((l) => l.id === hoveredLot) : null;
   const hoveredRow = hoveredData
@@ -235,6 +327,104 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
         )}
       </div>
 
+      {/* Buyer filters — narrow the map to lots that match the buyer's
+          decision criteria. Dim (not hide) non-matches so estate context
+          stays visible. Applies to plan / schematic / satellite. */}
+      <div className="bg-white border border-black/10 p-3 mb-4">
+        <div className="flex flex-wrap gap-x-5 gap-y-3 items-center text-xs font-archivo">
+          <div>
+            <span className="block text-slate font-semibold uppercase tracking-wider text-[0.6rem] mb-1">
+              Purchase type
+            </span>
+            <select
+              value={filterPurchase}
+              onChange={(e) =>
+                setFilterPurchase(e.target.value as PurchaseFilter)
+              }
+              className="border border-black/10 px-2 py-1.5 text-deep-blue bg-white focus:outline-none focus:border-[#00B5AD]"
+            >
+              <option value="any">Any</option>
+              <option value="land">Vacant land</option>
+              <option value="hl">House &amp; land</option>
+            </select>
+          </div>
+          <div>
+            <span className="block text-slate font-semibold uppercase tracking-wider text-[0.6rem] mb-1">
+              Land size
+            </span>
+            <select
+              value={filterSize}
+              onChange={(e) => setFilterSize(e.target.value as SizeFilter)}
+              className="border border-black/10 px-2 py-1.5 text-deep-blue bg-white focus:outline-none focus:border-[#00B5AD]"
+            >
+              <option value="any">Any size</option>
+              <option value="s">Small — up to 500m²</option>
+              <option value="m">Medium — 500–700m²</option>
+              <option value="l">Large — over 700m²</option>
+            </select>
+          </div>
+          <div>
+            <span className="block text-slate font-semibold uppercase tracking-wider text-[0.6rem] mb-1">
+              Price
+            </span>
+            <select
+              value={filterPrice}
+              onChange={(e) => setFilterPrice(e.target.value as PriceFilter)}
+              className="border border-black/10 px-2 py-1.5 text-deep-blue bg-white focus:outline-none focus:border-[#00B5AD]"
+            >
+              <option value="any">Any price</option>
+              <option value="p1">Up to $300k</option>
+              <option value="p2">$300k – $400k</option>
+              <option value="p3">$400k+</option>
+            </select>
+            <span className="block text-slate/50 text-[0.6rem] italic mt-0.5">
+              Only lots with disclosed pricing match.
+            </span>
+          </div>
+          <label className="inline-flex items-center gap-2 cursor-pointer pt-4">
+            <input
+              type="checkbox"
+              checked={availableOnly}
+              onChange={(e) => setAvailableOnly(e.target.checked)}
+              className="w-4 h-4 accent-[#00B5AD]"
+            />
+            <span className="text-deep-blue font-semibold">
+              Available only
+            </span>
+          </label>
+          {(filterPurchase !== "any" ||
+            filterSize !== "any" ||
+            filterPrice !== "any" ||
+            !availableOnly) && (
+            <button
+              type="button"
+              onClick={() => {
+                setFilterPurchase("any");
+                setFilterSize("any");
+                setFilterPrice("any");
+                setAvailableOnly(true);
+              }}
+              className="text-[#00B5AD] hover:underline pt-4"
+            >
+              Reset filters
+            </button>
+          )}
+          <div className="ml-auto text-slate/60 pt-4">
+            {dimmedLotIds.size > 0 ? (
+              <span>
+                <strong className="text-deep-blue">{matchingCount}</strong>{" "}
+                lots match — {dimmedLotIds.size} dimmed
+              </span>
+            ) : (
+              <span>
+                Showing all <strong className="text-deep-blue">{LOTS.length}</strong>{" "}
+                lots
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Stage filter tabs — schematic + plan views.
           Plan view uses it to highlight a stage's lots in stage colour
           (incl. allocated/coming-soon), per Uwe 2026-05-21 feedback. */}
@@ -296,6 +486,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
                 ? null
                 : (stageFilter as Exclude<LotStage, null>)
             }
+            dimmedLotIds={dimmedLotIds}
           />
         </div>
       )}
@@ -348,6 +539,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
             hoveredLot={hoveredLot}
             setHoveredLot={setHoveredLot}
             onOpenLot={(id) => setOpenLotId(id)}
+            dimmedLotIds={dimmedLotIds}
           />
         </div>
       )}
@@ -427,6 +619,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
                             isSelected={isSelected}
                             isHovered={isHovered}
                             isAllocated={isAllocated || isComingSoon}
+                            isDimmed={dimmedLotIds.has(lot.id)}
                             registrationCount={count}
                             onClick={() => setOpenLotId(lot.id)}
                             onMouseEnter={() => setHoveredLot(lot.id)}

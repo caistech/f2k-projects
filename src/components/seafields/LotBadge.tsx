@@ -10,6 +10,7 @@ interface LotBadgeProps {
   isSelected: boolean;
   isHovered: boolean;
   isAllocated: boolean;
+  isDimmed?: boolean;
   registrationCount: number;
   onClick: () => void;
   onMouseEnter: () => void;
@@ -25,6 +26,7 @@ export default function LotBadge({
   isSelected,
   isHovered,
   isAllocated,
+  isDimmed = false,
   registrationCount,
   onClick,
   onMouseEnter,
@@ -42,7 +44,10 @@ export default function LotBadge({
   };
 
   return (
-    <div className="flex flex-col items-center gap-0.5">
+    <div
+      className="flex flex-col items-center gap-0.5"
+      style={isDimmed && !isSelected ? { opacity: 0.22 } : undefined}
+    >
       <button
         type="button"
         onClick={onClick}
