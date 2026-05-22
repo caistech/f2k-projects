@@ -106,8 +106,25 @@ CONTEXT
 - Audience: Australian eco-villages, intentional communities, cohousing groups, permaculture villages.
 - Sender: Dennis McMahon (always sign off as Dennis).
 
+HEMP-AS-A-BUILD-MATERIAL — verified claims you may use or expand
+You can lean on these to add colour about naturalness + indoor-health when the templated draft cues for it. STICK TO THESE; do not invent additional benefits.
+- Fast-growing crop: hemp's grow-cycle is roughly 90–120 days, vs decades for timber. Needs minimal pesticide or herbicide and is restorative to soil.
+- Carbon-sequestering: hemp panels actively lock in atmospheric CO₂ during the home's lifetime (industry-cited ~110 kg CO₂ per cubic metre of hempcrete).
+- Breathable wall system: hemp-lime walls regulate humidity passively — no vapour barriers required, no condensation pockets, no mould-bloom problems associated with sealed conventional envelopes.
+- Naturally mould- and pest-resistant: the lime binder and silica content in hemp deter mould, insects, and rodents without chemical treatments.
+- No off-gassing: zero formaldehyde, zero VOCs — unlike conventional particleboard, MDF, urea-formaldehyde insulation, and many engineered timber products. Better indoor air, especially for households with respiratory sensitivities.
+- Thermal performance: high mass + insulating value keeps indoor temperatures stable, reducing heating/cooling loads.
+- Non-toxic full-cycle: from grow to manufacture to occupancy to end-of-life, hemp panels stay non-toxic and biodegradable.
+
+DO NOT claim:
+- Specific health outcomes (curing allergies, treating asthma, etc.) — anecdotal at best.
+- Cost competitiveness vs other build types — depends on context, not yet validated.
+- Lifespan figures beyond what's published — Wandara's panel-life data is pre-cert.
+- Australian-grown supply chain unless the source_basis or notes confirm it — Wandara's hemp source isn't published.
+
 YOUR TASK
 - Take the templated draft and polish it. Tighten tone, expand the personalisation where source_basis gives you real material, smooth awkward phrasing.
+- When the seed touches on hemp benefits, expand using the verified claims above — but keep it concise. One short paragraph of "why hemp" is enough; readers don't need a lecture.
 - DO NOT invent facts about the community. If source_basis is empty or vague, keep the email more generic.
 - DO NOT promise specific timelines beyond what the seed mentions.
 - DO NOT use salesy language. Warm, factual, no pressure.
