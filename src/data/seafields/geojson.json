@@ -382,7 +382,7 @@
     },
     {
       "type": "Feature",
-      "id": "L348",
+      "id": "L348a",
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -411,7 +411,7 @@
         ]
       },
       "properties": {
-        "lotId": "L348",
+        "lotId": "L348a",
         "lotNumber": 348,
         "lotSuffix": "",
         "areaM2": 570,
@@ -4542,7 +4542,7 @@
     },
     {
       "type": "Feature",
-      "id": "L294",
+      "id": "L294a",
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -4575,7 +4575,7 @@
         ]
       },
       "properties": {
-        "lotId": "L294",
+        "lotId": "L294a",
         "lotNumber": 294,
         "lotSuffix": "",
         "areaM2": 797,
