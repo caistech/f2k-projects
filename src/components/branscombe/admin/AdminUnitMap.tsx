@@ -31,6 +31,10 @@ interface Props {
   interestCounts: Record<string, number>;
   selectedUnitId: string | null;
   onSelectUnit: (unitId: string, unitNumber: number) => void;
+  /** When non-null, only these unitIds are at full opacity; everything else
+   * is dimmed. Mirrors the active filter set from the parent table so the
+   * map and table stay in lockstep. */
+  highlightedUnitIds?: Set<string> | null;
 }
 
 function pointsToD(pts: number[][]): string {
@@ -81,6 +85,7 @@ export default function AdminUnitMap({
   interestCounts,
   selectedUnitId,
   onSelectUnit,
+  highlightedUnitIds,
 }: Props) {
   return (
     <div className="bg-white border border-slate-200 rounded overflow-hidden">
@@ -168,6 +173,14 @@ export default function AdminUnitMap({
           const [lx, ly] = h.labelXY;
           const count = interestCounts[id] || 0;
           const a = allocations[unit.unitNumber];
+          const isDimmed =
+            !!highlightedUnitIds &&
+            !highlightedUnitIds.has(id) &&
+            !isSelected;
+          const isHighlightHit =
+            !!highlightedUnitIds &&
+            highlightedUnitIds.has(id) &&
+            !isSelected;
           const ariaLabel =
             `Unit ${unit.unitNumber} (Type ${unit.type}) — ${
               a?.allocated_to
@@ -191,13 +204,17 @@ export default function AdminUnitMap({
                   onSelectUnit(id, unit.unitNumber);
                 }
               }}
-              style={{ cursor: "pointer", outline: "none" }}
+              style={{
+                cursor: "pointer",
+                outline: "none",
+                opacity: isDimmed ? 0.18 : 1,
+              }}
             >
               <path
                 d={pointsToD(h.points)}
                 fill={c.fill}
-                stroke={c.stroke}
-                strokeWidth={c.strokeWidth}
+                stroke={isHighlightHit ? "#0F172A" : c.stroke}
+                strokeWidth={isHighlightHit ? c.strokeWidth + 0.6 : c.strokeWidth}
                 opacity={0.94}
               />
               <text

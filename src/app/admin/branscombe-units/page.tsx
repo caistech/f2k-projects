@@ -30,6 +30,53 @@ interface Allocation {
   updated_at: string;
 }
 
+type SortKey =
+  | "unit_number"
+  | "home_type"
+  | "area_m2"
+  | "allocated"
+  | "interest";
+type SortDir = "asc" | "desc";
+
+const STATUS_SORT_ORDER: Record<string, number> = {
+  allocated: 0,
+  soft: 1,
+  available: 2,
+};
+
+function SortableTh({
+  label,
+  sortKey: key,
+  activeKey,
+  dir,
+  onClick,
+  align = "left",
+}: {
+  label: string;
+  sortKey: SortKey;
+  activeKey: SortKey;
+  dir: SortDir;
+  onClick: (k: SortKey) => void;
+  align?: "left" | "right";
+}) {
+  const isActive = activeKey === key;
+  const arrow = isActive ? (dir === "asc" ? "▲" : "▼") : "";
+  return (
+    <th
+      onClick={() => onClick(key)}
+      className={`px-3 py-2 cursor-pointer select-none hover:bg-slate-100 ${
+        align === "right" ? "text-right" : "text-left"
+      } ${isActive ? "text-slate-900" : ""}`}
+      title={`Sort by ${label.toLowerCase()}`}
+    >
+      <span className="inline-flex items-center gap-1">
+        {label}
+        <span className="text-[10px] w-2 text-slate-400">{arrow}</span>
+      </span>
+    </th>
+  );
+}
+
 export default function BranscombeUnitsPage() {
   const [rows, setRows] = useState<Allocation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,6 +96,8 @@ export default function BranscombeUnitsPage() {
   >("all");
   const [filterType, setFilterType] = useState<"all" | HouseType>("all");
   const [search, setSearch] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("unit_number");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
 
   const fetchRows = useCallback(async () => {
     setLoading(true);
@@ -106,6 +155,53 @@ export default function BranscombeUnitsPage() {
       return true;
     });
   }, [rows, filterAllocated, filterType, search]);
+
+  const filtersActive =
+    filterAllocated !== "all" || filterType !== "all" || search.trim() !== "";
+
+  const matchingUnitIds = useMemo(() => {
+    const set = new Set<string>();
+    for (const r of filtered) set.add(`U${r.unit_number}`);
+    return set;
+  }, [filtered]);
+
+  const sorted = useMemo(() => {
+    const dir = sortDir === "asc" ? 1 : -1;
+    const allocRank = (r: Allocation): number => {
+      if (r.allocated_to) return STATUS_SORT_ORDER.allocated;
+      if (r.intent_locked_to_registration_id) return STATUS_SORT_ORDER.soft;
+      return STATUS_SORT_ORDER.available;
+    };
+    const cmp = (a: Allocation, b: Allocation): number => {
+      switch (sortKey) {
+        case "unit_number":
+          return (a.unit_number - b.unit_number) * dir;
+        case "area_m2":
+          return ((a.area_m2 ?? 0) - (b.area_m2 ?? 0)) * dir;
+        case "home_type":
+          return (a.home_type || "").localeCompare(b.home_type || "") * dir;
+        case "allocated":
+          return (allocRank(a) - allocRank(b)) * dir;
+        case "interest": {
+          const ia = interestCounts[`U${a.unit_number}`] || 0;
+          const ib = interestCounts[`U${b.unit_number}`] || 0;
+          return (ia - ib) * dir;
+        }
+        default:
+          return 0;
+      }
+    };
+    return [...filtered].sort(cmp);
+  }, [filtered, sortKey, sortDir, interestCounts]);
+
+  function toggleSort(key: SortKey) {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+  }
 
   const stats = useMemo(() => {
     const total = rows.length;
@@ -278,6 +374,7 @@ export default function BranscombeUnitsPage() {
             interestCounts={interestCounts}
             selectedUnitId={editing?.unitId ?? null}
             onSelectUnit={handleSelectUnit}
+            highlightedUnitIds={filtersActive ? matchingUnitIds : null}
           />
         </div>
 
@@ -289,16 +386,48 @@ export default function BranscombeUnitsPage() {
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 text-slate-600 uppercase text-xs tracking-wider sticky top-0 z-10">
                   <tr>
-                    <th className="px-3 py-2 text-left">Unit</th>
-                    <th className="px-3 py-2 text-left">Type</th>
-                    <th className="px-3 py-2 text-right">m²</th>
-                    <th className="px-3 py-2 text-left">Allocated</th>
-                    <th className="px-3 py-2 text-right">Interest</th>
+                    <SortableTh
+                      label="Unit"
+                      sortKey="unit_number"
+                      activeKey={sortKey}
+                      dir={sortDir}
+                      onClick={toggleSort}
+                    />
+                    <SortableTh
+                      label="Type"
+                      sortKey="home_type"
+                      activeKey={sortKey}
+                      dir={sortDir}
+                      onClick={toggleSort}
+                    />
+                    <SortableTh
+                      label="m²"
+                      sortKey="area_m2"
+                      activeKey={sortKey}
+                      dir={sortDir}
+                      onClick={toggleSort}
+                      align="right"
+                    />
+                    <SortableTh
+                      label="Allocated"
+                      sortKey="allocated"
+                      activeKey={sortKey}
+                      dir={sortDir}
+                      onClick={toggleSort}
+                    />
+                    <SortableTh
+                      label="Interest"
+                      sortKey="interest"
+                      activeKey={sortKey}
+                      dir={sortDir}
+                      onClick={toggleSort}
+                      align="right"
+                    />
                     <th className="px-3 py-2 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map((row) => {
+                  {sorted.map((row) => {
                     const unitId = `U${row.unit_number}`;
                     const interest = interestCounts[unitId] || 0;
                     const isSelected =

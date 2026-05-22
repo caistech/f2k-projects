@@ -2,7 +2,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import NotifyRecipientsCard from "@/components/seafields/admin/NotifyRecipientsCard";
+import NotifyRecipientsCard from "@/components/admin/NotifyRecipientsCard";
 
 type Status =
   | "active"
@@ -216,7 +216,7 @@ export default function SeafieldsRegistrationsPage() {
         fires queue_position_updated emails automatically.
       </p>
 
-      <NotifyRecipientsCard />
+      <NotifyRecipientsCard apiEndpoint="/api/admin/seafields/notify-recipients" />
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-6">
         <Stat label="Active" value={counts.active} color="emerald" />

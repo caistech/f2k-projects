@@ -8,6 +8,7 @@ import {
   HOUSE_TYPES,
   type HouseType,
 } from "@/data/branscombe";
+import NotifyRecipientsCard from "@/components/admin/NotifyRecipientsCard";
 
 interface Allocation {
   unit_number: number;
@@ -136,6 +137,11 @@ export default function BranscombePipelinePage() {
         and commercial planning. Numbers reflect waitlist registrations + admin
         allocations as of now.
       </p>
+
+      <NotifyRecipientsCard
+        apiEndpoint="/api/admin/branscombe/notify-recipients"
+        description="Who gets emailed on new Branscombe registrations, unit changes, and the daily digest."
+      />
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded px-4 py-3 text-sm text-red-700 mb-4">
