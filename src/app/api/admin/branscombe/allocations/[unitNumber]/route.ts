@@ -3,6 +3,12 @@ import { z } from "zod";
 import { getAdminUser, hasPermission, auditLog } from "@/lib/admin-auth";
 import { createSupabaseService } from "@/lib/supabase-service";
 import { forwardAllocationToGHL } from "@/lib/ghl";
+import {
+  escapeHtml,
+  formatCurrency,
+  getActiveRecipients,
+  renderBrandedEmail,
+} from "@/lib/branscombe/notify";
 
 const updateSchema = z.object({
   allocated_to: z.string().trim().max(200).nullable().optional(),
@@ -88,11 +94,14 @@ export async function PATCH(
   const supabase = createSupabaseService();
 
   // Read the row BEFORE the update so we can look up the registrant via the
-  // soft-allocate FK that gets atomically cleared on firm allocation.
+  // soft-allocate FK that gets atomically cleared on firm allocation, AND
+  // so we can diff the changed material fields for the admin-team email.
   const { data: priorRow } = await (
     supabase.from("branscombe_unit_allocations") as any
   )
-    .select("intent_locked_to_registration_id, allocated_to")
+    .select(
+      "intent_locked_to_registration_id, allocated_to, dwelling_type, wholesale_price, retail_price",
+    )
     .eq("unit_number", unitNumber)
     .maybeSingle();
 
@@ -182,6 +191,80 @@ export async function PATCH(
     }
   } catch (err) {
     console.error("GHL allocation forward threw:", err);
+  }
+
+  // Admin-team notification on material unit changes. Best-effort —
+  // never blocks the save. Bundles every changed field into ONE email
+  // per save so one click of "Save" doesn't trigger four emails.
+  try {
+    type Change = { label: string; before: string; after: string };
+    const changes: Change[] = [];
+
+    function fmt(v: unknown, kind: "text" | "currency"): string {
+      if (v == null || v === "") return "—";
+      if (kind === "currency" && typeof v === "number")
+        return formatCurrency(v);
+      return String(v);
+    }
+    function diff(
+      key: keyof typeof updates,
+      label: string,
+      kind: "text" | "currency" = "text",
+    ) {
+      if (!(key in updates)) return;
+      const before = (priorRow as Record<string, unknown> | null)?.[key];
+      const after = (updates as Record<string, unknown>)[key];
+      if (before === after) return;
+      if (before == null && (after == null || after === "")) return;
+      changes.push({
+        label,
+        before: fmt(before, kind),
+        after: fmt(after, kind),
+      });
+    }
+
+    diff("allocated_to", "Allocated to");
+    diff("dwelling_type", "Dwelling type");
+    diff("wholesale_price", "Wholesale price", "currency");
+    diff("retail_price", "Retail price", "currency");
+
+    if (changes.length > 0) {
+      const { Resend } = await import("resend");
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const recipients = await getActiveRecipients();
+      const verb =
+        changes.length === 1
+          ? `${changes[0].label.toLowerCase()} changed`
+          : `${changes.length} fields changed`;
+      const rows = changes.map((c) => ({
+        label: c.label,
+        value: `<span style="color:#94A3B8">${escapeHtml(c.before)}</span> &rarr; <strong style="color:#0F172A">${escapeHtml(c.after)}</strong>`,
+      }));
+      rows.push({
+        label: "Changed by",
+        value: escapeHtml(admin.email),
+      });
+      const html = renderBrandedEmail({
+        preheader: `U${unitNumber} ${verb} (${admin.email})`,
+        heading: `U${unitNumber} — ${verb}`,
+        intro: `Admin update saved by <strong>${escapeHtml(admin.email)}</strong>.`,
+        rows,
+        ctaLabel: "Open unit in admin",
+        ctaHref: `https://f2k-projects.vercel.app/admin/branscombe-units`,
+        footer:
+          "Sent because you are on the Branscombe admin-notification list. Manage at /admin/branscombe-pipeline.",
+      });
+      await resend.emails.send({
+        from:
+          process.env.RESEND_FROM_EMAIL ||
+          "Branscombe Estate <onboarding@resend.dev>",
+        to: recipients,
+        subject: `U${unitNumber} ${verb} (by ${admin.email})`,
+        html,
+      });
+    }
+  } catch (err) {
+    console.error("Branscombe admin unit-change notify failed:", err);
   }
 
   return NextResponse.json({ allocation: updated });
