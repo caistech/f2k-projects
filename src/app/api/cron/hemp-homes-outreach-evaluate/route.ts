@@ -25,7 +25,7 @@ export const runtime = "nodejs";
 export const maxDuration = 300;
 
 const FREQUENCY_CAP_DAYS = 21;
-const MAX_DRAFTS_PER_RUN = 10; // safety cap — keeps runs under maxDuration + bounds LLM cost
+const MAX_DRAFTS_PER_RUN = 25; // safety cap — keeps runs under maxDuration + bounds LLM cost
 
 function authorised(req: Request): boolean {
   const expected = process.env.CRON_SECRET;
@@ -137,14 +137,12 @@ export async function GET(req: Request) {
       }
 
       // ── Trigger-specific gates ──────────────────────────────────────────
+      // The target_statuses predicate above has already filtered prospects
+      // to the right status for both stage_transition + time_gap. The
+      // trigger-specific logic below only handles idempotency + time gating.
       if (t.trigger_type === "stage_transition") {
-        // Config: { from_status?, to_status }. Fire once per (template,prospect)
-        // when the prospect's status matches to_status (regardless of how
-        // they got there).
-        const toStatus = (t.trigger_config as { to_status?: string })?.to_status;
-        if (!toStatus || p.status !== toStatus) {
-          skips.no_match++; continue;
-        }
+        // Fire once per (template, prospect) when prospect entered the
+        // target status. Idempotent: skip if any prior draft exists at all.
         const { data: prior } = await (supabase.from("hemp_homes_prospect_outreach") as any)
           .select("id")
           .eq("prospect_id", p.id)
@@ -154,14 +152,11 @@ export async function GET(req: Request) {
           skips.stage_already_fired++; continue;
         }
       } else if (t.trigger_type === "time_gap") {
-        // Config: { after_status, days }. Fire if prospect.last_outreach_at
-        // is at least `days` ago AND prospect.status matches after_status
-        // AND no draft for this (template,prospect) within the last `days`.
-        const cfg = t.trigger_config as { after_status?: string; days?: number };
-        if (!cfg.after_status || cfg.days == null) {
-          skips.no_match++; continue;
-        }
-        if (p.status !== cfg.after_status) {
+        // Config: { days }. Fire when prospect.last_outreach_at is at least
+        // `days` ago. Re-firing window enforced by checking no draft for
+        // (template, prospect) within the last `days`.
+        const cfg = t.trigger_config as { days?: number };
+        if (cfg.days == null) {
           skips.no_match++; continue;
         }
         if (!p.last_outreach_at) {
@@ -171,7 +166,6 @@ export async function GET(req: Request) {
         if (elapsedMs < cfg.days * 86400_000) {
           skips.time_gap_not_reached++; continue;
         }
-        // Idempotency: don't re-fire the same time_gap template within `days`.
         const sinceGap = new Date(Date.now() - cfg.days * 86400_000).toISOString();
         const { data: priorGap } = await (supabase.from("hemp_homes_prospect_outreach") as any)
           .select("id")
