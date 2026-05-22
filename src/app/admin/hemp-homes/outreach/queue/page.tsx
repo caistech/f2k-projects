@@ -101,10 +101,29 @@ export default function HempHomesOutreachQueuePage() {
   }
 
   async function approve(id: string) {
-    if (!confirm("Send this email now? Cannot be undone.")) return;
+    if (!confirm("Send this email now? Any edits will be saved automatically. A copy is BCC'd to dennis@factory2key.com.au. Cannot be undone.")) return;
     setBusyId(id);
     setMessage(null);
     try {
+      // Auto-save the current edit state before sending. Closes the UX gap
+      // where typing into the modal then clicking Approve sent the OLD
+      // (un-saved) body. PATCH is idempotent — same values are harmless.
+      if (edit && openId === id) {
+        const saveRes = await fetch(`/api/admin/hemp-homes/outreach/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            drafted_subject: edit.subject,
+            drafted_body_md: edit.body_md,
+            drafted_to_addresses: edit.to.split("\n").map((s) => s.trim()).filter(Boolean),
+          }),
+        });
+        if (!saveRes.ok) {
+          const data = await saveRes.json().catch(() => ({}));
+          setMessage({ type: "error", text: `Auto-save failed: ${data.error ?? "unknown"}. Email NOT sent.` });
+          return;
+        }
+      }
       const res = await fetch(`/api/admin/hemp-homes/outreach/${id}/approve`, { method: "POST" });
       const data = await res.json();
       if (!res.ok) {
@@ -303,7 +322,9 @@ export default function HempHomesOutreachQueuePage() {
                   disabled={open.review_status !== "pending"}
                   className="w-full border border-slate-300 rounded px-3 py-2 text-xs font-mono disabled:opacity-60"
                 />
-                <p className="text-[0.65rem] text-slate-500 mt-0.5">One email per line.</p>
+                <p className="text-[0.65rem] text-slate-500 mt-0.5">
+                  One email per line. <span className="font-semibold">dennis@factory2key.com.au is auto-BCC&apos;d</span> — no need to add yourself.
+                </p>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Subject</label>

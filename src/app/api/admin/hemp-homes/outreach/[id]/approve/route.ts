@@ -13,6 +13,10 @@ interface Ctx { params: { id: string } }
 
 const FROM_DEFAULT = "Factory2Key Hemp Homes <noreply@updates.corporateaisolutions.com>";
 const REPLY_TO_DEFAULT = "dennis@factory2key.com.au";
+// Permanent guardrail: every approved outreach BCCs Dennis so he gets a
+// copy in his Gmail without needing to add himself to the to[] each time.
+// Recipients don't see the BCC. Change here if the operator ever changes.
+const OUTREACH_BCC = "dennis@factory2key.com.au";
 
 export async function POST(_request: Request, { params }: Ctx) {
   const admin = await getAdminUser();
@@ -61,6 +65,7 @@ export async function POST(_request: Request, { params }: Ctx) {
     const result = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || FROM_DEFAULT,
       to: outreach.drafted_to_addresses,
+      bcc: [OUTREACH_BCC],
       subject: outreach.drafted_subject,
       html: outreach.drafted_body_html ?? `<pre>${outreach.drafted_body_md}</pre>`,
       text: outreach.drafted_body_md,
