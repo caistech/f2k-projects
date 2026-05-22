@@ -59,6 +59,9 @@ interface Props {
   interestCounts: Record<string, number>;
   selectedLotId: string | null;
   onSelectLot: (lotId: string, lotNumber: number) => void;
+  /** When non-null, only these lot_ids are shown at full opacity; everything
+   * else is dimmed. Used to mirror the table's filter selection on the map. */
+  highlightedLotIds?: Set<string> | null;
 }
 
 function pointsToD(pts: number[][]): string {
@@ -132,6 +135,7 @@ export default function AdminLotMap({
   interestCounts,
   selectedLotId,
   onSelectLot,
+  highlightedLotIds,
 }: Props) {
   const lotById = useMemo(
     () => new globalThis.Map(LOTS.map((l) => [l.id, l] as const)),
@@ -219,11 +223,21 @@ export default function AdminLotMap({
           );
           const colors = STATUS_FILL[status];
           const c = centroid(pts);
+          const isDimmed =
+            !!highlightedLotIds &&
+            !highlightedLotIds.has(id) &&
+            !isSelected;
+          const isHighlightHit =
+            !!highlightedLotIds &&
+            highlightedLotIds.has(id) &&
+            !isSelected;
           return (
             <g
               key={id}
               role="button"
-              aria-label={`Lot ${lot.lotNumber} — ${status}`}
+              aria-label={`Lot ${lot.lotNumber} — ${status}${
+                isHighlightHit ? " (matches filter)" : ""
+              }`}
               tabIndex={0}
               onClick={() => onSelectLot(id, lot.lotNumber)}
               onKeyDown={(e) => {
@@ -232,13 +246,19 @@ export default function AdminLotMap({
                   onSelectLot(id, lot.lotNumber);
                 }
               }}
-              style={{ cursor: "pointer", outline: "none" }}
+              style={{
+                cursor: "pointer",
+                outline: "none",
+                opacity: isDimmed ? 0.18 : 1,
+              }}
             >
               <path
                 d={pointsToD(pts)}
                 fill={colors.fill}
-                stroke={colors.stroke}
-                strokeWidth={isSelected ? 1.5 : 0.5}
+                stroke={isHighlightHit ? "#0F172A" : colors.stroke}
+                strokeWidth={
+                  isSelected ? 1.5 : isHighlightHit ? 1.1 : 0.5
+                }
               />
               <text
                 x={c.x}

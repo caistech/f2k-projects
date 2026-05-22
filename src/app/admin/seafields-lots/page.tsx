@@ -90,6 +90,29 @@ const BUCKET_OPTIONS: { value: string; label: string }[] = [
   { value: "heritage_retained", label: "Heritage retained" },
 ];
 
+/**
+ * Effective allocation bucket for a row. Prefers the typed enum column;
+ * falls back to inferring from the legacy `allocated_to` free-text per the
+ * back-fill rules in migration 0003. Mirrors the ILIKE patterns there so
+ * admin lots tagged via the free-text path still match bucket filters.
+ */
+function effectiveBucket(r: {
+  allocation_bucket: string | null;
+  allocated_to: string | null;
+}): string | null {
+  if (r.allocation_bucket) return r.allocation_bucket;
+  const a = (r.allocated_to || "").toLowerCase();
+  if (!a) return null;
+  if (a.startsWith("wachs")) return "wachs";
+  if (a.startsWith("groh")) return "groh";
+  if (a.includes("takken")) return "takken";
+  if (a.includes("baurimus")) return "baurimus";
+  if (a.includes("f2k")) return "f2k_withheld";
+  if (a.includes("display") && a.includes("home")) return "display_home";
+  if (a.includes("heritage")) return "heritage_retained";
+  return null;
+}
+
 // Sort priority for status when used as a sort key.
 const STATUS_SORT_ORDER: Record<string, number> = {
   available: 0,
@@ -223,6 +246,14 @@ export default function SeafieldsLotsPage() {
     return map;
   }, [rows]);
 
+  const filtersActive =
+    filterAllocated !== "all" ||
+    filterStage !== "all" ||
+    filterStatus !== "all" ||
+    filterBucket !== "all" ||
+    filterDwelling !== "all" ||
+    search.trim() !== "";
+
   const dwellingOptions = useMemo(() => {
     const seen = new Set<string>();
     for (const r of rows) {
@@ -244,7 +275,7 @@ export default function SeafieldsLotsPage() {
         if (filterStatus === "unset" && r.status) return false;
         if (filterStatus !== "unset" && r.status !== filterStatus) return false;
       }
-      if (filterBucket !== "all" && r.allocation_bucket !== filterBucket)
+      if (filterBucket !== "all" && effectiveBucket(r) !== filterBucket)
         return false;
       if (filterDwelling !== "all") {
         if (filterDwelling === "unset" && r.dwelling_type) return false;
@@ -325,6 +356,12 @@ export default function SeafieldsLotsPage() {
     };
     return [...filtered].sort(cmp);
   }, [filtered, sortKey, sortDir, interestCounts]);
+
+  const matchingLotIds = useMemo(() => {
+    const set = new Set<string>();
+    for (const r of filtered) set.add(`L${r.lot_number}`);
+    return set;
+  }, [filtered]);
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
@@ -556,6 +593,7 @@ export default function SeafieldsLotsPage() {
             interestCounts={interestCounts}
             selectedLotId={editing?.lotId ?? null}
             onSelectLot={handleSelectLot}
+            highlightedLotIds={filtersActive ? matchingLotIds : null}
           />
         </div>
 
