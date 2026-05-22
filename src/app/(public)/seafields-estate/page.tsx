@@ -94,8 +94,8 @@ export default function SeafieldsEstatePage() {
             {[
               { value: "145", label: "Lots" },
               { value: "445–1522m²", label: "Lot sizes" },
-              { value: "POA", label: "Land pricing" },
-              { value: "Various", label: "H&L packages" },
+              { value: "From $155k", label: "Land pricing" },
+              { value: "From $485k", label: "H&L packages" },
               { value: "From Q3 2026", label: "Stage 1 release" },
             ].map((stat) => (
               <div key={stat.label}>
@@ -156,6 +156,7 @@ export default function SeafieldsEstatePage() {
                 { label: "Services", value: "Water, sewer, power (reticulated)" },
                 { label: "Planner", value: "CLE Town Planning + Design" },
                 { label: "Plan Reference", value: "CLE 3027-08B-01 (22 Apr 2026, WAPC 202888)" },
+                { label: "Covenant", value: "Estate covenant applies — available on request" },
               ].map((item) => (
                 <div
                   key={item.label}
@@ -184,22 +185,23 @@ export default function SeafieldsEstatePage() {
             Stage 1 Open Now — SW Block, 20 Lots
           </h2>
           <p className="text-slate font-archivo leading-relaxed mb-8 max-w-[700px]">
-            Seafields Estate releases in seven stages on a price-escalation
-            ladder. Only <strong>Stage 1 (the 20 SW Block lots)</strong> is
-            open for registration at launch — Stage 2 opens automatically once
-            Stage 1 hits its threshold, at a higher per-m² rate. Every Stage 1
-            registrant gets price-protection notification when that fires.
+            Seafields Estate releases in seven stages. Only{" "}
+            <strong>Stage 1 (the 20 SW Block lots)</strong> is open for
+            registration at launch — later stages release sequentially as
+            Stage 1 fills. Pricing is set by lot size, not by stage, so
+            registering early in Stage 1 gives you the best pick of available
+            lots without paying a stage premium.
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
             {[
-              { stage: "Stage 1", lots: "20", area: "SW Block — Launch", rate: "$250/m²", state: "OPEN" },
-              { stage: "Stage 2", lots: "1",  area: "Central Heritage", rate: "$265/m²", state: "LOCKED" },
-              { stage: "Stage 3", lots: "23", area: "Central",          rate: "$280/m²", state: "LOCKED" },
-              { stage: "Stage 4", lots: "12", area: "East",             rate: "$295/m²", state: "LOCKED" },
-              { stage: "Stage 5", lots: "25", area: "North",            rate: "$310/m²", state: "LOCKED" },
-              { stage: "Stage 6", lots: "35", area: "Central Upper",    rate: "$325/m²", state: "LOCKED" },
-              { stage: "Stage 7", lots: "29", area: "NW Premium",       rate: "$340/m²", state: "LOCKED" },
+              { stage: "Stage 1", lots: "20", area: "SW Block — Launch", rate: "From $155k", state: "OPEN" },
+              { stage: "Stage 2", lots: "1",  area: "Central Heritage", rate: "$270k",      state: "LOCKED" },
+              { stage: "Stage 3", lots: "23", area: "Central",          rate: "From $155k", state: "LOCKED" },
+              { stage: "Stage 4", lots: "12", area: "East",             rate: "From $155k", state: "LOCKED" },
+              { stage: "Stage 5", lots: "25", area: "North",            rate: "From $155k", state: "LOCKED" },
+              { stage: "Stage 6", lots: "35", area: "Central Upper",    rate: "From $155k", state: "LOCKED" },
+              { stage: "Stage 7", lots: "29", area: "NW Premium",       rate: "From $155k", state: "LOCKED" },
             ].map((t) => (
               <div
                 key={t.stage}
@@ -249,7 +251,7 @@ export default function SeafieldsEstatePage() {
             </div>
             <div className="font-archivo text-sm text-deep-blue">
               <strong>145 freehold lots</strong> &middot; CLE Plan 3027-08B-01,
-              WAPC 202888 &middot; price ladder $250 → $340/m² across Stages 1–7
+              WAPC 202888 &middot; vacant land $155k–$270k by lot size
             </div>
           </div>
         </div>
@@ -269,11 +271,11 @@ export default function SeafieldsEstatePage() {
             {[
               {
                 title: "Vacant Serviced Land",
-                desc: "Titled, serviced lots ready to build. Bring your own builder or hold as an investment. Priced from $150,000.",
+                desc: "Titled, serviced lots ready to build. Bring your own builder or hold as an investment. From $155,000 — pricing set by lot size band.",
               },
               {
                 title: "House & Land Package",
-                desc: "Complete turnkey modular home by Factory2Key. Lot + 2, 3 and 4-bedroom modular build + site works will be available from $485,000.",
+                desc: "Complete turnkey modular home by Factory2Key. Lot + 2, 3, 4 or 5-bedroom modular build + site works. From $485,000.",
               },
             ].map((opt) => (
               <div
@@ -320,6 +322,76 @@ export default function SeafieldsEstatePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ===== PURCHASE TERMS ===== */}
+      <section className="py-16 px-4 bg-white">
+        <div className="max-w-[900px] mx-auto">
+          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+            Sales Terms
+          </p>
+          <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
+            Purchase Terms
+          </h2>
+          <p className="text-slate font-archivo leading-relaxed mb-8 max-w-[700px]">
+            Indicative contract terms for both vacant land and house &amp; land
+            packages at Seafields Estate. Full contract documentation is
+            provided at contract stage.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              {
+                label: "Deposit",
+                value: "5%",
+                note: "Payable within 5 days of contract",
+              },
+              {
+                label: "Finance",
+                value: "45 days",
+                note: "Finance approval window from contract date",
+              },
+              {
+                label: "Settlement",
+                value: "30 days",
+                note: "Settlement period after finance approval",
+              },
+              {
+                label: "Covenant",
+                value: "Applies",
+                note: "Estate covenant — available on request",
+              },
+            ].map((term) => (
+              <div
+                key={term.label}
+                className="bg-off-white border border-black/5 p-5"
+              >
+                <div className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-slate/60 mb-1">
+                  {term.label}
+                </div>
+                <div className="font-playfair text-2xl font-black text-deep-blue mb-2">
+                  {term.value}
+                </div>
+                <div className="font-archivo text-xs text-slate leading-relaxed">
+                  {term.note}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="font-archivo text-xs text-slate/60 mt-6 leading-relaxed">
+            Terms shown are indicative and may be varied by mutual agreement at
+            contract. The estate covenant restricts certain construction and
+            land-use choices to protect the character of the development —{" "}
+            <a
+              href="mailto:uwe@factory2key.com.au?subject=Seafields%20Estate%20covenant%20request"
+              className="text-[#00B5AD] hover:underline"
+            >
+              email Uwe
+            </a>{" "}
+            for the full document.
+          </p>
         </div>
       </section>
 
