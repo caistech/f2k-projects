@@ -1,0 +1,78 @@
+{
+  "name": "hemp-homes-drive-sync",
+  "description": "Google Drive folder sync into the hemp-homes-media Supabase Storage bucket.",
+  "introduced_at": "2026-05-22",
+  "env_vars": [
+    {
+      "name": "GOOGLE_CLIENT_ID",
+      "required": true,
+      "description": "OAuth 2.0 client ID for Google Drive readonly scope. Reused from the preflight project's Corporate AI Solutions client.",
+      "scope": ["production", "preview"],
+      "where": "Google Cloud Console → APIs & Services → Credentials"
+    },
+    {
+      "name": "GOOGLE_CLIENT_SECRET",
+      "required": true,
+      "description": "OAuth 2.0 client secret companion to GOOGLE_CLIENT_ID.",
+      "scope": ["production", "preview"],
+      "where": "Google Cloud Console → APIs & Services → Credentials (signing secret shown once)"
+    },
+    {
+      "name": "NEXT_PUBLIC_CANONICAL_URL",
+      "required": true,
+      "description": "Used to construct the OAuth redirect URI: <CANONICAL>/api/admin/hemp-homes/drive/callback",
+      "scope": ["production", "preview", "development"],
+      "where": "Vercel env"
+    }
+  ],
+  "external_setup": [
+    {
+      "id": "google_oauth_consent_screen",
+      "type": "dashboard",
+      "title": "Google Cloud OAuth consent screen",
+      "description": "App must be in Testing mode with operator's gmail as a Test user, OR verified for the drive.readonly restricted scope.",
+      "url": "https://console.cloud.google.com/auth/scopes",
+      "steps": [
+        "Confirm publishing status is Testing (recommended for personal admin tools)",
+        "Confirm operator email is in the Test Users list",
+        "Confirm 'https://www.googleapis.com/auth/drive.readonly' is in the Scopes list (DO NOT submit for verification — Testing mode bypasses)",
+        "Confirm 'https://www.googleapis.com/auth/userinfo.email' is also in scopes"
+      ]
+    },
+    {
+      "id": "google_oauth_redirect_uris",
+      "type": "dashboard",
+      "title": "Google OAuth client redirect URIs",
+      "description": "Authorized redirect URIs must include the f2k callback path.",
+      "url": "https://console.cloud.google.com/apis/credentials",
+      "steps": [
+        "Open the OAuth 2.0 client (Corporate AI Solutions for the f2k portfolio)",
+        "Authorized redirect URIs must include: https://<canonical>/api/admin/hemp-homes/drive/callback",
+        "For local dev also include: http://localhost:3001/api/admin/hemp-homes/drive/callback",
+        "Save — propagation takes up to a few hours"
+      ]
+    },
+    {
+      "id": "supabase_storage_upload_cap",
+      "type": "dashboard",
+      "title": "Supabase Storage project upload cap",
+      "description": "Project-level Max upload size must exceed the largest video being synced. Bumped to 5GB on 2026-05-22.",
+      "url": "https://supabase.com/dashboard/project/earqebbwhklxadqawtex/storage/settings",
+      "steps": [
+        "Confirm Max upload size >= 524288000 (500MB)",
+        "Default is 50MB on free tier; bump on Pro tier to 5GB (max)"
+      ]
+    },
+    {
+      "id": "drive_folder_shared",
+      "type": "drive",
+      "title": "Drive folder accessible to authorising account",
+      "description": "The folder ID 1I3rbikNGgVtUXNwpvfU5ud67aTE3pfyQ must be accessible by the Google account that authorises the connection.",
+      "url": "https://drive.google.com/drive/folders/1I3rbikNGgVtUXNwpvfU5ud67aTE3pfyQ",
+      "steps": [
+        "Open the folder in the same Google account used to Connect Drive",
+        "Confirm 'My Drive' or 'Shared with me' access"
+      ]
+    }
+  ]
+}

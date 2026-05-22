@@ -1,0 +1,52 @@
+{
+  "name": "seafields-daily-digest",
+  "description": "Daily 00:00 UTC Seafields registration + lot transition summary email to seafields_notify_recipients.",
+  "introduced_at": "2026-05-15",
+  "env_vars": [
+    {
+      "name": "CRON_SECRET",
+      "required": true,
+      "description": "Bearer token validating Vercel cron route invocations. Shared with hemp-homes-outreach-evaluate.",
+      "scope": ["production", "preview", "development"],
+      "where": "Generate locally and paste into Vercel env",
+      "generator": "random-32"
+    },
+    {
+      "name": "RESEND_API_KEY",
+      "required": true,
+      "description": "Resend API for sending the daily digest.",
+      "scope": ["production", "preview"],
+      "where": "resend.com → API Keys"
+    },
+    {
+      "name": "RESEND_FROM_EMAIL",
+      "required": false,
+      "description": "Sender override; defaults to 'Seafields Estate <noreply@updates.corporateaisolutions.com>'.",
+      "scope": ["production", "preview"],
+      "where": "Vercel env"
+    }
+  ],
+  "external_setup": [
+    {
+      "id": "vercel_cron_seafields",
+      "type": "config-file",
+      "title": "Vercel cron config — seafields-daily-digest",
+      "description": "Schedule entry in vercel.json at 00:00 UTC daily.",
+      "url": "vercel.json",
+      "steps": [
+        "Confirm vercel.json crons array contains: { path: '/api/cron/seafields-daily-digest', schedule: '0 0 * * *' }"
+      ]
+    },
+    {
+      "id": "seafields_notify_recipients_seeded",
+      "type": "database",
+      "title": "Recipients table populated",
+      "description": "public.seafields_notify_recipients must have at least one active row, otherwise the digest sends to no one.",
+      "url": null,
+      "steps": [
+        "Check via SQL or the admin: SELECT count(*) FROM seafields_notify_recipients WHERE active = true",
+        "Seed via /admin if empty"
+      ]
+    }
+  ]
+}

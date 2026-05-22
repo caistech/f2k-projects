@@ -1,0 +1,85 @@
+{
+  "name": "hemp-homes-outreach",
+  "description": "AI-drafted prospect outreach pipeline with manual approval (intro + 14-day follow-up).",
+  "introduced_at": "2026-05-22",
+  "env_vars": [
+    {
+      "name": "ANTHROPIC_API_KEY",
+      "required": true,
+      "description": "Claude API key for polishing outreach drafts via @caistech/ai-client.",
+      "scope": ["production", "preview"],
+      "where": "Anthropic Console → API Keys (or share with the portfolio-wide key)"
+    },
+    {
+      "name": "OPENROUTER_API_KEY",
+      "required": false,
+      "description": "Alternative LLM routing via OpenRouter. Either this or ANTHROPIC_API_KEY must be present; ANTHROPIC is preferred.",
+      "scope": ["production", "preview"],
+      "where": "openrouter.ai → API Keys"
+    },
+    {
+      "name": "RESEND_API_KEY",
+      "required": true,
+      "description": "Resend API for sending outreach emails. Already used by Seafields transactional sends.",
+      "scope": ["production", "preview"],
+      "where": "resend.com → API Keys"
+    },
+    {
+      "name": "RESEND_FROM_EMAIL",
+      "required": false,
+      "description": "Sender override. Defaults to 'Factory2Key Hemp Homes <noreply@updates.corporateaisolutions.com>'. Must be a verified sender per the Email Infrastructure rule.",
+      "scope": ["production", "preview"],
+      "where": "Set in Vercel env"
+    },
+    {
+      "name": "RESEND_WEBHOOK_SECRET",
+      "required": true,
+      "description": "Svix signing secret for Resend webhook verification at /api/webhooks/resend.",
+      "scope": ["production", "preview"],
+      "where": "Resend dashboard → Webhooks → endpoint signing secret",
+      "depends_on": ["resend_webhook_endpoint"]
+    },
+    {
+      "name": "CRON_SECRET",
+      "required": true,
+      "description": "Bearer token validating Vercel cron route invocations. Also required by seafields-daily-digest.",
+      "scope": ["production", "preview", "development"],
+      "where": "Generate locally and paste into Vercel env",
+      "generator": "random-32"
+    },
+    {
+      "name": "NEXT_PUBLIC_CANONICAL_URL",
+      "required": true,
+      "description": "Canonical app URL used to construct OAuth redirect URIs + webhook endpoints (e.g. https://f2k-projects.vercel.app).",
+      "scope": ["production", "preview", "development"],
+      "where": "Set in Vercel env to match the canonical hostname"
+    }
+  ],
+  "external_setup": [
+    {
+      "id": "resend_webhook_endpoint",
+      "type": "dashboard",
+      "title": "Resend webhook endpoint",
+      "description": "Registers the webhook receiver so delivery + open + click events flow back into hemp_homes_prospect_outreach.",
+      "url": "https://resend.com/webhooks",
+      "steps": [
+        "Click Add Endpoint",
+        "Endpoint URL: <NEXT_PUBLIC_CANONICAL_URL>/api/webhooks/resend",
+        "Events: email.delivered, email.bounced, email.complained, email.opened, email.clicked, email.failed",
+        "Save the endpoint, copy the Signing Secret",
+        "Add Vercel env var RESEND_WEBHOOK_SECRET with the signing secret as value"
+      ]
+    },
+    {
+      "id": "vercel_cron_registered",
+      "type": "config-file",
+      "title": "Vercel cron config",
+      "description": "Daily evaluator cron entry in vercel.json (runs 23:00 UTC = 09:00 AWST).",
+      "url": "vercel.json",
+      "steps": [
+        "Confirm vercel.json contains a cron entry for /api/cron/hemp-homes-outreach-evaluate",
+        "Schedule '0 23 * * *' or earlier per AWST preference"
+      ]
+    }
+  ]
+}

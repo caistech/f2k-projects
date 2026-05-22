@@ -1,0 +1,34 @@
+{
+  "name": "hemp-homes-media",
+  "description": "Direct upload + Drive-synced media library for hemp-homes posts and journey.",
+  "introduced_at": "2026-05-22",
+  "env_vars": [
+    {
+      "name": "NEXT_PUBLIC_SUPABASE_URL",
+      "required": true,
+      "description": "Supabase project URL.",
+      "scope": ["production", "preview", "development"],
+      "where": "Supabase dashboard → Project Settings → API"
+    },
+    {
+      "name": "SUPABASE_SERVICE_ROLE_KEY",
+      "required": true,
+      "description": "Service-role key for Storage uploads (bypasses RLS).",
+      "scope": ["production", "preview", "development"],
+      "where": "Supabase dashboard → Project Settings → API → service_role"
+    }
+  ],
+  "external_setup": [
+    {
+      "id": "storage_bucket_hemp_homes_media",
+      "type": "database",
+      "title": "Storage bucket exists",
+      "description": "Bucket 'hemp-homes-media' must exist with file_size_limit=524288000 and public read policy. Created by migration 0013.",
+      "url": null,
+      "steps": [
+        "Apply migration 0013_hemp_homes_community_builder.sql if not yet applied",
+        "Confirm via SQL: SELECT id, file_size_limit FROM storage.buckets WHERE id = 'hemp-homes-media'"
+      ]
+    }
+  ]
+}
