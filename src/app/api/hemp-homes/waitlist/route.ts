@@ -235,7 +235,11 @@ export async function POST(request: Request) {
     // Admin notification
     await resend.emails.send({
       from: fromAddress,
-      to: ["dennis@factory2key.com.au", "uwe@factory2key.com.au"],
+      to: [
+        "dennis@factory2key.com.au",
+        "uwe@factory2key.com.au",
+        "steve@wandarra.com.au",
+      ],
       subject: `Hemp Homes waitlist: ${d.full_name}`,
       html: `
         <h2 style="color:#1A2744;font-family:sans-serif">New Hemp Homes Waitlist Registration</h2>
