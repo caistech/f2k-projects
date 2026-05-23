@@ -62,7 +62,6 @@ const REGIONS = [
   { value: "ACT", label: "ACT" },
   { value: "NT", label: "Northern Territory" },
   { value: "no_preference", label: "No preference — open to any region" },
-  { value: "follow_only", label: "Just want to follow the journey" },
 ] as const;
 
 const CONFIG_OPTIONS = [
