@@ -20,7 +20,7 @@ const BUCKET_LABELS: Record<AllocationBucket, string> = {
   public: "Public (open market)",
   groh: "GROH",
   wachs: "WACHS",
-  takken: "Takken",
+  takken: "Tarken",
   baurimus: "Baurimus",
   f2k_withheld: "F2K withheld",
   display_home: "Display home",
@@ -496,7 +496,7 @@ export default function AdminLotEditModal({
                 ))}
               </select>
               <div className="text-[11px] text-slate-500 mt-1">
-                Pre-set pools (GROH, WACHS, Takken, Baurimus, F2K withheld,
+                Pre-set pools (GROH, WACHS, Tarken, Baurimus, F2K withheld,
                 Display, Heritage) are self-labelling. Pick &ldquo;Public&rdquo; for any
                 open-market or named individual buyer.
               </div>
