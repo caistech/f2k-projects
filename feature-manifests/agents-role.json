@@ -1,0 +1,65 @@
+{
+  "name": "agents-role",
+  "description": "New 'Agents' role: external real-estate agents log into a scoped partner portal to manage their own buyer interests (own clients full detail; all other lots/units masked status-only). Seafields + Branscombe. Invite-only; request-only holds; status enquiries to admin.",
+  "introduced_at": "2026-05-24",
+  "env_vars": [
+    {
+      "name": "AGENT_INVITE_TOKEN_SECRET",
+      "required": true,
+      "description": "HMAC secret signing single-use agent invite tokens (14-day expiry). Mirrors the team-admin invite pattern.",
+      "scope": ["production", "preview", "development"],
+      "where": "Generate locally and paste into Vercel env",
+      "generator": "random-48"
+    },
+    {
+      "name": "SUPABASE_SERVICE_ROLE_KEY",
+      "required": true,
+      "description": "Server-side agent provisioning (create auth user on invite accept) + RLS-bypass admin ops. Already present.",
+      "scope": ["production", "preview", "development"],
+      "where": "Supabase dashboard → Project settings → API"
+    },
+    {
+      "name": "RESEND_API_KEY",
+      "required": true,
+      "description": "Invite emails + agent->admin status-enquiry emails. Already present.",
+      "scope": ["production", "preview"],
+      "where": "resend.com → API Keys"
+    },
+    {
+      "name": "RESEND_FROM_EMAIL",
+      "required": false,
+      "description": "Sender override; defaults to the verified updates.corporateaisolutions.com subdomain.",
+      "scope": ["production", "preview"],
+      "where": "Vercel env"
+    }
+  ],
+  "external_setup": [
+    {
+      "id": "agents_schema_migration",
+      "type": "database",
+      "title": "Agents schema + RLS migration",
+      "description": "Migration creating the agents table, agent_id FK on both registration tables, agent hold-request fields, agent_enquiries, and the RLS policies that mask identity on non-owned lots/units.",
+      "url": null,
+      "steps": [
+        "Author supabase/migrations/00NN_agents_role.sql (idempotent)",
+        "agents (id, name, email, agency, estate_access text[], active, invited_by, created_at)",
+        "ALTER seafields_registrations + branscombe_registrations ADD agent_id uuid NULL REFERENCES agents(id)",
+        "Hold-request fields (hold_requested_by_agent_id, hold_requested_at, hold_status) on lots/units OR a lot_hold_requests log table",
+        "agent_enquiries (id, agent_id, estate, lot_or_unit, message, created_at, resolved_at) — optional in phase 1 (email-only acceptable)",
+        "RLS: agents SELECT own registrations (agent_id = auth uid mapping); masked projection for all other lots/units",
+        "Apply via supabase db push per the migrations rule"
+      ]
+    },
+    {
+      "id": "supabase_auth_agent_portal",
+      "type": "dashboard",
+      "title": "Supabase Auth — agent portal redirect",
+      "description": "Agents authenticate through the existing Supabase auth + /api/auth/confirm flow. Confirm the agent portal landing route is covered by the redirect allowlist and middleware allowlist.",
+      "url": "https://supabase.com/dashboard/project/earqebbwhklxadqawtex/auth/url-configuration",
+      "steps": [
+        "Confirm the agent portal route (e.g. /agent or /agent/login) resolves post-auth",
+        "Confirm /api/auth/confirm is in middleware allowlist (already true for admin)"
+      ]
+    }
+  ]
+}
