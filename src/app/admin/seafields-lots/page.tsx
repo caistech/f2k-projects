@@ -68,6 +68,14 @@ const STAGE_COLOR: Record<string, string> = {
   "7": "bg-gray-200 text-gray-800 border-gray-400",
 };
 
+const STATUS_BADGE: Record<string, string> = {
+  available: "bg-emerald-100 text-emerald-800 border-emerald-300",
+  reserved: "bg-amber-100 text-amber-800 border-amber-300",
+  sold: "bg-slate-200 text-slate-800 border-slate-400",
+  withheld: "bg-rose-100 text-rose-800 border-rose-300",
+  backup_list_only: "bg-sky-100 text-sky-800 border-sky-300",
+};
+
 const STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: "all", label: "All statuses" },
   { value: "available", label: "Available" },
@@ -83,7 +91,7 @@ const BUCKET_OPTIONS: { value: string; label: string }[] = [
   { value: "public", label: "Public" },
   { value: "groh", label: "GROH" },
   { value: "baurimus", label: "Baurimus" },
-  { value: "takken", label: "Takken" },
+  { value: "takken", label: "Tarken" },
   { value: "wachs", label: "Wachs" },
   { value: "f2k_withheld", label: "F2K withheld" },
   { value: "display_home", label: "Display home" },
@@ -105,7 +113,7 @@ function effectiveBucket(r: {
   if (!a) return null;
   if (a.startsWith("wachs")) return "wachs";
   if (a.startsWith("groh")) return "groh";
-  if (a.includes("takken")) return "takken";
+  if (a.includes("takken") || a.includes("tarken")) return "takken";
   if (a.includes("baurimus")) return "baurimus";
   if (a.includes("f2k")) return "f2k_withheld";
   if (a.includes("display") && a.includes("home")) return "display_home";
@@ -469,7 +477,7 @@ export default function SeafieldsLotsPage() {
           placeholder="Search lot #, tenant, type..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border rounded px-3 py-2 text-sm w-64"
+          className="border rounded px-3 py-2 text-sm w-full sm:w-64"
         />
         <div className="flex gap-1 bg-slate-100 rounded p-1 text-sm">
           {(
@@ -587,7 +595,7 @@ export default function SeafieldsLotsPage() {
       {/* Map + Table side-by-side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Map */}
-        <div className="lg:sticky lg:top-4 self-start">
+        <div className="hidden lg:block lg:sticky lg:top-4 self-start">
           <AdminLotMap
             allocations={allocByNumber}
             interestCounts={interestCounts}
@@ -602,7 +610,118 @@ export default function SeafieldsLotsPage() {
           {loading ? (
             <div className="p-6 text-slate-500">Loading lots…</div>
           ) : (
-            <div className="overflow-x-auto" style={{ maxHeight: "78vh" }}>
+            <>
+              {/* Mobile (<md): sort control + tap-friendly card list */}
+              <div className="md:hidden">
+                <div className="flex items-center gap-2 px-3 py-2 border-b bg-slate-50">
+                  <label htmlFor="mobile-sort" className="text-xs text-slate-500 shrink-0">
+                    Sort
+                  </label>
+                  <select
+                    id="mobile-sort"
+                    value={sortKey}
+                    onChange={(e) => setSortKey(e.target.value as SortKey)}
+                    className="flex-1 border rounded px-2 py-2 text-sm bg-white"
+                  >
+                    <option value="lot_number">Lot number</option>
+                    <option value="sqm">Size (m²)</option>
+                    <option value="allocated">Status / allocated</option>
+                    <option value="stage">Stage</option>
+                    <option value="dwelling_type">Dwelling type</option>
+                    <option value="land_price">Land price</option>
+                    <option value="interest">Interest</option>
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
+                    className="px-3 py-2 border rounded text-sm bg-white min-h-[40px]"
+                    aria-label="Toggle sort direction"
+                  >
+                    {sortDir === "asc" ? "▲" : "▼"}
+                  </button>
+                </div>
+                <div className="p-3 space-y-2">
+                  {sorted.map((row) => {
+                    const lotId = `L${row.lot_number}`;
+                    const interest = interestCounts[lotId] || 0;
+                    const hasIntent = !!row.intent_locked_to_registration_id;
+                    const landPrice = landPriceOf(row);
+                    return (
+                      <button
+                        key={row.lot_number}
+                        type="button"
+                        onClick={() =>
+                          setEditing({ lotId, lotNumber: row.lot_number })
+                        }
+                        className="w-full text-left border border-slate-200 rounded-lg p-3 active:bg-slate-50"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-slate-900">
+                            Lot {row.lot_number}
+                          </span>
+                          <span className="text-sm text-slate-500">{row.sqm}m²</span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                          {row.status && (
+                            <span
+                              className={`inline-block border px-2 py-0.5 rounded text-xs font-semibold ${
+                                STATUS_BADGE[row.status] ||
+                                "bg-slate-100 text-slate-700 border-slate-300"
+                              }`}
+                            >
+                              {row.status.replace(/_/g, " ")}
+                            </span>
+                          )}
+                          {row.stage && (
+                            <span
+                              className={`inline-block border px-2 py-0.5 rounded text-xs font-semibold ${
+                                STAGE_COLOR[row.stage] ||
+                                "bg-slate-100 text-slate-800 border-slate-300"
+                              }`}
+                            >
+                              S{row.stage}
+                            </span>
+                          )}
+                          {row.allocated_to ? (
+                            <span className="inline-block bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs font-medium">
+                              {row.allocated_to}
+                            </span>
+                          ) : hasIntent ? (
+                            <span className="inline-block bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs font-medium">
+                              Soft
+                            </span>
+                          ) : null}
+                          {row.dwelling_type && (
+                            <span className="text-slate-600 text-xs">
+                              {row.dwelling_type}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between mt-2 text-sm">
+                          <span className="font-semibold text-slate-800">
+                            {landPrice != null ? (
+                              formatCurrency(landPrice)
+                            ) : (
+                              <span className="text-slate-300">—</span>
+                            )}
+                          </span>
+                          <span className="text-slate-500 text-xs">
+                            {interest > 0 ? `${interest} interested` : "no interest yet"}
+                          </span>
+                          <span className="text-blue-600 font-medium text-xs">Edit ›</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                  {sorted.length === 0 && (
+                    <div className="text-slate-400 text-sm text-center py-6">
+                      No lots match your filters.
+                    </div>
+                  )}
+                </div>
+              </div>
+              {/* Desktop (md+): full table */}
+              <div className="hidden md:block overflow-x-auto" style={{ maxHeight: "78vh" }}>
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 text-slate-600 uppercase text-xs tracking-wider sticky top-0 z-10">
                   <tr>
@@ -754,6 +873,7 @@ export default function SeafieldsLotsPage() {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
       </div>
