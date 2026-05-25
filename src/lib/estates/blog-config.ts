@@ -65,7 +65,7 @@ HARD RULES (a violation makes the post unusable):
     mediaTable: "branscombe_media",
     postMediaTable: "branscombe_post_media",
     bucket: "branscombe-media",
-    driveEnabled: false,
+    driveEnabled: true,
     aiContext: `THE DEVELOPMENT
 - Branscombe Estate, Claremont, Tasmania — a development of 37 architecturally individual homes (each home a distinct design, not a repeated plan).
 - Audience: prospective owner-occupiers and investors interested in well-designed Tasmanian homes.
@@ -85,7 +85,7 @@ HARD RULES:
     mediaTable: "seafields_media",
     postMediaTable: "seafields_post_media",
     bucket: "seafields-media",
-    driveEnabled: false,
+    driveEnabled: true,
     aiContext: `THE DEVELOPMENT
 - Seafields — a Western Australian residential land estate, released in stages with individual lots.
 - Audience: prospective buyers and investors interested in land at Seafields.

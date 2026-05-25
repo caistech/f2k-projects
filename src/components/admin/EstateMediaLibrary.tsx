@@ -1,7 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { HempHomesMedia } from "@/lib/hemp-homes/types";
+
+interface DriveStatus {
+  connected: boolean;
+  connected_email: string | null;
+  folder_id: string | null;
+  paused: boolean;
+  last_sync_at: string | null;
+  last_sync_message: string | null;
+  connected_at: string | null;
+}
 
 function fmtBytes(n: number | null): string {
   if (n == null) return "—";
@@ -18,6 +29,8 @@ interface Props {
   /** e.g. /api/admin/estates/branscombe */
   apiBase: string;
   estateName: string;
+  /** Show the Google Drive sync section. */
+  driveEnabled?: boolean;
 }
 
 /**
@@ -26,7 +39,8 @@ interface Props {
  * drive into apiBase. New items default hidden; operator opts each into the
  * public gallery. (Google Drive sync is added per estate in a later step.)
  */
-export default function EstateMediaLibrary({ apiBase, estateName }: Props) {
+export default function EstateMediaLibrary({ apiBase, estateName, driveEnabled = false }: Props) {
+  const search = useSearchParams();
   const [media, setMedia] = useState<HempHomesMedia[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -36,6 +50,23 @@ export default function EstateMediaLibrary({ apiBase, estateName }: Props) {
   const [altText, setAltText] = useState("");
   const [caption, setCaption] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const [drive, setDrive] = useState<DriveStatus | null>(null);
+  const [folderInput, setFolderInput] = useState("");
+  const [syncing, setSyncing] = useState(false);
+  const [savingFolder, setSavingFolder] = useState(false);
+
+  const fetchDriveStatus = useCallback(async () => {
+    if (!driveEnabled) return;
+    try {
+      const res = await fetch(`${apiBase}/drive/status`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setDrive(data);
+      if (data.folder_id) setFolderInput(data.folder_id);
+    } catch {
+      // Non-fatal.
+    }
+  }, [apiBase, driveEnabled]);
 
   const fetchMedia = useCallback(async () => {
     setLoading(true);
@@ -56,7 +87,62 @@ export default function EstateMediaLibrary({ apiBase, estateName }: Props) {
 
   useEffect(() => {
     fetchMedia();
-  }, [fetchMedia]);
+    fetchDriveStatus();
+  }, [fetchMedia, fetchDriveStatus]);
+
+  // Surface the OAuth callback result from the URL.
+  useEffect(() => {
+    if (!search) return;
+    if (search.get("connected") === "1") {
+      setMessage({ type: "success", text: "Google Drive connected — set the folder (if needed) and click Sync now." });
+    } else if (search.get("error")) {
+      setMessage({ type: "error", text: `Drive connect failed: ${search.get("error")}` });
+    }
+  }, [search]);
+
+  async function saveFolder() {
+    setSavingFolder(true);
+    setMessage(null);
+    try {
+      const res = await fetch(`${apiBase}/drive/folder`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ folder_id: folderInput }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage({ type: "error", text: data.error ?? "Could not save folder" });
+        return;
+      }
+      setMessage({ type: "success", text: "Drive folder saved." });
+      fetchDriveStatus();
+    } catch {
+      setMessage({ type: "error", text: "Network error saving folder" });
+    } finally {
+      setSavingFolder(false);
+    }
+  }
+
+  async function runSync() {
+    setSyncing(true);
+    setMessage(null);
+    try {
+      const res = await fetch(`${apiBase}/drive/sync`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage({ type: "error", text: data.error ?? "Sync failed" });
+        return;
+      }
+      const errs = data.errors ?? [];
+      setMessage({ type: errs.length > 0 ? "error" : "success", text: data.message ?? "Sync complete" });
+      fetchMedia();
+      fetchDriveStatus();
+    } catch {
+      setMessage({ type: "error", text: "Network error during sync" });
+    } finally {
+      setSyncing(false);
+    }
+  }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -194,6 +280,77 @@ export default function EstateMediaLibrary({ apiBase, estateName }: Props) {
           }`}
         >
           {message.text}
+        </div>
+      )}
+
+      {/* Google Drive sync */}
+      {driveEnabled && (
+        <div className="bg-white border rounded-lg p-5 space-y-3">
+          <div className="flex items-start justify-between gap-3 flex-wrap">
+            <div>
+              <h3 className="font-semibold text-slate-900">Google Drive sync</h3>
+              <p className="text-xs text-slate-500 mt-0.5 max-w-xl">
+                Pull image + video files from a Drive folder into this estate&apos;s library.
+                Files are mirrored into the estate bucket and tagged DRIVE. Sync is incremental —
+                already-pulled files are skipped. New items stay hidden until you show them.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              {drive?.connected ? (
+                <>
+                  <a href={`${apiBase}/drive/connect`} className="text-xs text-slate-600 hover:text-slate-900 underline">
+                    Re-authorise
+                  </a>
+                  <button
+                    type="button"
+                    onClick={runSync}
+                    disabled={syncing || !drive?.folder_id}
+                    title={!drive?.folder_id ? "Set a Drive folder first" : undefined}
+                    className="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded text-sm font-semibold disabled:opacity-50"
+                  >
+                    {syncing ? "Syncing…" : "Sync now"}
+                  </button>
+                </>
+              ) : (
+                <a
+                  href={`${apiBase}/drive/connect`}
+                  className="bg-slate-900 hover:bg-slate-700 text-white px-3 py-1.5 rounded text-sm font-semibold no-underline"
+                >
+                  Connect Drive
+                </a>
+              )}
+            </div>
+          </div>
+          <div className="flex items-end gap-2 flex-wrap">
+            <div className="flex-1 min-w-[240px]">
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                Drive folder ID or URL
+              </label>
+              <input
+                type="text"
+                value={folderInput}
+                onChange={(e) => setFolderInput(e.target.value)}
+                placeholder="1AbCdEf… or https://drive.google.com/drive/folders/1AbCdEf…"
+                className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={saveFolder}
+              disabled={savingFolder || !folderInput.trim()}
+              className="bg-slate-100 hover:bg-slate-200 border border-slate-300 px-3 py-2 rounded text-sm font-semibold disabled:opacity-50"
+            >
+              {savingFolder ? "Saving…" : "Save folder"}
+            </button>
+          </div>
+          {drive?.connected && (
+            <div className="text-xs text-slate-600 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1 pt-2 border-t border-slate-100">
+              <div><span className="text-slate-500">Connected as:</span> <span className="font-medium">{drive.connected_email ?? "—"}</span></div>
+              <div><span className="text-slate-500">Folder:</span> <span className="font-mono">{drive.folder_id ?? "(not set)"}</span></div>
+              <div><span className="text-slate-500">Last sync:</span> <span>{fmtDate(drive.last_sync_at)}</span></div>
+              <div><span className="text-slate-500">Last run:</span> <span>{drive.last_sync_message ?? "—"}</span></div>
+            </div>
+          )}
         </div>
       )}
 

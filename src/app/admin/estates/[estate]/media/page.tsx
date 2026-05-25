@@ -7,5 +7,11 @@ export const dynamic = "force-dynamic";
 export default function EstateMediaPage({ params }: { params: { estate: string } }) {
   const cfg = getEstateBlog(params.estate);
   if (!cfg) notFound();
-  return <EstateMediaLibrary apiBase={`/api/admin/estates/${cfg.slug}`} estateName={cfg.name} />;
+  return (
+    <EstateMediaLibrary
+      apiBase={`/api/admin/estates/${cfg.slug}`}
+      estateName={cfg.name}
+      driveEnabled={cfg.driveEnabled}
+    />
+  );
 }

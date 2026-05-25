@@ -1,0 +1,43 @@
+{
+  "name": "estate-drive-sync",
+  "description": "Google Drive sync for the generic estate media libraries (Branscombe + Seafields). One shared OAuth callback carries the estate in the state param, so only a single new redirect URI is needed. Hemp Homes keeps its own Drive integration.",
+  "introduced_at": "2026-05-25",
+  "env_vars": [
+    {
+      "name": "GOOGLE_CLIENT_ID",
+      "required": true,
+      "description": "Google OAuth client ID. Already present for the Hemp Homes Drive sync.",
+      "scope": ["production", "preview"],
+      "where": "Google Cloud Console → APIs & Services → Credentials"
+    },
+    {
+      "name": "GOOGLE_CLIENT_SECRET",
+      "required": true,
+      "description": "Google OAuth client secret. Already present for the Hemp Homes Drive sync.",
+      "scope": ["production", "preview"],
+      "where": "Google Cloud Console → APIs & Services → Credentials"
+    },
+    {
+      "name": "NEXT_PUBLIC_CANONICAL_URL",
+      "required": true,
+      "description": "Canonical app URL, used to build the OAuth redirect URI. Already set.",
+      "scope": ["production", "preview", "development"],
+      "where": "Vercel env"
+    }
+  ],
+  "external_setup": [
+    {
+      "id": "gcp_estate_drive_redirect_uri",
+      "type": "dashboard",
+      "title": "Add the estate Drive callback redirect URI to the Google OAuth client",
+      "description": "The generic estate Drive sync uses ONE shared callback (estate carried in the OAuth state). Until this redirect URI is on the OAuth client, Connect Drive fails with redirect_uri_mismatch.",
+      "url": "https://console.cloud.google.com/apis/credentials",
+      "steps": [
+        "Open the OAuth 2.0 Client ID already used by the Hemp Homes Drive sync (the one matching GOOGLE_CLIENT_ID)",
+        "Under 'Authorised redirect URIs', click Add URI",
+        "Add: https://f2k-projects.vercel.app/api/admin/estates/drive/callback",
+        "Save. (The existing Hemp Homes URI .../api/admin/hemp-homes/drive/callback stays as-is.)"
+      ]
+    }
+  ]
+}
