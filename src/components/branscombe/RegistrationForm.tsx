@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { UNITS, HOUSE_TYPE_INFO, type HouseType } from "@/lib/branscombe-units";
 import SiteMap from "./SiteMap";
+import SuburbAutocomplete from "./SuburbAutocomplete";
 
 const PRICE_RANGES = [
   "$600,000 – $650,000",
@@ -265,7 +266,7 @@ export default function RegistrationForm() {
   }
 
   const inputClass =
-    "w-full border border-black/10 px-4 py-2.5 font-archivo text-sm text-deep-blue focus:outline-none focus:border-[#00B5AD] transition-colors bg-white";
+    "w-full border border-black/10 px-4 py-3 font-archivo text-base text-deep-blue focus:outline-none focus:border-[#00B5AD] transition-colors bg-white";
   const labelClass =
     "block text-deep-blue font-semibold font-archivo text-sm mb-1";
   const selectClass = inputClass;
@@ -539,21 +540,21 @@ export default function RegistrationForm() {
                           </p>
                           <div className="grid grid-cols-3 gap-1 mb-4">
                             <Image
-                              src="/branscombe/home-exterior-1.png"
+                              src="/branscombe/home-exterior-1.jpg"
                               alt="Home exterior front"
                               width={200}
                               height={140}
                               className="w-full h-auto object-cover"
                             />
                             <Image
-                              src="/branscombe/home-exterior-2.png"
+                              src="/branscombe/home-exterior-2.jpg"
                               alt="Home exterior side"
                               width={200}
                               height={140}
                               className="w-full h-auto object-cover"
                             />
                             <Image
-                              src="/branscombe/home-exterior-3.png"
+                              src="/branscombe/home-exterior-3.jpg"
                               alt="Home exterior rear"
                               width={200}
                               height={140}
@@ -733,11 +734,11 @@ export default function RegistrationForm() {
                   <label htmlFor="suburb" className={labelClass}>
                     Current Suburb / Town
                   </label>
-                  <input
+                  <SuburbAutocomplete
                     id="suburb"
-                    type="text"
                     value={suburb}
-                    onChange={(e) => setSuburb(e.target.value)}
+                    onChange={setSuburb}
+                    onSelectPostcode={setPostcode}
                     className={inputClass}
                     placeholder="e.g. Claremont, Sandy Bay, Moonah"
                   />
@@ -1038,7 +1039,7 @@ export default function RegistrationForm() {
               type="checkbox"
               checked={consent}
               onChange={(e) => setConsent(e.target.checked)}
-              className="mt-1 w-4 h-4 accent-[#00B5AD]"
+              className="mt-1 w-5 h-5 accent-[#00B5AD]"
             />
             <span className="text-sm text-slate font-archivo leading-relaxed">
               I understand this is a Registration of Interest only — no deposit

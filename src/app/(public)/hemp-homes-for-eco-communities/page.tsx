@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import HempHomesWaitlistForm from "@/components/hemp-homes/HempHomesWaitlistForm";
 import { JourneyTimeline } from "@/components/hemp-homes/JourneyTimeline";
+import HempHomesGallerySection from "@/components/hemp-homes/HempHomesGallerySection";
 import { COMMUNITIES_PIPELINE } from "@/data/hemp-homes/communities-pipeline";
 
 const ACCENT = "#1B4332";
@@ -60,13 +61,6 @@ export default function HempHomesForEcoCommunitiesPage() {
       >
         Skip to main content
       </a>
-
-      {/* ===== DISCLAIMER BANNER ===== */}
-      <div className="bg-[#1A2744] text-white/80 text-xs font-archivo text-center py-2.5 px-4 leading-relaxed">
-        <strong className="text-white">REGISTRATION OF INTEREST ONLY</strong> —
-        No deposit is required or accepted. Registering does not create any
-        legal or financial obligation.
-      </div>
 
       <main id="main-content">
         {/* ===== HERO ===== */}
@@ -519,6 +513,11 @@ export default function HempHomesForEcoCommunitiesPage() {
             </Suspense>
           </div>
         </section>
+
+        {/* ===== BUILD PHOTO GALLERY (renders only when photos exist) ===== */}
+        <Suspense fallback={null}>
+          <HempHomesGallerySection />
+        </Suspense>
 
         {/* ===== COMMUNITIES PIPELINE ===== */}
         <section className="py-16 px-4 bg-warm-grey">

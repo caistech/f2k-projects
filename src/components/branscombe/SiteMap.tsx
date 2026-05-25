@@ -83,6 +83,18 @@ export default function SiteMap({ selectedUnits, onToggleUnit }: SiteMapProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("plan");
   const [showInferredLots, setShowInferredLots] = useState(false);
 
+  // On phones, default to the schematic (type-grouped) view: its home pills are
+  // 44px tap targets, whereas the spatial plan view packs 37 homes too tightly
+  // to tap reliably with a thumb. Desktop keeps the plan view as default.
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 767px)").matches
+    ) {
+      setViewMode("schematic");
+    }
+  }, []);
+
   // Group homes by type for the schematic panels
   const byType = useMemo(() => {
     const m = new Map<HouseType, UnitData[]>();

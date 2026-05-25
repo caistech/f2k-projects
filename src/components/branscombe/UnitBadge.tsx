@@ -46,7 +46,7 @@ export default function UnitBadge({
         onMouseLeave={onMouseLeave}
         aria-label={ariaLabel}
         aria-pressed={isSelected}
-        className="relative inline-flex items-center justify-between gap-1 rounded-full px-2 py-1 transition-all duration-100 cursor-pointer w-full"
+        className="relative inline-flex items-center justify-between gap-1 rounded-full px-3 py-1 min-h-[44px] transition-all duration-100 cursor-pointer w-full"
         style={pillStyle}
       >
         <span

@@ -22,7 +22,7 @@ const currentDevelopments = [
     type: "Residential Homes",
     status: "Registration Open",
     desc: "37 architecturally designed, single-storey 3-bedroom, 2-bathroom homes on an approved subdivision 8km from Hobart CBD. 7 Star Energy rated.",
-    image: "/branscombe/home-exterior-1.png",
+    image: "/branscombe/home-exterior-1.jpg",
     href: "/branscombe-estate",
     cta: "Select your home",
   },

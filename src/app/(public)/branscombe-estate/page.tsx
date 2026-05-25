@@ -14,13 +14,6 @@ export const metadata: Metadata = {
 export default function BranscombeEstatePage() {
   return (
     <>
-      {/* ===== DISCLAIMER BANNER ===== */}
-      <div className="bg-[#1A2744] text-white/80 text-xs font-archivo text-center py-2.5 px-4 leading-relaxed">
-        <strong className="text-white">REGISTRATION OF INTEREST ONLY</strong> —
-        No deposit is required or accepted. Registering does not create any
-        legal or financial obligation.
-      </div>
-
       {/* ===== HERO ===== */}
       <section className="relative bg-[#1A2744] text-white overflow-hidden">
         {/* Background gradient */}
@@ -176,7 +169,7 @@ export default function BranscombeEstatePage() {
               controls
               playsInline
               preload="metadata"
-              poster="/branscombe/home-exterior-1.png"
+              poster="/branscombe/home-exterior-1.jpg"
               className="w-full h-auto"
             >
               <source

@@ -70,7 +70,7 @@ export default function ElevationGallery() {
           <button
             type="button"
             onClick={() => setExpanded(null)}
-            className="absolute top-4 right-4 text-white/70 hover:text-white text-3xl font-light z-[101]"
+            className="absolute top-4 right-4 flex items-center justify-center w-11 h-11 text-white/80 hover:text-white text-3xl font-light z-[101]"
             aria-label="Close"
           >
             &times;
