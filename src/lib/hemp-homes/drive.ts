@@ -223,6 +223,9 @@ export async function syncHempHomesDrive(): Promise<DriveSyncResult> {
           mime_type: f.mimeType,
           byte_size: buf.length,
           alt_text: f.name,
+          // Default hidden — operator opts each synced item into the public
+          // gallery via the Media Library toggle (migration 0030).
+          show_in_gallery: false,
           drive_file_id: f.id,
           drive_url: f.webViewLink ?? `https://drive.google.com/file/d/${f.id}/view`,
           drive_synced_at: new Date().toISOString(),

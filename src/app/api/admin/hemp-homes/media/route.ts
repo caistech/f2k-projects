@@ -63,7 +63,9 @@ export async function POST(request: Request) {
   }
   const altText = String(formData.get("alt_text") ?? "").trim();
   const caption = String(formData.get("caption") ?? "").trim();
-  const showInGallery = formData.get("show_in_gallery") !== "false";
+  // Default hidden — operator opts each item into the public gallery via the
+  // Media Library toggle (migration 0030). Only an explicit "true" publishes.
+  const showInGallery = formData.get("show_in_gallery") === "true";
 
   const kind = kindFromMime(file.type);
   if (!kind) {
@@ -108,4 +110,46 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ media: insert.data }, { status: 201 });
+}
+
+// Bulk gallery-visibility update. Body: { show_in_gallery: boolean, ids?: string[] }.
+// With `ids`, updates just those rows; without, updates every media row (used by
+// the "Hide all from gallery" prune accelerator). One atomic UPDATE.
+export async function PATCH(request: Request) {
+  const admin = await getAdminUser();
+  if (!admin || !hasPermission(admin.role, "manage_hemp_homes_media")) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  let body: any;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  if (typeof body.show_in_gallery !== "boolean") {
+    return NextResponse.json({ error: "show_in_gallery must be boolean" }, { status: 400 });
+  }
+  const ids: string[] | null = Array.isArray(body.ids)
+    ? body.ids.filter((x: unknown) => typeof x === "string")
+    : null;
+
+  const supabase = createSupabaseServiceWithActor(
+    admin.email,
+    `bulk gallery visibility → ${body.show_in_gallery}${ids ? ` (${ids.length} items)` : " (all)"}`,
+  );
+
+  let query = (supabase.from("hemp_homes_media") as any)
+    .update({ show_in_gallery: body.show_in_gallery });
+  query = ids && ids.length > 0
+    ? query.in("id", ids)
+    // No-op-safe full-table update: every row has a non-null id.
+    : query.not("id", "is", null);
+
+  const { data, error } = await query.select("id");
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+  return NextResponse.json({ updated: data?.length ?? 0 });
 }

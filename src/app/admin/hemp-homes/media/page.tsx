@@ -45,6 +45,8 @@ export default function HempHomesMediaPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [altText, setAltText] = useState("");
   const [caption, setCaption] = useState("");
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   const fetchMedia = useCallback(async () => {
     setLoading(true);
@@ -146,8 +148,104 @@ export default function HempHomesMediaPage() {
     }
   }
 
+  async function patchMedia(
+    id: string,
+    body: Record<string, unknown>,
+    okMsg?: string,
+  ): Promise<boolean> {
+    setBusyId(id);
+    setMessage(null);
+    try {
+      const res = await fetch(`/api/admin/hemp-homes/media/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage({ type: "error", text: data.error ?? "Update failed" });
+        return false;
+      }
+      setMedia((prev) => prev.map((m) => (m.id === id ? { ...m, ...data.media } : m)));
+      if (okMsg) setMessage({ type: "success", text: okMsg });
+      return true;
+    } catch {
+      setMessage({ type: "error", text: "Network error" });
+      return false;
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function toggleGallery(m: HempHomesMedia) {
+    await patchMedia(
+      m.id,
+      { show_in_gallery: !m.show_in_gallery },
+      !m.show_in_gallery ? "Now showing on the public site." : "Hidden from the public site.",
+    );
+  }
+
+  async function saveCaption(m: HempHomesMedia, value: string) {
+    if ((m.caption ?? "") === value.trim()) return;
+    await patchMedia(m.id, { caption: value }, "Caption saved.");
+  }
+
+  async function deleteMedia(m: HempHomesMedia) {
+    if (!confirm(`Delete this ${m.kind}? The file is removed permanently.`)) return;
+    setBusyId(m.id);
+    setMessage(null);
+    try {
+      const res = await fetch(`/api/admin/hemp-homes/media/${m.id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setMessage({ type: "error", text: data.error ?? "Delete failed" });
+        return;
+      }
+      setMedia((prev) => prev.filter((x) => x.id !== m.id));
+      setMessage({ type: "success", text: "Deleted." });
+    } catch {
+      setMessage({ type: "error", text: "Network error" });
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function hideAllFromGallery() {
+    const count = media.filter((m) => m.show_in_gallery).length;
+    if (count === 0) {
+      setMessage({ type: "success", text: "Nothing is showing on the public site." });
+      return;
+    }
+    if (!confirm(
+      `Hide all ${count} item(s) from the public gallery? The public page clears within a load or two — then toggle on just the ones you want to show.`,
+    )) {
+      return;
+    }
+    setBulkBusy(true);
+    setMessage(null);
+    try {
+      const res = await fetch(`/api/admin/hemp-homes/media`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ show_in_gallery: false }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage({ type: "error", text: data.error ?? "Bulk hide failed" });
+        return;
+      }
+      setMedia((prev) => prev.map((m) => ({ ...m, show_in_gallery: false })));
+      setMessage({ type: "success", text: `Hid ${data.updated} item(s). Now toggle on the ones you want public.` });
+    } catch {
+      setMessage({ type: "error", text: "Network error" });
+    } finally {
+      setBulkBusy(false);
+    }
+  }
+
   const images = media.filter((m) => m.kind === "image");
   const videos = media.filter((m) => m.kind === "video");
+  const publicCount = media.filter((m) => m.show_in_gallery).length;
 
   return (
     <div className="space-y-6">
@@ -156,7 +254,9 @@ export default function HempHomesMediaPage() {
         <p className="text-sm text-slate-500 max-w-2xl">
           Photos and video that back posts, the public journey timeline, and the
           gallery page. Drop a file directly here, or connect your Google Drive
-          folder and pull new files in bulk.
+          folder and pull new files in bulk. New items are <strong>hidden from
+          the public gallery by default</strong> — use the <em>Show on site</em>
+          toggle on each item to publish only the ones you want.
         </p>
       </div>
 
@@ -300,7 +400,7 @@ export default function HempHomesMediaPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white border rounded p-4">
           <div className="text-xs uppercase tracking-wider text-slate-500">Total media</div>
           <div className="text-2xl font-bold text-slate-900">{media.length}</div>
@@ -317,6 +417,21 @@ export default function HempHomesMediaPage() {
             {drive?.connected ? "Use Sync now to pull more" : "Connect Drive above to enable"}
           </div>
         </div>
+        <div className="bg-white border rounded p-4 flex flex-col">
+          <div className="text-xs uppercase tracking-wider text-slate-500">In public gallery</div>
+          <div className="text-2xl font-bold text-emerald-700">
+            {publicCount}
+            <span className="text-base font-normal text-slate-400"> / {media.length}</span>
+          </div>
+          <button
+            type="button"
+            onClick={hideAllFromGallery}
+            disabled={bulkBusy || publicCount === 0}
+            className="mt-2 self-start text-xs font-semibold text-amber-700 hover:text-amber-900 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {bulkBusy ? "Hiding…" : "Hide all from gallery"}
+          </button>
+        </div>
       </div>
 
       <div className="bg-white border rounded-lg overflow-hidden">
@@ -329,38 +444,85 @@ export default function HempHomesMediaPage() {
           <div className="p-6 text-slate-500">No media yet. Upload above or sync from Drive.</div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-4">
-            {media.map((m) => (
-              <div key={m.id} className="border border-slate-200 rounded overflow-hidden bg-slate-50">
-                {m.kind === "image" ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={m.public_url}
-                    alt={m.alt_text ?? ""}
-                    className="w-full h-40 object-cover bg-slate-100"
-                  />
-                ) : (
-                  <video src={m.public_url} className="w-full h-40 object-cover bg-slate-900" controls={false} muted />
-                )}
-                <div className="p-2 text-xs text-slate-600 space-y-0.5">
-                  <div className="flex items-center justify-between">
-                    <span className="uppercase tracking-wider text-[0.6rem] font-semibold text-slate-500">
-                      {m.kind}
+            {media.map((m) => {
+              const busy = busyId === m.id;
+              return (
+                <div
+                  key={m.id}
+                  className={`border rounded overflow-hidden bg-white ${
+                    m.show_in_gallery
+                      ? "border-emerald-400 ring-1 ring-emerald-200"
+                      : "border-slate-200"
+                  }`}
+                >
+                  <div className="relative">
+                    {m.kind === "image" ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={m.public_url}
+                        alt={m.alt_text ?? ""}
+                        className="w-full h-40 object-cover bg-slate-100"
+                      />
+                    ) : (
+                      <video src={m.public_url} className="w-full h-40 object-cover bg-slate-900" controls={false} muted />
+                    )}
+                    <span
+                      className={`absolute top-1.5 left-1.5 text-[0.6rem] font-semibold px-1.5 py-0.5 rounded ${
+                        m.show_in_gallery ? "bg-emerald-600 text-white" : "bg-slate-900/70 text-white"
+                      }`}
+                    >
+                      {m.show_in_gallery ? "ON SITE" : "HIDDEN"}
                     </span>
                     {m.source === "drive" && (
-                      <span className="text-[0.6rem] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-semibold">
+                      <span className="absolute top-1.5 right-1.5 text-[0.6rem] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-semibold">
                         DRIVE
                       </span>
                     )}
                   </div>
-                  <div className="truncate text-slate-500" title={m.alt_text ?? ""}>
-                    {m.alt_text || <span className="italic text-slate-400">no alt text</span>}
-                  </div>
-                  <div className="text-[0.65rem] text-slate-400">
-                    {fmtBytes(m.byte_size)} · {fmtDate(m.created_at)}
+                  <div className="p-2 text-xs text-slate-600 space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="uppercase tracking-wider text-[0.6rem] font-semibold text-slate-500">
+                        {m.kind}
+                      </span>
+                      <span className="text-[0.65rem] text-slate-400">
+                        {fmtBytes(m.byte_size)} · {fmtDate(m.created_at)}
+                      </span>
+                    </div>
+                    <input
+                      type="text"
+                      defaultValue={m.caption ?? ""}
+                      placeholder="Caption (shown on the public site)"
+                      disabled={busy}
+                      onBlur={(e) => saveCaption(m, e.target.value)}
+                      className="w-full border border-slate-200 rounded px-2 py-1.5 text-xs disabled:opacity-50"
+                    />
+                    <div className="flex items-center justify-between gap-2 pt-0.5">
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => toggleGallery(m)}
+                        className={`flex-1 text-[0.7rem] font-semibold px-2 py-2 rounded disabled:opacity-50 ${
+                          m.show_in_gallery
+                            ? "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300"
+                            : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300"
+                        }`}
+                      >
+                        {busy ? "…" : m.show_in_gallery ? "✓ On site — hide" : "Show on site"}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => deleteMedia(m)}
+                        aria-label="Delete media"
+                        className="text-[0.7rem] font-semibold text-red-600 hover:text-red-800 px-2 py-2 disabled:opacity-50"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

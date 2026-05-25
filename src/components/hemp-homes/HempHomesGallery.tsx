@@ -10,6 +10,20 @@ export interface GalleryItem {
   caption: string | null;
 }
 
+// Grid tiles load a small, server-resized thumbnail via Supabase Storage image
+// transforms (Pro plan) instead of the full 3-4MB original. The lightbox still
+// loads the full-res original. If transforms aren't enabled the render endpoint
+// 404s — the <img> onError handler falls back to the original URL, so the
+// gallery still works (just heavier).
+function thumbUrl(publicUrl: string): string {
+  if (!publicUrl.includes("/storage/v1/object/public/")) return publicUrl;
+  const rendered = publicUrl.replace(
+    "/storage/v1/object/public/",
+    "/storage/v1/render/image/public/",
+  );
+  return `${rendered}?width=600&height=450&resize=cover&quality=70`;
+}
+
 export default function HempHomesGallery({ items }: { items: GalleryItem[] }) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const active = items.find((i) => i.id === activeId) ?? null;
@@ -43,7 +57,13 @@ export default function HempHomesGallery({ items }: { items: GalleryItem[] }) {
                 {item.kind === "image" ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={item.public_url}
+                    src={thumbUrl(item.public_url)}
+                    data-fallback={item.public_url}
+                    onError={(e) => {
+                      const el = e.currentTarget;
+                      const fb = el.dataset.fallback;
+                      if (fb && el.src !== fb) el.src = fb;
+                    }}
                     alt={label}
                     loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
