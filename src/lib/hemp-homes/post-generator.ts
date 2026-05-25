@@ -4,15 +4,18 @@
  * Flow:
  *   1. Give Claude the pool of curated/captioned media (id + caption + alt +
  *      kind), the recent post titles (so it doesn't repeat itself), and the
- *      build context.
+ *      estate context.
  *   2. Claude returns a JSON draft: title, markdown body, stage, state, and an
  *      ordered list of media_ids it selected (first = hero).
  *   3. The caller inserts a DRAFT post + post_media rows. NEVER auto-publishes
- *      and NEVER sends — Dennis edits and approves before publish/send.
+ *      and NEVER sends — the operator edits and approves before publish/send.
  *
  * Mirrors outreach-generator.ts (same @caistech/ai-client setup). Photo
- * selection is caption-based for now (vision is a later upgrade per the
- * hemp-homes-community-builder-spec).
+ * selection is caption-based for now (vision is a later upgrade).
+ *
+ * Two entry points share one engine (runDraft):
+ *   - generatePostDraft       → Hemp Homes (prompt preserved verbatim).
+ *   - generateEstatePostDraft → any estate, prompt composed from its config.
  */
 
 import Anthropic from "@anthropic-ai/sdk";
@@ -48,7 +51,18 @@ const ALLOWED_STAGES: HempHomesStage[] = [
 ];
 const ALLOWED_STATES: HempHomesState[] = ["completed", "in_progress", "scheduled"];
 
-const SYSTEM_PROMPT = `You write short "build in public" blog posts for Factory2Key's Hemp Homes for Eco-Communities program. The posts go on the PUBLIC website and (after the operator approves) to people who signed up to follow the journey.
+const OUTPUT_SPEC = `OUTPUT
+Return ONLY a single JSON object, no prose, no code fences:
+{
+  "title": "short, specific, no clickbait",
+  "overview": "the post body in markdown — 2 to 4 short paragraphs",
+  "stage": one of [design, material_development, engineering, prototyping, building, certification, install, community],
+  "state": one of [completed, in_progress, scheduled],
+  "media_ids": ["<id>", ...]   // 1-4 ids from the supplied photos, most relevant first (first = hero). [] if none fit.
+}`;
+
+// Hemp Homes prompt — preserved verbatim (its output is the proven reference).
+const HEMP_SYSTEM_PROMPT = `You write short "build in public" blog posts for Factory2Key's Hemp Homes for Eco-Communities program. The posts go on the PUBLIC website and (after the operator approves) to people who signed up to follow the journey.
 
 THE PRODUCT
 - The Joey60 Hemp Edition: a 60m² single-bedroom home built from engineered hemp panels, assembled on site as a flat-pack kit (owner-build with community OR built by an F2K team).
@@ -77,29 +91,43 @@ HARD RULES (a violation makes the post unusable)
 - Do NOT invent events. Ground the post in the supplied photo captions and the current stage. If the captions are thin, write a warm general update about that stage and the material — do not fabricate specifics.
 - Only select photos from the supplied list, by their exact id.
 
-OUTPUT
-Return ONLY a single JSON object, no prose, no code fences:
-{
-  "title": "short, specific, no clickbait",
-  "overview": "the post body in markdown — 2 to 4 short paragraphs",
-  "stage": one of [design, material_development, engineering, prototyping, building, certification, install, community],
-  "state": one of [completed, in_progress, scheduled],
-  "media_ids": ["<id>", ...]   // 1-4 ids from the supplied photos, most relevant first (first = hero). [] if none fit.
-}`;
+${OUTPUT_SPEC}`;
+
+// Generic prompt skeleton for any estate. Estate-specific facts + guardrails
+// come from the estate config's aiContext.
+function buildSystemPrompt(estateName: string, aiContext: string): string {
+  return `You write short "build in public" blog posts for ${estateName}, an Australian Factory2Key development. The posts go on the PUBLIC website and (after the operator approves) to people following the project.
+
+${aiContext}
+
+VOICE
+- Upbeat, warm, educational. Genuinely interested in the work, never hypey or salesy.
+- Teach the reader something about this stage of the development. Short paragraphs.
+- Australian English (organisation, recognise, metre, colour). No emoji. No exclamation-point spam.
+- Standalone updates — do NOT number them "Day 1 / Update 3" or imply a strict sequence.
+
+UNIVERSAL RULES
+- Registration of interest only — never promise deposits, contracts, guaranteed availability, prices or dates not in the supplied material.
+- Do NOT invent events, specs, or figures. Ground the post in the supplied photo captions and the current stage. If captions are thin, write a warm general update — do not fabricate specifics.
+- Only select photos from the supplied list, by their exact id.
+
+${OUTPUT_SPEC}`;
+}
 
 function stripFences(s: string): string {
   return s.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
 }
 
-export async function generatePostDraft(
+async function runDraft(
   photos: PostGenInputMedia[],
   recentPosts: PostGenRecentPost[],
+  systemPrompt: string,
 ): Promise<GeneratedPost> {
   const config = getClaudeClientConfig({
     openrouterKey: process.env.OPENROUTER_API_KEY,
     anthropicKey: process.env.ANTHROPIC_API_KEY,
     referer: process.env.NEXT_PUBLIC_CANONICAL_URL,
-    appTitle: "f2k-projects (hemp-homes posts)",
+    appTitle: "f2k-projects (estate posts)",
   });
   const client = new Anthropic(config);
   const model = resolveClaudeModel({
@@ -131,7 +159,7 @@ Write one fresh, standalone build-in-public post. Pick the stage that best match
   const resp = await client.messages.create({
     model,
     max_tokens: 1200,
-    system: SYSTEM_PROMPT,
+    system: systemPrompt,
     messages: [{ role: "user", content: userMessage }],
   });
 
@@ -155,15 +183,16 @@ Write one fresh, standalone build-in-public post. Pick the stage that best match
 
   const stage: HempHomesStage = ALLOWED_STAGES.includes(parsed.stage)
     ? parsed.stage
-    : "material_development";
+    : "building";
   const state: HempHomesState = ALLOWED_STATES.includes(parsed.state)
     ? parsed.state
     : "in_progress";
 
-  // Keep only ids that were actually offered, preserve LLM order, cap at 4.
   const offered = new Set(photos.map((p) => p.id));
   const media_ids = Array.isArray(parsed.media_ids)
-    ? parsed.media_ids.filter((id: unknown): id is string => typeof id === "string" && offered.has(id)).slice(0, 4)
+    ? parsed.media_ids
+        .filter((id: unknown): id is string => typeof id === "string" && offered.has(id))
+        .slice(0, 4)
     : [];
 
   return {
@@ -176,4 +205,22 @@ Write one fresh, standalone build-in-public post. Pick the stage that best match
     llm_input_tokens: resp.usage?.input_tokens ?? null,
     llm_output_tokens: resp.usage?.output_tokens ?? null,
   };
+}
+
+/** Hemp Homes drafter — prompt preserved verbatim. */
+export async function generatePostDraft(
+  photos: PostGenInputMedia[],
+  recentPosts: PostGenRecentPost[],
+): Promise<GeneratedPost> {
+  return runDraft(photos, recentPosts, HEMP_SYSTEM_PROMPT);
+}
+
+/** Generic estate drafter — prompt composed from the estate's config. */
+export async function generateEstatePostDraft(
+  estateName: string,
+  aiContext: string,
+  photos: PostGenInputMedia[],
+  recentPosts: PostGenRecentPost[],
+): Promise<GeneratedPost> {
+  return runDraft(photos, recentPosts, buildSystemPrompt(estateName, aiContext));
 }

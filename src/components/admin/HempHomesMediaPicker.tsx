@@ -8,9 +8,20 @@ interface Props {
   onChange: (mediaId: string | null) => void;
   placeholder?: string;
   kind?: "image" | "video" | "all";
+  /** API base for the media endpoint (per estate). Defaults to Hemp Homes. */
+  apiBase?: string;
+  /** Link target for the "upload some first" empty-state. */
+  uploadHref?: string;
 }
 
-export function MediaPicker({ value, onChange, placeholder = "Pick from library", kind = "image" }: Props) {
+export function MediaPicker({
+  value,
+  onChange,
+  placeholder = "Pick from library",
+  kind = "image",
+  apiBase = "/api/admin/hemp-homes",
+  uploadHref = "/admin/hemp-homes/media",
+}: Props) {
   const [open, setOpen] = useState(false);
   const [media, setMedia] = useState<HempHomesMedia[]>([]);
   const [loading, setLoading] = useState(false);
@@ -19,7 +30,7 @@ export function MediaPicker({ value, onChange, placeholder = "Pick from library"
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/hemp-homes/media");
+      const res = await fetch(`${apiBase}/media`);
       if (!res.ok) return;
       const data = await res.json();
       setMedia(data.media ?? []);
@@ -27,7 +38,7 @@ export function MediaPicker({ value, onChange, placeholder = "Pick from library"
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [apiBase]);
 
   useEffect(() => {
     // Lazy-load on first open OR when a value is set so we can render the preview.
@@ -125,7 +136,7 @@ export function MediaPicker({ value, onChange, placeholder = "Pick from library"
               ) : filtered.length === 0 ? (
                 <div className="text-slate-500 text-sm">
                   No {kind === "all" ? "media" : `${kind}s`} in the library yet.{" "}
-                  <a href="/admin/hemp-homes/media" className="text-emerald-700 underline">
+                  <a href={uploadHref} className="text-emerald-700 underline">
                     Upload some first →
                   </a>
                 </div>
