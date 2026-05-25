@@ -1,0 +1,29 @@
+{
+  "name": "hemp-homes-ai-posts",
+  "description": "LLM-drafted Hemp Homes blog posts (upbeat/eco/educational, non-sequential) with photo selection from the curated media pool. Approval-gated end-to-end: LLM drafts title + body + photo picks, Dennis edits and approves before publish-to-site or email-to-subscribers. Reuses the outreach Claude pattern (@caistech/ai-client). Public blog rendering + email send are sibling pieces.",
+  "introduced_at": "2026-05-25",
+  "env_vars": [
+    {
+      "name": "ANTHROPIC_API_KEY",
+      "required": true,
+      "description": "Claude API key for drafting posts via @caistech/ai-client. Already used by hemp-homes-outreach.",
+      "scope": ["production", "preview"],
+      "where": "Anthropic Console → API Keys (portfolio-wide key)"
+    },
+    {
+      "name": "OPENROUTER_API_KEY",
+      "required": false,
+      "description": "Alternative LLM routing. Either this or ANTHROPIC_API_KEY must be present; ANTHROPIC preferred.",
+      "scope": ["production", "preview"],
+      "where": "openrouter.ai → API Keys"
+    },
+    {
+      "name": "NEXT_PUBLIC_CANONICAL_URL",
+      "required": true,
+      "description": "Canonical app URL, used for the public_journey_url in generated copy. Already set.",
+      "scope": ["production", "preview", "development"],
+      "where": "Vercel env"
+    }
+  ],
+  "external_setup": []
+}

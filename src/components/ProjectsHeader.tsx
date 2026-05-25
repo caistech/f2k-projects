@@ -8,6 +8,7 @@ const navItems = [
   { href: "/seafields-estate", label: "Seafields" },
   { href: "/branscombe-estate", label: "Branscombe" },
   { href: "/hemp-homes-for-eco-communities", label: "Hemp Homes" },
+  { href: "/blog", label: "Blog" },
   { href: "https://www.factory2key.com.au", label: "About F2K", external: true },
 ];
 

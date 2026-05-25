@@ -51,6 +51,7 @@ export default function HempHomesPostsPage() {
   const [posts, setPosts] = useState<HempHomesPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [busyPostId, setBusyPostId] = useState<string | null>(null);
   const [editing, setEditing] = useState<EditDraft | null>(null);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -82,6 +83,31 @@ export default function HempHomesPostsPage() {
   useEffect(() => {
     fetchPosts();
   }, [fetchPosts]);
+
+  async function generateDraft() {
+    setGenerating(true);
+    setMessage(null);
+    try {
+      const res = await fetch("/api/admin/hemp-homes/posts/generate", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage({ type: "error", text: data.error ?? "AI draft failed" });
+        return;
+      }
+      setMessage({
+        type: data.warning ? "error" : "success",
+        text: data.warning
+          ? data.warning
+          : `AI draft created${data.selected_media ? ` with ${data.selected_media} photo(s)` : ""} — review and edit below, then publish when ready.`,
+      });
+      await fetchPosts();
+      if (data.post) startEdit(data.post);
+    } catch {
+      setMessage({ type: "error", text: "Network error generating draft" });
+    } finally {
+      setGenerating(false);
+    }
+  }
 
   async function createPost(e: React.FormEvent) {
     e.preventDefault();
@@ -215,6 +241,27 @@ export default function HempHomesPostsPage() {
           {message.text}
         </div>
       )}
+
+      {/* AI draft */}
+      <div className="bg-gradient-to-br from-emerald-50 to-white border border-emerald-200 rounded-lg p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="flex-1">
+          <h3 className="font-semibold text-slate-900">Draft a post with AI</h3>
+          <p className="text-sm text-slate-600 mt-0.5 max-w-2xl">
+            The assistant writes an upbeat, educational update about the Joey60 build
+            and picks relevant photos from your curated library. It lands as a{" "}
+            <strong>draft</strong> — you edit and approve before anything publishes or
+            sends. Best results when your gallery photos have captions.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={generateDraft}
+          disabled={generating}
+          className="shrink-0 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded text-sm font-semibold disabled:opacity-50"
+        >
+          {generating ? "Drafting…" : "✨ Draft a post with AI"}
+        </button>
+      </div>
 
       {/* Create form */}
       <form onSubmit={createPost} className="bg-white border rounded-lg p-5 space-y-4">
