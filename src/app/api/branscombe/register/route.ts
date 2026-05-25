@@ -15,7 +15,8 @@ const schema = z.object({
   phone: z.string().max(30).nullable().optional(),
   units_selected: z
     .array(z.string().regex(/^U\d{1,2}$/))
-    .min(1, "Please select at least one home"),
+    .min(1, "Please select at least one home")
+    .max(3, "You can register interest in at most three homes"),
   price_preferences: z.record(z.string(), z.string()).optional(),
   // Location
   suburb: z.string().max(100).nullable().optional(),

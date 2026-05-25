@@ -285,13 +285,13 @@ export default function BranscombeEstatePage() {
               },
               {
                 label: "Finance",
-                value: "45 days",
-                note: "Finance approval window from contract date",
+                value: "30 days",
+                note: "Finance approval window from date of contract",
               },
               {
                 label: "Settlement",
-                value: "30 days",
-                note: "Settlement period after finance approval",
+                value: "On Title",
+                note: "Settlement after the issue of title",
               },
               {
                 label: "Build",
@@ -326,7 +326,7 @@ export default function BranscombeEstatePage() {
             >
               Dennis
             </a>{" "}
-            for the full sales contract template.
+            for full information.
           </p>
         </div>
       </section>
@@ -339,15 +339,15 @@ export default function BranscombeEstatePage() {
       </section>
 
       {/* ===== PRIVACY NOTE ===== */}
-      <section className="py-8 px-4 bg-[#1A2744]">
+      <section className="py-8 px-4 bg-white border-t border-black/5">
         <div className="max-w-[900px] mx-auto">
-          <p className="text-white/40 text-xs font-archivo leading-relaxed text-center">
+          <p className="text-slate text-sm font-archivo leading-relaxed text-center">
             Registration data collected on this page is used by Factory2Key Pty
             Ltd for project communications only and is not shared with any third
             party for marketing.{" "}
             <a
               href="/privacy"
-              className="text-[#00B5AD]/60 hover:text-[#00B5AD] underline transition-colors"
+              className="text-[#00B5AD] hover:text-[#009E97] underline font-semibold transition-colors"
             >
               View our Privacy Policy
             </a>

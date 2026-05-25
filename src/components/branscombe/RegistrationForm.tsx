@@ -74,14 +74,18 @@ const HOW_HEARD = [
   "Other",
 ] as const;
 
-/** Floor plan image per house type group */
+/** Floor plan image per house type — one distinct layout per type */
 const FLOORPLAN_IMAGE: Record<HouseType, string> = {
-  "1A": "/branscombe/floorplan-type1.png",
-  "1B": "/branscombe/floorplan-type1.png",
-  "2A": "/branscombe/floorplan-type2.png",
-  "2B": "/branscombe/floorplan-type2.png",
-  "2C": "/branscombe/floorplan-type2.png",
+  "1A": "/branscombe/floorplan-1a.png",
+  "1B": "/branscombe/floorplan-1b.png",
+  "2A": "/branscombe/floorplan-2a.png",
+  "2B": "/branscombe/floorplan-2b.png",
+  "2C": "/branscombe/floorplan-2c.png",
 };
+
+/** Buyers may register interest in at most three homes (first / second / third choice). */
+const MAX_SELECTIONS = 3;
+const CHOICE_LABELS = ["First choice", "Second choice", "Third choice"];
 
 export default function RegistrationForm() {
   const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
@@ -118,6 +122,9 @@ export default function RegistrationForm() {
   // Expanded unit detail panel
   const [expandedUnit, setExpandedUnit] = useState<string | null>(null);
 
+  // Shown when a buyer tries to select more than the allowed number of homes.
+  const [selectionNotice, setSelectionNotice] = useState<string | null>(null);
+
   const toggleUnit = (unitId: string) => {
     setSelectedUnits((prev) => {
       if (prev.includes(unitId)) {
@@ -127,8 +134,16 @@ export default function RegistrationForm() {
           return next;
         });
         if (expandedUnit === unitId) setExpandedUnit(null);
+        setSelectionNotice(null);
         return prev.filter((id) => id !== unitId);
       }
+      if (prev.length >= MAX_SELECTIONS) {
+        setSelectionNotice(
+          `You can register interest in up to ${MAX_SELECTIONS} homes — your first, second and third choice. Deselect one to pick another.`
+        );
+        return prev;
+      }
+      setSelectionNotice(null);
       setExpandedUnit(unitId);
       return [...prev, unitId];
     });
@@ -309,10 +324,11 @@ export default function RegistrationForm() {
               Click directly on a numbered home in the map below to select it.
             </p>
             <p className="text-slate/70 font-archivo text-sm mt-1">
-              You can select multiple homes. Each home will appear in your
-              registration form where you can review its floor plan and set
-              your price expectation. Use the reference table below to see
-              which home type is assigned to each unit number.
+              You can make up to three selections — your first, second and
+              third choice. Each home you pick appears in your registration
+              form where you can review its floor plan and set your price
+              expectation. Use the reference table below to see which home type
+              is assigned to each unit number.
             </p>
           </div>
         </div>
@@ -352,22 +368,33 @@ export default function RegistrationForm() {
 
         <SiteMap selectedUnits={selectedUnits} onToggleUnit={toggleUnit} />
 
-        {/* Selected units summary bar */}
+        {/* Selection-limit notice */}
+        {selectionNotice && (
+          <div className="mt-4 bg-amber-50 border-l-4 border-amber-400 px-4 py-3 text-sm font-archivo text-amber-900">
+            {selectionNotice}
+          </div>
+        )}
+
+        {/* Selected units summary bar — in preference order (first / second / third choice) */}
         {selectedUnits.length > 0 && (
           <div className="mt-6 bg-[#1A2744] text-white p-4 flex flex-wrap items-center gap-3">
             <span className="font-ibm-mono text-[0.65rem] tracking-[0.3em] uppercase opacity-60">
-              Selected:
+              Your choices:
             </span>
-            {sortedUnits.map((unitId) => {
+            {selectedUnits.map((unitId, idx) => {
               const unit = UNITS.find((u) => u.id === unitId);
+              const choice = CHOICE_LABELS[idx] || `Choice ${idx + 1}`;
               return (
                 <button
                   key={unitId}
                   type="button"
                   onClick={() => toggleUnit(unitId)}
-                  className="bg-white/10 hover:bg-white/20 px-3 py-1 text-sm font-archivo transition-colors flex items-center gap-2"
+                  className="bg-white/10 hover:bg-white/20 px-3 py-1.5 text-sm font-archivo transition-colors flex items-center gap-2"
                 >
-                  {unitId}
+                  <span className="text-[0.55rem] uppercase tracking-wider text-[#00B5AD] font-semibold">
+                    {choice}
+                  </span>
+                  <span className="font-semibold">{unitId}</span>
                   {unit && (
                     <span className="opacity-50 text-xs">
                       Type {unit.type}
@@ -589,9 +616,9 @@ export default function RegistrationForm() {
           </h2>
           <p className="text-slate font-archivo leading-relaxed mb-6 max-w-[560px] mx-auto">
             The registration form opens once you choose at least one home on
-            the site map above. You can pick multiple homes — each one will
-            give you a slot to set your preferences before you complete the
-            form.
+            the site map above. You can make up to three selections — your
+            first, second and third choice — and each one gives you a slot to
+            set your preferences before you complete the form.
           </p>
           <a
             href="#site-map"
