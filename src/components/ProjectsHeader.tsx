@@ -100,7 +100,7 @@ export default function ProjectsHeader() {
             onClick={() => setMenuOpen((v) => !v)}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
-            className="md:hidden p-2 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+            className="md:hidden p-2.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

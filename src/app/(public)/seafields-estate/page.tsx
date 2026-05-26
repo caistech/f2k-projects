@@ -92,6 +92,27 @@ export const metadata: Metadata = {
   title: "Seafields Estate — Register Your Interest | F2K",
   description:
     "145-lot residential subdivision in Waggrakine, Geraldton WA. Vacant serviced land or house & land packages. Register your interest — no deposit required.",
+  openGraph: {
+    title: "Seafields Estate — Waggrakine, Geraldton WA",
+    description:
+      "145-lot residential subdivision in Waggrakine, Geraldton WA. Vacant serviced land or house & land packages. Register your interest — no deposit required.",
+    url: "https://f2k-projects.vercel.app/seafields-estate",
+    siteName: "Factory2Key Projects",
+    type: "website",
+    images: [
+      {
+        url: "https://f2k-projects.vercel.app/seafields/site-plan.jpg",
+        alt: "Seafields Estate subdivision plan, Geraldton WA",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Seafields Estate — Waggrakine, Geraldton WA",
+    description:
+      "145-lot residential subdivision in Waggrakine, Geraldton WA. Vacant serviced land or house & land packages.",
+    images: ["https://f2k-projects.vercel.app/seafields/site-plan.jpg"],
+  },
 };
 
 export default function SeafieldsEstatePage() {

@@ -9,6 +9,27 @@ export const metadata: Metadata = {
   title: "Branscombe Estate — Register Your Interest | F2K",
   description:
     "37 architecturally designed, single-storey 3-bedroom, 2-bathroom homes in Claremont, Tasmania. 7 Star Energy rated. Register your interest — no deposit required.",
+  openGraph: {
+    title: "Branscombe Estate — Claremont, Tasmania",
+    description:
+      "37 architecturally designed single-storey homes in Claremont, Tasmania. Register your interest — no deposit required.",
+    url: "https://f2k-projects.vercel.app/branscombe-estate",
+    siteName: "Factory2Key Projects",
+    type: "website",
+    images: [
+      {
+        url: "https://f2k-projects.vercel.app/branscombe/home-exterior-1.jpg",
+        alt: "Branscombe Estate, Claremont Tasmania",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Branscombe Estate — Claremont, Tasmania",
+    description:
+      "37 architecturally designed single-storey homes in Claremont, Tasmania.",
+    images: ["https://f2k-projects.vercel.app/branscombe/home-exterior-1.jpg"],
+  },
 };
 
 export default function BranscombeEstatePage() {

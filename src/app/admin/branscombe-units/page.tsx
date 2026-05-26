@@ -108,6 +108,9 @@ export default function BranscombeUnitsPage() {
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("unit_number");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const [bulkType, setBulkType] = useState<HouseType | "">("");
+  const [bulkPrice, setBulkPrice] = useState("");
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   const fetchRows = useCallback(async () => {
     setLoading(true);
@@ -250,6 +253,54 @@ export default function BranscombeUnitsPage() {
     });
   }
 
+  // Bulk-set retail price across every home of one type (Uwe: "4x Type 1A at
+  // $669,900" is per-unit today; this applies one price to all of a type).
+  async function applyBulkPrice() {
+    if (!bulkType) {
+      setMessage({ type: "error", text: "Pick a home type first" });
+      return;
+    }
+    const price = Number(bulkPrice.replace(/[^0-9.]/g, ""));
+    if (!Number.isFinite(price) || price <= 0) {
+      setMessage({ type: "error", text: "Enter a valid price" });
+      return;
+    }
+    const targets = rows.filter((r) => r.home_type === bulkType);
+    if (targets.length === 0) {
+      setMessage({ type: "error", text: `No Type ${bulkType} homes to price` });
+      return;
+    }
+    if (
+      !window.confirm(
+        `Set retail price to ${AUD0.format(price)} on all ${targets.length} Type ${bulkType} home(s)? This OVERWRITES any existing retail price on those homes.`,
+      )
+    )
+      return;
+    setBulkBusy(true);
+    let ok = 0;
+    for (const t of targets) {
+      try {
+        const res = await fetch(
+          `/api/admin/branscombe/allocations/${t.unit_number}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ retail_price: price }),
+          },
+        );
+        if (res.ok) ok++;
+      } catch {
+        /* failure tallied via ok count below */
+      }
+    }
+    setBulkBusy(false);
+    setMessage({
+      type: ok === targets.length ? "success" : "error",
+      text: `Set ${AUD0.format(price)} on ${ok}/${targets.length} Type ${bulkType} home(s)`,
+    });
+    await fetchRows();
+  }
+
   return (
     <div>
       <h2 className="text-2xl font-bold text-slate-900 mb-1">
@@ -307,6 +358,41 @@ export default function BranscombeUnitsPage() {
           {message.text}
         </div>
       )}
+
+      {/* Bulk price — set one retail price across every home of a type */}
+      <div className="mb-4 flex flex-wrap items-center gap-2 rounded border border-slate-200 bg-slate-50 p-3 text-sm">
+        <span className="font-medium text-slate-700">Bulk price</span>
+        <select
+          value={bulkType}
+          onChange={(e) => setBulkType(e.target.value as HouseType | "")}
+          className="border rounded px-2 py-2"
+        >
+          <option value="">Home type…</option>
+          {HOUSE_TYPES.map((t) => (
+            <option key={t} value={t}>
+              Type {t}
+            </option>
+          ))}
+        </select>
+        <input
+          type="text"
+          inputMode="numeric"
+          placeholder="Retail $"
+          value={bulkPrice}
+          onChange={(e) => setBulkPrice(e.target.value)}
+          className="border rounded px-3 py-2 w-32"
+        />
+        <button
+          onClick={applyBulkPrice}
+          disabled={bulkBusy || !bulkType || !bulkPrice.trim()}
+          className="bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 rounded font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {bulkBusy ? "Applying…" : "Apply to all of type"}
+        </button>
+        <span className="text-slate-400">
+          Overwrites existing retail prices on that type — asks to confirm first.
+        </span>
+      </div>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center mb-4">
