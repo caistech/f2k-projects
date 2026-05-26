@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getAdminUser, hasPermission } from "@/lib/admin-auth";
 import { createSupabaseServiceWithActor } from "@/lib/supabase-service";
+import { coerceNumerics, DWELLING_NUMERIC_KEYS } from "@/lib/seafields/coerce-numerics";
 
 const updateSchema = z.object({
   code: z
@@ -79,5 +80,7 @@ export async function PATCH(
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ dwelling_type: data });
+  return NextResponse.json({
+    dwelling_type: coerceNumerics(data as Record<string, unknown>, DWELLING_NUMERIC_KEYS),
+  });
 }

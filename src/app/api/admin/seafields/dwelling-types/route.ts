@@ -5,6 +5,7 @@ import {
   createSupabaseService,
   createSupabaseServiceWithActor,
 } from "@/lib/supabase-service";
+import { coerceNumerics, DWELLING_NUMERIC_KEYS } from "@/lib/seafields/coerce-numerics";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +42,10 @@ export async function GET() {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  return NextResponse.json({ dwelling_types: data ?? [] });
+  const dwelling_types = ((data as Record<string, unknown>[]) ?? []).map((r) =>
+    coerceNumerics(r, DWELLING_NUMERIC_KEYS),
+  );
+  return NextResponse.json({ dwelling_types });
 }
 
 export async function POST(request: Request) {
@@ -80,5 +84,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ dwelling_type: data }, { status: 201 });
+  return NextResponse.json(
+    { dwelling_type: coerceNumerics(data as Record<string, unknown>, DWELLING_NUMERIC_KEYS) },
+    { status: 201 },
+  );
 }

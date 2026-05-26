@@ -7,6 +7,7 @@ import {
   createSupabaseServiceWithActor,
 } from "@/lib/supabase-service";
 import { sendTemplated } from "@/lib/email/send";
+import { coerceNumerics, STAGE_NUMERIC_KEYS } from "@/lib/seafields/coerce-numerics";
 
 const updateSchema = z.object({
   stage_label: z.string().trim().min(1).max(200).optional(),
@@ -214,5 +215,7 @@ export async function PATCH(
   revalidatePath("/seafields-estate");
   revalidatePath("/");
 
-  return NextResponse.json({ stage: fresh });
+  return NextResponse.json({
+    stage: coerceNumerics(fresh as Record<string, unknown>, STAGE_NUMERIC_KEYS),
+  });
 }

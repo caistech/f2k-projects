@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser, hasPermission } from "@/lib/admin-auth";
 import { createSupabaseService } from "@/lib/supabase-service";
+import { coerceNumerics, STAGE_NUMERIC_KEYS } from "@/lib/seafields/coerce-numerics";
 
 export const dynamic = "force-dynamic";
 
@@ -27,5 +28,8 @@ export async function GET() {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  return NextResponse.json({ stages: data ?? [] });
+  const stages = ((data as Record<string, unknown>[]) ?? []).map((r) =>
+    coerceNumerics(r, STAGE_NUMERIC_KEYS),
+  );
+  return NextResponse.json({ stages });
 }
