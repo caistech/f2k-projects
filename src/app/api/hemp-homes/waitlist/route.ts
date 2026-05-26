@@ -8,6 +8,7 @@ import {
   getActiveRecipients,
   renderBrandedEmail,
 } from "@/lib/hemp-homes/notify";
+import { guardRecipients } from "@/lib/email/recipient-guard";
 import { z } from "zod";
 
 const PROGRAM_SLUG = "hemp-homes-for-eco-communities";
@@ -296,9 +297,13 @@ export async function POST(request: Request) {
         "Waitlist signup only — no deposit taken. Reply directly to the applicant from your inbox or follow up via the admin panel.",
     });
 
+    // Keep test/non-production submissions out of real recipients' inboxes.
+    const adminGuard = guardRecipients(recipients, { triggeredByEmail: d.email });
+    const confirmGuard = guardRecipients(d.email, { triggeredByEmail: d.email });
+
     await resend.emails.send({
       from: fromAddress,
-      to: recipients,
+      to: adminGuard.to,
       subject: `Another waitlist signup by ${d.full_name}`,
       html: adminHtml,
     });
@@ -306,7 +311,7 @@ export async function POST(request: Request) {
     // Applicant confirmation — forest accent (#1B4332) per DESIGN.md §11.
     await resend.emails.send({
       from: fromAddress,
-      to: d.email,
+      to: confirmGuard.to,
       subject: "Hemp Homes — You're on the waitlist",
       html: `
         <div style="max-width:600px;font-family:sans-serif">

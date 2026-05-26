@@ -8,6 +8,7 @@
 
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { renderMarkdown } from "@/lib/markdown";
+import { guardRecipients } from "@/lib/email/recipient-guard";
 
 function getSecret(): string {
   const s = process.env.HEMP_HOMES_UNSUBSCRIBE_SECRET;
@@ -108,12 +109,13 @@ export async function sendRawEmail(args: {
   if (!apiKey) return { id: null, error: "RESEND_API_KEY not configured" };
   const from =
     process.env.RESEND_FROM_EMAIL || "Factory2Key <noreply@updates.corporateaisolutions.com>";
+  const guard = guardRecipients(args.to);
   try {
     const { Resend } = await import("resend");
     const resend = new Resend(apiKey);
     const res = await resend.emails.send({
       from,
-      to: args.to,
+      to: guard.to,
       subject: args.subject,
       html: args.html,
       // List-Unsubscribe so Gmail/Outlook show a native unsubscribe control.

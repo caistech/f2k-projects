@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getAdminUser, hasPermission, auditLog } from "@/lib/admin-auth";
 import { createSupabaseService } from "@/lib/supabase-service";
 import { forwardAllocationToGHL } from "@/lib/ghl";
+import { guardRecipients } from "@/lib/email/recipient-guard";
 import {
   escapeHtml,
   formatCurrency,
@@ -254,11 +255,12 @@ export async function PATCH(
         footer:
           "Sent because you are on the Branscombe admin-notification list. Manage at /admin/branscombe-pipeline.",
       });
+      const guard = guardRecipients(recipients, { triggeredByEmail: admin.email });
       await resend.emails.send({
         from:
           process.env.RESEND_FROM_EMAIL ||
           "Branscombe Estate <onboarding@resend.dev>",
-        to: recipients,
+        to: guard.to,
         subject: `U${unitNumber} ${verb} (by ${admin.email})`,
         html,
       });

@@ -6,6 +6,7 @@ import {
   getActiveRecipients,
   renderBrandedEmail,
 } from "@/lib/branscombe/notify";
+import { guardRecipients } from "@/lib/email/recipient-guard";
 import { z } from "zod";
 
 const schema = z.object({
@@ -217,11 +218,15 @@ export async function POST(request: Request) {
         "Registration of Interest only — no deposit taken. Reply directly to the registrant from your inbox or follow up from the admin panel.",
     });
 
+    // Keep test/non-production submissions out of real recipients' inboxes.
+    const adminGuard = guardRecipients(recipients, { triggeredByEmail: d.email });
+    const confirmGuard = guardRecipients(d.email, { triggeredByEmail: d.email });
+
     await resend.emails.send({
       from:
         process.env.RESEND_FROM_EMAIL ||
         "Branscombe Estate <onboarding@resend.dev>",
-      to: recipients,
+      to: adminGuard.to,
       subject: `Another registration for ${subjectUnitPhrase} by ${fullName}`,
       html: adminHtml,
     });
@@ -231,7 +236,7 @@ export async function POST(request: Request) {
       from:
         process.env.RESEND_FROM_EMAIL ||
         "Branscombe Estate <onboarding@resend.dev>",
-      to: d.email,
+      to: confirmGuard.to,
       subject: "Branscombe Estate — Thank You for Your Interest",
       html: `
         <div style="max-width:600px;font-family:sans-serif">

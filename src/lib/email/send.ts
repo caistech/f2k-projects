@@ -28,6 +28,7 @@
  */
 import { createSupabaseService } from "@/lib/supabase-service";
 import { escapeHtml } from "@/lib/html-escape";
+import { guardRecipients } from "@/lib/email/recipient-guard";
 
 const FROM_DEFAULT =
   "Seafields Estate <noreply@updates.corporateaisolutions.com>";
@@ -47,6 +48,11 @@ export type SendTemplatedArgs = {
   from?: string;
   /** Optional reply-to so registrants reach a real inbox. */
   replyTo?: string;
+  /**
+   * The submitter/actor email this send is on behalf of. Lets the recipient
+   * guard catch production test-traffic even when `to` is a real recipient.
+   */
+  triggeredByEmail?: string | null;
 };
 
 export type SendTemplatedResult = {
@@ -105,6 +111,9 @@ export async function sendTemplated(
   const html = interpolate(tpl.html_body, vars, true);
   const text = tpl.text_body ? interpolate(tpl.text_body, vars, false) : undefined;
 
+  // Keep test-tester + non-production traffic out of real recipients' inboxes.
+  const guard = guardRecipients(args.to, { triggeredByEmail: args.triggeredByEmail });
+
   let resendId: string | undefined;
   try {
     const { Resend } = await import("resend");
@@ -118,7 +127,7 @@ export async function sendTemplated(
       replyTo?: string;
     } = {
       from: args.from || process.env.RESEND_FROM_EMAIL || FROM_DEFAULT,
-      to: args.to,
+      to: guard.to,
       subject,
       html,
     };
@@ -146,7 +155,10 @@ export async function sendTemplated(
       entity_id: args.audit.entityId ?? null,
       details: {
         template_slug: args.slug,
-        to: args.to,
+        to: guard.to,
+        intended_to: guard.original,
+        rerouted: guard.rerouted,
+        reroute_reason: guard.reason,
         subject,
         resend_id: resendId ?? null,
       },

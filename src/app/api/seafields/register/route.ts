@@ -7,6 +7,7 @@ import {
   getActiveRecipients,
   renderBrandedEmail,
 } from "@/lib/seafields/notify";
+import { guardRecipients } from "@/lib/email/recipient-guard";
 import { z } from "zod";
 
 const schema = z.object({
@@ -355,11 +356,14 @@ export async function POST(request: Request) {
         "Registration of Interest only — no deposit taken. Reply directly to the registrant from your inbox or follow up from the admin panel.",
     });
 
+    // Keep test/non-production submissions out of real recipients' inboxes.
+    const guard = guardRecipients(recipients, { triggeredByEmail: d.email });
+
     await resend.emails.send({
       from:
         process.env.RESEND_FROM_EMAIL ||
         "Seafields Estate <onboarding@resend.dev>",
-      to: recipients,
+      to: guard.to,
       subject: `Another registration for ${subjectLotPhrase} by ${fullName}`,
       html,
     });
@@ -379,6 +383,7 @@ export async function POST(request: Request) {
     const result = await sendTemplated({
       slug: "registration_confirmation",
       to: d.email,
+      triggeredByEmail: d.email,
       variables: {
         first_name: d.first_name,
         lot_list: lotListPlain,

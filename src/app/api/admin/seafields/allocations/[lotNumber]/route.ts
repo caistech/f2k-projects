@@ -7,6 +7,7 @@ import {
   createSupabaseServiceWithActor,
 } from "@/lib/supabase-service";
 import { sendTemplated } from "@/lib/email/send";
+import { guardRecipients } from "@/lib/email/recipient-guard";
 import { forwardAllocationToGHL } from "@/lib/ghl";
 import { coerceAllocationNumerics } from "@/lib/seafields/coerce-numerics";
 import {
@@ -469,11 +470,12 @@ export async function PATCH(
         footer:
           "Sent because you are on the Seafields admin-notification list. Manage at /admin/seafields-registrations.",
       });
+      const guard = guardRecipients(recipients, { triggeredByEmail: admin.email });
       await resend.emails.send({
         from:
           process.env.RESEND_FROM_EMAIL ||
           "Seafields Estate <onboarding@resend.dev>",
-        to: recipients,
+        to: guard.to,
         subject: `Lot ${lotNumber} ${verb} (by ${admin.email})`,
         html,
       });

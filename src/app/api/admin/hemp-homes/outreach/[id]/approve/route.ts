@@ -5,6 +5,7 @@ import {
   createSupabaseServiceWithActor,
 } from "@/lib/supabase-service";
 import { buildUnsubscribeUrl } from "@/lib/hemp-homes/unsubscribe-token";
+import { guardRecipients } from "@/lib/email/recipient-guard";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -62,9 +63,10 @@ export async function POST(_request: Request, { params }: Ctx) {
   try {
     const { Resend } = await import("resend");
     const resend = new Resend(apiKey);
+    const guard = guardRecipients(outreach.drafted_to_addresses);
     const result = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || FROM_DEFAULT,
-      to: outreach.drafted_to_addresses,
+      to: guard.to,
       bcc: [OUTREACH_BCC],
       subject: outreach.drafted_subject,
       html: outreach.drafted_body_html ?? `<pre>${outreach.drafted_body_md}</pre>`,

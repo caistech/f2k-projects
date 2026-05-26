@@ -5,6 +5,7 @@ import { createSupabaseService } from "@/lib/supabase-service";
 import { generateInvite } from "@/lib/agents/invite";
 import { renderBrandedEmail } from "@/lib/seafields/notify";
 import { escapeHtml } from "@/lib/html-escape";
+import { guardRecipients } from "@/lib/email/recipient-guard";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://f2k-projects.vercel.app";
@@ -106,11 +107,12 @@ export async function POST(request: Request) {
       footer:
         "This invite expires in 14 days. The access code is required in addition to this link. If you weren't expecting this, you can ignore this email.",
     });
+    const guard = guardRecipients([d.email.trim()], { triggeredByEmail: d.email });
     await resend.emails.send({
       from:
         process.env.RESEND_FROM_EMAIL ||
         "Seafields Estate <noreply@updates.corporateaisolutions.com>",
-      to: [d.email.trim()],
+      to: guard.to,
       subject: "Your Seafields agent portal invite",
       html,
     });
