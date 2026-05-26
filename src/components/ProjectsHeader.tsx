@@ -1,19 +1,50 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 
-const navItems = [
+type NavItem = { href: string; label: string; external?: boolean };
+
+const ABOUT_F2K: NavItem = {
+  href: "https://www.factory2key.com.au",
+  label: "About F2K",
+  external: true,
+};
+
+const DEFAULT_NAV: NavItem[] = [
   { href: "/", label: "Projects" },
   { href: "/seafields-estate", label: "Seafields" },
   { href: "/branscombe-estate", label: "Branscombe" },
   { href: "/hemp-homes-for-eco-communities", label: "Hemp Homes" },
   { href: "/blog", label: "Blog" },
-  { href: "https://www.factory2key.com.au", label: "About F2K", external: true },
+  ABOUT_F2K,
 ];
+
+// Estate-scoped nav: a buyer on one estate sees only that estate's own
+// blog+gallery and About F2K — never cross-links to the other estates, which
+// confused buyers (Uwe, 2026-05-26). Hemp Homes + the Projects hub keep the
+// full nav.
+function navItemsForPath(pathname: string | null): NavItem[] {
+  if (pathname?.startsWith("/seafields-estate")) {
+    return [
+      { href: "/blog/seafields", label: "Seafields Blog & Gallery" },
+      ABOUT_F2K,
+    ];
+  }
+  if (pathname?.startsWith("/branscombe-estate")) {
+    return [
+      { href: "/blog/branscombe", label: "Branscombe Blog & Gallery" },
+      ABOUT_F2K,
+    ];
+  }
+  return DEFAULT_NAV;
+}
 
 export default function ProjectsHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const navItems = navItemsForPath(pathname);
 
   return (
     <header className="border-b border-slate-200 bg-white sticky top-0 z-50 backdrop-blur-xl bg-white/90">
