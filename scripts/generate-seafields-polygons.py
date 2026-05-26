@@ -192,6 +192,15 @@ def collect_area_labels(msp):
     return out
 
 
+# Known DWG N-Stname corruptions -> correct public street name. The 3027-08B
+# layer carries "PEAD FAIRWAY" (an MTEXT/extraction artifact); the DA and Ray
+# White's listing plan both name it POND FAIRWAY (Nicky Banks, 2026-05-26).
+# Map any such corruption here so a regeneration stays correct.
+STREET_NAME_FIX = {
+    "PEAD FAIRWAY": "POND FAIRWAY",
+}
+
+
 def collect_street_labels(msp):
     out = []
     for e in msp:
@@ -200,6 +209,7 @@ def collect_street_labels(msp):
         raw = e.dxf.text if e.dxftype() == "TEXT" else e.text
         txt = re.sub(r"\\[pP][xqc;]*", "", raw)
         txt = re.sub(r"\s+", " ", txt).strip()
+        txt = STREET_NAME_FIX.get(txt.upper(), txt)
         if not txt:
             continue
         ip = e.dxf.insert
