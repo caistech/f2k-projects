@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser, hasPermission } from "@/lib/admin-auth";
 import { createSupabaseService } from "@/lib/supabase-service";
+import { coerceAllocationNumerics } from "@/lib/seafields/coerce-numerics";
 
 export const dynamic = "force-dynamic";
 
@@ -21,5 +22,14 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ allocations: data || [] });
+  // Postgres NUMERIC columns come back from PostgREST as strings (e.g.
+  // "160000.00"). The client treats them as numbers (FullAllocation types
+  // them number|null) and compares with strToNum(input) !== stored — which is
+  // always true for string-vs-number, falsely flagging price fields as
+  // "changed" on every edit and forcing a spurious reason. Coerce here so the
+  // contract matches the type. (Uwe 2026-05-26: "errors for no good reason".)
+  const allocations = ((data as Record<string, unknown>[]) || []).map(
+    coerceAllocationNumerics,
+  );
+  return NextResponse.json({ allocations });
 }

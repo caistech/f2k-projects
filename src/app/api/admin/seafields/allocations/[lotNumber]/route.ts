@@ -8,6 +8,7 @@ import {
 } from "@/lib/supabase-service";
 import { sendTemplated } from "@/lib/email/send";
 import { forwardAllocationToGHL } from "@/lib/ghl";
+import { coerceAllocationNumerics } from "@/lib/seafields/coerce-numerics";
 import {
   formatCurrency,
   getActiveRecipients,
@@ -487,5 +488,10 @@ export async function PATCH(
   revalidatePath("/seafields-estate");
   revalidatePath("/");
 
-  return NextResponse.json({ allocation: updated });
+  // Coerce NUMERIC-as-string back to numbers so the row merged into the admin
+  // table matches the client's number|null contract (avoids re-introducing the
+  // phantom "price changed" on the next edit).
+  return NextResponse.json({
+    allocation: coerceAllocationNumerics(updated as Record<string, unknown>),
+  });
 }
