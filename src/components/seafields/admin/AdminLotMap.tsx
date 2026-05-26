@@ -10,6 +10,7 @@ import polygonsData from "@/data/seafields/polygons.json";
 
 type Polygons = {
   viewBox: string;
+  viewWidth: number;
   subjectArea: number[][] | null;
   parentLots: number[][][];
   pos: number[][] | null;
@@ -308,29 +309,34 @@ export default function AdminLotMap({
           );
         })}
 
-        {POLYGONS.streetLabels.map((s, i) => (
-          <text
-            key={`street-${i}`}
-            x={s.x}
-            y={s.y}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontSize="6.5"
-            fontWeight="700"
-            fill="#1A2744"
-            fontFamily="Archivo, system-ui, sans-serif"
-            letterSpacing="1"
-            pointerEvents="none"
-            transform={
-              s.rotation
-                ? `rotate(${-s.rotation} ${s.x} ${s.y})`
-                : undefined
-            }
-            style={{ textShadow: "0 0 2px rgba(255,255,255,0.9)" }}
-          >
-            {s.text}
-          </text>
-        ))}
+        {POLYGONS.streetLabels.map((s, i) => {
+          const FONT = 6.5;
+          const halfW = (s.text.length * (FONT * 0.6 + 1)) / 2;
+          const margin = 3;
+          const x = Math.min(
+            Math.max(s.x, halfW + margin),
+            POLYGONS.viewWidth - halfW - margin,
+          );
+          return (
+            <text
+              key={`street-${i}`}
+              x={x}
+              y={s.y}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize={FONT}
+              fontWeight="700"
+              fill="#1A2744"
+              fontFamily="Archivo, system-ui, sans-serif"
+              letterSpacing="1"
+              pointerEvents="none"
+              transform={s.rotation ? `rotate(${-s.rotation} ${x} ${s.y})` : undefined}
+              style={{ textShadow: "0 0 2px rgba(255,255,255,0.9)" }}
+            >
+              {s.text}
+            </text>
+          );
+        })}
       </svg>
 
       {/* Legend */}

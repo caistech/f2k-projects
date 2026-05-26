@@ -411,30 +411,40 @@ export default function PlanView({
           );
         })}
 
-        {/* Street name labels */}
-        {POLYGONS.streetLabels.map((s, i) => (
-          <text
-            key={`street-${i}`}
-            x={s.x}
-            y={s.y}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontSize="6.5"
-            fontWeight="700"
-            fill="#1A2744"
-            fontFamily="Archivo, sans-serif"
-            letterSpacing="1"
-            pointerEvents="none"
-            transform={
-              s.rotation
-                ? `rotate(${-s.rotation} ${s.x} ${s.y})`
-                : undefined
-            }
-            style={{ textShadow: "0 0 2px rgba(255,255,255,0.9)" }}
-          >
-            {s.text}
-          </text>
-        ))}
+        {/* Street name labels. The label x/y from the DWG is the text CENTRE
+            (insert + width/2). Boundary roads (e.g. Sutcliffe, on the east
+            edge) can still centre beyond the viewBox, so clamp x so the
+            text box stays inside — prevents the "vid Road" clipping the
+            Ray White agent reported (2026-05-26). */}
+        {POLYGONS.streetLabels.map((s, i) => {
+          const FONT = 6.5;
+          // approx half text width (em ≈ 0.6 + 1 letter-spacing unit per char)
+          const halfW = (s.text.length * (FONT * 0.6 + 1)) / 2;
+          const margin = 3;
+          const x = Math.min(
+            Math.max(s.x, halfW + margin),
+            POLYGONS.viewWidth - halfW - margin,
+          );
+          return (
+            <text
+              key={`street-${i}`}
+              x={x}
+              y={s.y}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize={FONT}
+              fontWeight="700"
+              fill="#1A2744"
+              fontFamily="Archivo, sans-serif"
+              letterSpacing="1"
+              pointerEvents="none"
+              transform={s.rotation ? `rotate(${-s.rotation} ${x} ${s.y})` : undefined}
+              style={{ textShadow: "0 0 2px rgba(255,255,255,0.9)" }}
+            >
+              {s.text}
+            </text>
+          );
+        })}
       </svg>
 
       {/* Caption */}
