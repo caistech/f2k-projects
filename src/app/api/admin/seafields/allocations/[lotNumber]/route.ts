@@ -57,7 +57,7 @@ const updateSchema = z.object({
   land_rate_override_per_sqm: z
     .number()
     .min(0)
-    .max(99_999.99)
+    .max(5_000_000) // land $/m² OR land-total override; $5M sanity cap (was 99,999.99, which blocked real land prices) — per Dennis 2026-05-26
     .nullable()
     .optional(),
   house_cost: z.number().min(0).max(99_999_999.99).nullable().optional(),

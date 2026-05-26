@@ -1,37 +1,37 @@
 """Regenerate src/data/seafields/polygons.json (+ geojson.json) from the
-authoritative CLE 3027-08B DWG.
+authoritative CLE 3027-08B DA plan (DWG).
 
-This is the f2k-projects-local copy of the extractor (the original lives in
-F2K-Fund-Tokenisation/scripts/v6-extract). It fixes two defects that the
-Ray White selling agent flagged on 2026-05-26:
+DA-FAITHFUL EXTRACTION (rewritten 2026-05-26 after Uwe's QA challenge):
 
-  1. AMENDMENT MIS-ASSIGNMENT (lots overlapping each other).
-     The WAPC202888 amendment layer holds 28 polygons that tile the amended
-     cluster cleanly. The old extractor matched them to lots by
-     "base-centroid-inside-amendment", which mis-assigned several (two base
-     lots' centroids could fall in one amendment polygon; the correctly
-     labelled polygon was then dropped), leaving stale neighbours that
-     overlapped the amended lots by 10-54%. We now assign each amendment to a
-     base lot by the surveyor's own lot-number label that falls inside it
-     (authoritative), with max-overlap as the tie-break and a global 1-1
-     constraint. Amendment polygons that match no real lot (two ~500 m2
-     re-cut slivers in the 269/307 fan) are dropped.
+The DWG carries two lot layers:
+  - `Cad-Poly`            — the DA-approved subdivision (what the plan prints).
+  - `Cad-Poly WAPC202888` — a separate/superseded re-cut. NOT the approved DA.
 
-  2. STREET LABELS CLIPPED / OFF THEIR STREETS ("vid Road").
-     The N-Stname MTEXT entities use top-left attachment (attach=1) with
-     centre-justified text in a ~132-140 unit-wide box. The old extractor
-     stored the top-left insert point and PlanView re-centred on it, pulling
-     every label left by half its width (David Road, near the left edge,
-     clipped to "vid Road"). We now emit the true text CENTRE
-     (insert.x + width/2, insert.y - char_height/2) so each label sits where
-     the surveyor placed it.
+Proof that `Cad-Poly` is the DA: the DWG's own `Areas` layer (the "NNNm²"
+labels printed on each lot of the DA plan) matches the `Cad-Poly` polygon area
+for EVERY lot to within ~1 m², and `Cad-Poly` tiles with zero overlaps. The
+WAPC202888 layer does NOT match the Areas labels. An earlier version of this
+script (and the original V6 extraction) wrongly used WAPC202888 for ~22 lots,
+which (a) produced the overlapping lots Ray White flagged and (b) put wrong
+m² on the site (e.g. lot 331 shown elsewhere as 525 when the DA says 749).
+
+So: we extract `Cad-Poly` ONLY, and ASSERT every lot's polygon area matches
+its DA `Areas` label (hard gate — the build fails if any lot drifts > the
+tolerance). The `amendments` map is emitted empty; the renderers fall back to
+the base polygon, which is the DA.
+
+Street labels: the N-Stname MTEXT use top-left attachment, centre-justified in
+a width box; we emit the TRUE text centre (insert + width/2) so labels sit on
+their roads and "David Road" stops clipping to "vid Road".
 
 Usage: python scripts/generate-seafields-polygons.py
-Requires: ezdxf, pyproj, shapely, scipy, numpy + the ODA File Converter.
+Requires: ezdxf, pyproj, shapely + the ODA File Converter.
+Also prints the DA area per lot so lots.ts displayed areas can be corrected.
 """
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import shutil
@@ -43,12 +43,9 @@ from pathlib import Path
 from typing import Optional
 
 import ezdxf
-import numpy as np
 from ezdxf import path as ezpath
 from pyproj import Transformer
-from scipy.optimize import linear_sum_assignment
 from shapely.geometry import Polygon as ShapelyPolygon
-from shapely.ops import unary_union
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -58,16 +55,15 @@ MGA50_TO_WGS84 = Transformer.from_crs("EPSG:28350", "EPSG:4326", always_xy=True)
 SETBACK_M = 1.5
 VIEW_W = 1000
 PAD = 32
+# A lot's extracted polygon area must match its DA Areas-label within this
+# tolerance, else the build fails. Polygon flattening + label rounding give a
+# few m² of slack; >3% (min 8 m²) means a real mismatch (wrong polygon/lot).
+AREA_TOL_FRAC = 0.03
+AREA_TOL_MIN = 8.0
 
 REPO = Path(__file__).parent.parent
 OUT_JSON = REPO / "src" / "data" / "seafields" / "polygons.json"
 OUT_GEOJSON = REPO / "src" / "data" / "seafields" / "geojson.json"
-
-# Amendment polygons that match no sellable lot (re-cut slivers in the
-# 269/307 fan: ~501 + ~504 m2, overlapping no base lot). Documented + dropped
-# so they neither overlap nor get a phantom lot id. See render verification
-# 2026-05-26 (scripts/seafields-dwg-render.py).
-MIN_AMEND_OVERLAP_FRAC = 0.20  # an amendment must cover >=20% of a base lot to bind
 
 
 def find_oda() -> Optional[Path]:
@@ -181,10 +177,22 @@ def collect_lot_labels(msp):
     return out
 
 
+def collect_area_labels(msp):
+    """The DA `Areas` layer — the printed 'NNNm²' on each lot. Authoritative."""
+    out = []
+    for e in msp:
+        if e.dxftype() not in ("TEXT", "MTEXT") or e.dxf.layer != "Areas":
+            continue
+        raw = e.dxf.text if e.dxftype() == "TEXT" else e.text
+        m = re.search(r"(\d+(?:\.\d+)?)\s*m", raw)
+        if not m:
+            continue
+        ip = e.dxf.insert
+        out.append({"area": float(m.group(1)), "x": ip.x, "y": ip.y})
+    return out
+
+
 def collect_street_labels(msp):
-    """N-Stname MTEXT: top-left attachment, centre-justified in a width box.
-    Return the TRUE text centre so the renderer (text-anchor=middle) places it
-    where the surveyor intended — fixing the 'vid Road' clip + misalignment."""
     out = []
     for e in msp:
         if e.dxftype() not in ("TEXT", "MTEXT") or e.dxf.layer != "N-Stname":
@@ -201,9 +209,7 @@ def collect_street_labels(msp):
             width = getattr(e.dxf, "width", 0.0) or 0.0
             char_h = getattr(e.dxf, "char_height", 0.0) or 0.0
             attach = getattr(e.dxf, "attachment_point", 1) or 1
-            # attachment 1/2/3 = top row, 4/5/6 = middle, 7/8/9 = bottom
-            # columns 1/4/7 = left, 2/5/8 = centre, 3/6/9 = right
-            col = (attach - 1) % 3  # 0 left, 1 centre, 2 right
+            col = (attach - 1) % 3   # 0 left, 1 centre, 2 right
             row = (attach - 1) // 3  # 0 top, 1 middle, 2 bottom
             if col == 0:
                 cx = ip.x + width / 2.0
@@ -215,86 +221,6 @@ def collect_street_labels(msp):
                 cy = ip.y + char_h / 2.0
         out.append({"text": txt, "x": cx, "y": cy, "rotation": rotation})
     return out
-
-
-def assign_amendments(amend_polys, base_polys, base_id_for_poly, labels):
-    """Assign each WAPC202888 amendment polygon to a base lot id.
-
-    Identity comes from the surveyor's lot-number label that falls inside the
-    amendment polygon (authoritative). Ties / no-label cases fall back to
-    maximum overlap with the labelled base lot, solved as a global 1-1
-    assignment. Amendments that cannot bind to a real lot (>=20% overlap or a
-    contained label) are dropped. Returns {base_lot_id: amend_poly}.
-    """
-    sa = [ShapelyPolygon(p).buffer(0) for p in amend_polys]
-    sb = {bi: ShapelyPolygon(base_polys[bi]).buffer(0) for bi in base_id_for_poly}
-    # number -> list of base indices (handles duplicate numbers 294a/294b)
-    num_to_bis: dict[int, list[int]] = {}
-    for bi, lid in base_id_for_poly.items():
-        n = int(re.sub(r"[^0-9]", "", lid))
-        num_to_bis.setdefault(n, []).append(bi)
-
-    # candidate base indices per amendment: those whose label is inside it
-    cand = {}
-    for ai, ap in enumerate(amend_polys):
-        inside_nums = {lab["n"] for lab in labels if point_in_poly((lab["x"], lab["y"]), ap)}
-        bis = []
-        for n in inside_nums:
-            bis.extend(num_to_bis.get(n, []))
-        cand[ai] = bis
-
-    # cost matrix [amend x base] using overlap; restrict to candidates when a
-    # candidate set exists, else allow any base (max overlap), gated later.
-    bidx = list(sb)
-    bpos = {bi: k for k, bi in enumerate(bidx)}
-    NEG = 1e9
-    cost = np.full((len(sa), len(bidx)), NEG)
-    overlap = np.zeros((len(sa), len(bidx)))
-    for ai in range(len(sa)):
-        allowed = cand[ai] if cand[ai] else bidx
-        for bi in allowed:
-            ov = sa[ai].intersection(sb[bi]).area
-            overlap[ai, bpos[bi]] = ov
-            cost[ai, bpos[bi]] = -ov  # maximise overlap
-    row, col = linear_sum_assignment(cost)
-    result = {}
-    bound_amend = set()
-    for ai, k in zip(row, col):
-        if cost[ai, k] >= NEG:
-            continue  # no allowed cell chosen
-        bi = bidx[k]
-        ov = overlap[ai, k]
-        had_label = bool(cand[ai])
-        frac = ov / sa[ai].area if sa[ai].area else 0
-        # bind if the label was inside (authoritative) or overlap is material
-        if had_label or frac >= MIN_AMEND_OVERLAP_FRAC:
-            result[base_id_for_poly[bi]] = amend_polys[ai]
-            bound_amend.add(ai)
-
-    # Fallback for unbound amendments (e.g. the re-subdivided 294b polygon,
-    # which barely overlaps the OLD 294b base): bind to the nearest lot-number
-    # label whose lot is not yet bound. Re-cut slivers in the 269/307 fan stay
-    # dropped because their nearest lots (307, 269) are already bound.
-    bound_nums = {int(re.sub(r"[^0-9]", "", lid)) for lid in result}
-    for ai in range(len(sa)):
-        if ai in bound_amend:
-            continue
-        cx, cy = poly_centroid(amend_polys[ai])
-        labs = sorted(labels, key=lambda L: (L["x"] - cx) ** 2 + (L["y"] - cy) ** 2)
-        bound = False
-        for lab in labs[:4]:
-            n = lab["n"]
-            free = [bi for bi in num_to_bis.get(n, [])
-                    if base_id_for_poly[bi] not in result]
-            if free:
-                bi = max(free, key=lambda b: sa[ai].intersection(sb[b]).area)
-                result[base_id_for_poly[bi]] = amend_polys[ai]
-                bound_amend.add(ai)
-                bound = True
-                break
-        if not bound:
-            print(f"  [drop] amend #{ai} area={sa[ai].area:.0f} -> no real lot (sliver)")
-    return result
 
 
 def main():
@@ -310,7 +236,6 @@ def main():
     msp = doc.modelspace()
 
     base_polys = collect_polys(msp, "Cad-Poly")
-    amend_polys = collect_polys(msp, "Cad-Poly WAPC202888")
     heritage_polys = collect_polys(msp, "Cad-Poly existing building lot")
     pos_polys = collect_polys(msp, "Cad-Poly POS")
     subject_polys = collect_polys(msp, "G-Bndy Subject Area")
@@ -318,11 +243,22 @@ def main():
     road_lines = collect_lines(msp, "Cad-Rd-Car")
     rr_lines = collect_lines(msp, "Cad-RR")
     lot_labels = collect_lot_labels(msp)
+    area_labels = collect_area_labels(msp)
     street_labels = collect_street_labels(msp)
 
-    print(f"[layers] base={len(base_polys)} amend={len(amend_polys)} "
-          f"heritage={len(heritage_polys)} labels={len(lot_labels)} "
+    print(f"[layers] base={len(base_polys)} heritage={len(heritage_polys)} "
+          f"lot_labels={len(lot_labels)} area_labels={len(area_labels)} "
           f"streets={len(street_labels)}")
+
+    # DA area per lot number = nearest `Areas` label to the lot-number label.
+    # (For duplicate numbers 294/348 we keep a list, matched per-polygon below.)
+    def nearest_area(x, y):
+        best, bd = None, 1e18
+        for a in area_labels:
+            d = (x - a["x"]) ** 2 + (y - a["y"]) ** 2
+            if d < bd:
+                bd, best = d, a["area"]
+        return best
 
     # heritage labels first
     used_label_idx = set()
@@ -336,66 +272,27 @@ def main():
                 used_label_idx.add(li)
                 break
 
-    # Pre-count label occurrences per lot number. A number that appears 2+
-    # times (294, 348 — the DWG carries 2 polygons per number pending CLE
-    # renumber) suffixes EVERY occurrence a/b/... including the first, so the
-    # keys match the L294a/L294b ids in lots.ts. (Order-independent — the
-    # previous "count unused labels after this one" logic produced a bare
-    # L294 for one poly, which is the white-render bug fixed in 34b8a65.)
+    # base polys -> lot id; duplicate numbers (294/348) suffix a/b for ALL
+    # occurrences so keys match lots.ts (avoids the white-render bug).
     label_num_counts = Counter(lab["n"] for lab in lot_labels)
-    seen_lot_no_count = {}
+    seen = {}
     base_id_for_poly = {}
+    da_area_for_id = {}
     for bi, poly in enumerate(base_polys):
         for li, lab in enumerate(lot_labels):
             if li in used_label_idx:
                 continue
             if point_in_poly((lab["x"], lab["y"]), poly):
                 n = lab["n"]
-                seen_lot_no_count[n] = seen_lot_no_count.get(n, 0) + 1
-                count = seen_lot_no_count[n]
+                seen[n] = seen.get(n, 0) + 1
                 suffix = (
-                    chr(ord("a") + count - 1) if label_num_counts[n] > 1 else ""
+                    chr(ord("a") + seen[n] - 1) if label_num_counts[n] > 1 else ""
                 )
-                base_id_for_poly[bi] = f"L{n}{suffix}"
+                lot_id = f"L{n}{suffix}"
+                base_id_for_poly[bi] = lot_id
+                da_area_for_id[lot_id] = nearest_area(lab["x"], lab["y"])
                 used_label_idx.add(li)
                 break
-
-    print("[amendments] assigning WAPC202888 polygons by surveyor label + overlap")
-    amend_for_id = assign_amendments(amend_polys, base_polys, base_id_for_poly, lot_labels)
-    print(f"  bound {len(amend_for_id)} amendments -> "
-          f"{sorted(amend_for_id, key=lambda s: int(re.sub(chr(92)+'D','',s)))}")
-
-    # Unamended neighbours of the amended cluster (e.g. 304, 312) keep their
-    # original boundary, but the amendment moved the SHARED edge into them.
-    # Clip each unamended base lot to cede exactly the strip an adjacent
-    # amendment now occupies — a deterministic reconciliation against the
-    # authoritative amendment geometry (not a guess). Far-away lots are
-    # untouched (no intersection). Result: the whole estate tiles, no overlaps.
-    amend_union = unary_union([ShapelyPolygon(p).buffer(0) for p in amend_for_id.values()])
-    clipped_base = {}  # bi -> clipped DWG polygon
-    for bi, lot_id in base_id_for_poly.items():
-        if lot_id in amend_for_id:
-            continue
-        bp = ShapelyPolygon(base_polys[bi]).buffer(0)
-        if not bp.intersects(amend_union):
-            continue
-        inter = bp.intersection(amend_union).area
-        if inter / bp.area < 0.005:
-            continue  # negligible shared-edge sliver, leave as-is
-        diff = bp.difference(amend_union)
-        if diff.geom_type == "MultiPolygon":
-            diff = max(diff.geoms, key=lambda g: g.area)
-        if diff.is_empty or diff.area < 0.5 * bp.area:
-            print(f"  [clip] {lot_id}: skipped (would remove too much)")
-            continue
-        ext = list(diff.exterior.coords)
-        if ext and ext[0] == ext[-1]:
-            ext = ext[:-1]
-        clipped_base[bi] = [(round(x, 3), round(y, 3)) for x, y in ext]
-        print(f"  [clip] {lot_id}: ceded {inter:.0f} m2 to adjacent amendment")
-
-    def base_geom(bi):
-        return clipped_base.get(bi, base_polys[bi])
 
     subj = subject_polys[0] if subject_polys else None
     xs = [p[0] for p in subj]; ys = [p[1] for p in subj]
@@ -408,11 +305,11 @@ def main():
     inner_h = inner_w * aspect
     view_h = inner_h + 2 * PAD
     units_per_m = inner_w / width_m
+    sq_units_per_m2 = units_per_m * units_per_m
 
     def proj(x, y):
-        nx = (x - min_x) / width_m * inner_w + PAD
-        ny = (max_y - y) / height_m * inner_h + PAD
-        return [round(nx, 2), round(ny, 2)]
+        return [round((x - min_x) / width_m * inner_w + PAD, 2),
+                round((max_y - y) / height_m * inner_h + PAD, 2)]
 
     def proj_pts(pts):
         return [proj(x, y) for x, y in pts]
@@ -443,7 +340,7 @@ def main():
             return None, 0.0
 
     out = {
-        "_comment": "Generated by scripts/generate-seafields-polygons.py from CLE 3027-08B DWG. Do not hand-edit. Amendments bound by surveyor lot-number label (2026-05-26 Ray White overlap fix).",
+        "_comment": "Generated by scripts/generate-seafields-polygons.py from CLE 3027-08B DA (Cad-Poly layer = the approved DA; WAPC202888 NOT used). Polygon areas validated against the DWG Areas layer. Do not hand-edit.",
         "viewBox": f"0 0 {VIEW_W} {round(view_h, 2)}",
         "viewWidth": VIEW_W,
         "viewHeight": round(view_h, 2),
@@ -455,7 +352,7 @@ def main():
         "pos": proj_pts(pos_polys[0]) if pos_polys else None,
         "lots": {},
         "heritageLots": {},
-        "amendments": {},
+        "amendments": {},  # base IS the DA; no amendment override
         "buildableEnvelopes": {},
         "roads": [[proj(*a), proj(*b)] for a, b in road_lines],
         "roadReserves": [[proj(*a), proj(*b)] for a, b in rr_lines],
@@ -464,44 +361,57 @@ def main():
              "y": proj(s["x"], s["y"])[1], "rotation": s["rotation"]}
             for s in street_labels
         ],
+        "daAreasM2": {},  # DA Areas-layer figure per lot (authoritative for display)
     }
 
     for bi, lot_id in base_id_for_poly.items():
-        out["lots"][lot_id] = proj_pts(base_geom(bi))
-        env_source = amend_for_id.get(lot_id) or base_geom(bi)
-        env_pts, env_area = envelope_for(env_source)
+        out["lots"][lot_id] = proj_pts(base_polys[bi])
+        out["daAreasM2"][lot_id] = round(da_area_for_id.get(lot_id) or 0)
+        env_pts, env_area = envelope_for(base_polys[bi])
         if env_pts is not None:
             out["buildableEnvelopes"][lot_id] = {"points": env_pts, "areaM2": round(env_area)}
     for hi, n in heritage_id_for_poly.items():
         out["heritageLots"][f"L{n}"] = proj_pts(heritage_polys[hi])
-    for lot_id, apoly in amend_for_id.items():
-        out["amendments"][lot_id] = proj_pts(apoly)
 
-    # --- self-validation: final geometry must tile with ~0 overlap ---
-    final = {}
-    for lid, pts in out["lots"].items():
-        final[lid] = ShapelyPolygon(out["amendments"].get(lid, pts)).buffer(0)
+    # --- HARD GATE 1: polygon area must match the DA Areas label ---
+    print("\n[validate] polygon area vs DA Areas layer:")
+    area_fail = []
+    for bi, lot_id in base_id_for_poly.items():
+        # base_polys are raw DWG coords in MGA50 metres, so .area is m² directly.
+        poly_m2 = ShapelyPolygon(base_polys[bi]).area
+        da = da_area_for_id.get(lot_id)
+        if da is None:
+            area_fail.append((lot_id, None, round(poly_m2)))
+            continue
+        tol = max(AREA_TOL_MIN, da * AREA_TOL_FRAC)
+        if abs(poly_m2 - da) > tol:
+            area_fail.append((lot_id, da, round(poly_m2)))
+    if area_fail:
+        for lid, da, pm in area_fail:
+            print(f"  ❌ {lid}: DA={da} polygon={pm}")
+    print(f"  area mismatches: {len(area_fail)}")
+
+    # --- HARD GATE 2: lots must tile with no overlaps ---
+    final = {lid: ShapelyPolygon(pts).buffer(0) for lid, pts in out["lots"].items()}
     ids = list(final)
-    overlaps = []
+    overlaps = 0
     for i in range(len(ids)):
         for j in range(i + 1, len(ids)):
             inter = final[ids[i]].intersection(final[ids[j]]).area
             mn = min(final[ids[i]].area, final[ids[j]].area)
             if mn and inter / mn > 0.03:
-                overlaps.append((ids[i], ids[j], inter / mn))
-    print(f"[validate] lots={len(out['lots'])} amendments={len(out['amendments'])} "
-          f"heritage={len(out['heritageLots'])} overlaps>3%={len(overlaps)}")
-    for a, b, f in overlaps:
-        print(f"  OVERLAP {a} x {b} = {f*100:.0f}%")
+                overlaps += 1
+                print(f"  ❌ OVERLAP {ids[i]} x {ids[j]} {inter/mn*100:.0f}%")
+    print(f"[validate] lots={len(out['lots'])} heritage={len(out['heritageLots'])} "
+          f"overlaps>3%={overlaps}")
 
     OUT_JSON.write_text(json.dumps(out, indent=2), encoding="utf-8")
     print(f"[write] {OUT_JSON} ({OUT_JSON.stat().st_size:,} bytes)")
 
-    # --- GeoJSON (Mapbox, WGS84) ---
+    # GeoJSON (Mapbox / WGS84) — base geometry
     features = []
     for bi, lot_id in base_id_for_poly.items():
-        env_source = amend_for_id.get(lot_id) or base_geom(bi)
-        coords = to_wgs84(env_source)
+        coords = to_wgs84(base_polys[bi])
         if coords and coords[0] != coords[-1]:
             coords.append(coords[0])
         m = re.match(r"^L(\d+)([a-z]?)$", lot_id)
@@ -512,9 +422,9 @@ def main():
                 "lotId": lot_id,
                 "lotNumber": int(m.group(1)) if m else None,
                 "lotSuffix": m.group(2) if m else "",
-                "areaM2": round(ShapelyPolygon(env_source).area),
+                "areaM2": round(da_area_for_id.get(lot_id) or ShapelyPolygon(base_polys[bi]).area),
                 "kind": "lot",
-                "isAmended": lot_id in amend_for_id,
+                "isAmended": False,
                 "isPendingRenumber": bool(m and m.group(2)),
             },
         })
@@ -552,11 +462,30 @@ def main():
                   "centre": [round((min(lons) + max(lons)) / 2, 7),
                              round((min(lats) + max(lats)) / 2, 7)]}
     geojson = {"type": "FeatureCollection",
-               "_comment": "Generated from CLE 3027-08B DWG. MGA50 (EPSG:28350) -> WGS84.",
+               "_comment": "Generated from CLE 3027-08B DA (Cad-Poly). MGA50 (EPSG:28350) -> WGS84.",
                "bounds": bounds, "features": features}
     OUT_GEOJSON.write_text(json.dumps(geojson, indent=2), encoding="utf-8")
     print(f"[geojson] {OUT_GEOJSON} ({OUT_GEOJSON.stat().st_size:,} bytes, {len(features)} features)")
-    return 0 if not overlaps else 2
+
+    # Surface the DA-area-vs-lots.ts deltas so displayed areas can be corrected.
+    ts_path = REPO / "src" / "data" / "seafields" / "lots.ts"
+    ts = ts_path.read_text(encoding="utf-8")
+    print("\n[lots.ts] displayed-area corrections needed (site -> DA):")
+    diffs = []
+    for lot_id, da in sorted(da_area_for_id.items(), key=lambda kv: kv[0]):
+        if not da:
+            continue
+        n = re.sub(r"[^0-9]", "", lot_id)
+        m = re.search(r"lot\(" + n + r",\s*(\d+)", ts)
+        if not m:
+            continue
+        st = int(m.group(1))
+        if abs(st - da) > 6:
+            diffs.append((lot_id, st, round(da)))
+    for lid, st, da in diffs:
+        print(f"  {lid}: {st} -> {da}")
+    print(f"  ({len(diffs)} lots differ from DA by >6 m²)")
+    return 0 if (not area_fail and not overlaps) else 2
 
 
 if __name__ == "__main__":

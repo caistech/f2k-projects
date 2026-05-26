@@ -76,8 +76,8 @@ const COLLINS = "Collins Road";
 
 export const LOTS: LotData[] = [
   // Stage 1 — SW Block / GROH-WACHS cluster (20 lots)
-  lot(332, 690, SW_BLOCK, "1", { isAmended: true }),  // amended in 08B (WAPC202888)
-  lot(333, 537, SW_BLOCK, "1", { isAmended: true }),  // amended in 08B (WAPC202888)
+  lot(332, 669, SW_BLOCK, "1"),
+  lot(333, 606, SW_BLOCK, "1"),
   lot(334, 613, SW_BLOCK, "1"),
   lot(335, 596, SW_BLOCK, "1"),
   lot(336, 643, SW_BLOCK, "1"),
@@ -101,17 +101,17 @@ export const LOTS: LotData[] = [
   lot(323, 1522, CENTRAL, "2", { isHeritage: true }),  // heritage retention
 
   // Stage 3 — Central (24 lots) — Lot 307 moved here from Stage 6 per CLE/Uwe 2026-05-21 (spatially adjacent to 308; was misfiled in V6 reconciliation)
-  lot(307, 536, CENTRAL, "3", { isAmended: true }),  // NEW in 08B (V5 omitted); stage corrected 2026-05-21
-  lot(308, 685, CENTRAL, "3", { isAmended: true }),  // NEW in 08B (V5 omitted)
-  lot(309, 614, CENTRAL, "3", { isAmended: true }),  // amended in 08B (WAPC202888)
-  lot(310, 510, CENTRAL, "3", { isAmended: true }),  // amended in 08B (WAPC202888)
+  lot(307, 604, CENTRAL, "3"),  // NEW in 08B (V5 omitted); stage corrected 2026-05-21
+  lot(308, 605, CENTRAL, "3"),  // NEW in 08B (V5 omitted)
+  lot(309, 456, CENTRAL, "3"),
+  lot(310, 614, CENTRAL, "3"),
   lot(311, 505, CENTRAL, "3"),
   lot(312, 510, CENTRAL, "3"),
-  lot(313, 525, CENTRAL, "3", { isAmended: true }),  // amended in 08B (WAPC202888)
+  lot(313, 505, CENTRAL, "3"),
   lot(314, 614, CENTRAL, "3"),
-  lot(315, 560, CENTRAL, "3", { isAmended: true }),  // amended in 08B (WAPC202888)
-  lot(316, 794, CENTRAL, "3", { isAmended: true }),  // amended in 08B (WAPC202888)
-  lot(317, 658, CENTRAL, "3", { isAmended: true }),  // amended in 08B (WAPC202888)
+  lot(315, 472, CENTRAL, "3"),
+  lot(316, 754, CENTRAL, "3"),
+  lot(317, 606, CENTRAL, "3"),
   lot(318, 595, CENTRAL, "3"),
   lot(319, 595, CENTRAL, "3"),
   lot(320, 595, CENTRAL, "3"),
@@ -120,11 +120,11 @@ export const LOTS: LotData[] = [
   lot(324, 630, CENTRAL, "3"),
   lot(325, 682, CENTRAL, "3"),
   lot(326, 682, CENTRAL, "3"),
-  lot(327, 772, CENTRAL, "3", { isAmended: true }),  // amended in 08B (WAPC202888)
-  lot(328, 704, CENTRAL, "3", { isAmended: true }),  // amended in 08B (WAPC202888)
-  lot(329, 804, CENTRAL, "3", { isAmended: true }),  // amended in 08B (WAPC202888)
-  lot(330, 721, CENTRAL, "3", { isAmended: true }),  // amended in 08B (WAPC202888)
-  lot(331, 748, CENTRAL, "3", { isAmended: true }),  // re-extracted 2026-05-12 with bulge/arc-aware extractor — confirmed 50m x 15m base polygon, 749 m2 in CLE 08B
+  lot(327, 735, CENTRAL, "3"),
+  lot(328, 625, CENTRAL, "3"),
+  lot(329, 736, CENTRAL, "3"),
+  lot(330, 723, CENTRAL, "3"),
+  lot(331, 749, CENTRAL, "3"),  // re-extracted 2026-05-12 with bulge/arc-aware extractor — confirmed 50m x 15m base polygon, 749 m2 in CLE 08B
 
   // Stage 4 — Pepper Gate Inner (12 lots)
   lot(261, 536, PEPPER, "4"),
@@ -135,8 +135,8 @@ export const LOTS: LotData[] = [
   lot(266, 606, PEPPER, "4"),
   lot(267, 598, PEPPER, "4"),
   lot(268, 685, PEPPER, "4"),
-  lot(269, 619, PEPPER, "4", { isAmended: true }),  // amended in 08B (WAPC202888)
-  lot(270, 548, PEPPER, "4", { isAmended: true }),  // amended in 08B (WAPC202888)
+  lot(269, 678, PEPPER, "4"),
+  lot(270, 622, PEPPER, "4"),
   lot(271, 629, PEPPER, "4"),
   lot(272, 600, PEPPER, "4"),
 
@@ -187,9 +187,9 @@ export const LOTS: LotData[] = [
   lot(289, 525, CENTRAL, "6"),
   lot(290, 595, CENTRAL, "6"),
   lot(291, 595, CENTRAL, "6"),
-  lot(292, 783, CENTRAL, "6", { isAmended: true }),  // amended in 08B (WAPC202888)
-  lot(294, 797, CENTRAL, "6", { idSuffix: "a", pendingRenumber: true, isAmended: true }),  // amended in 08B (WAPC202888)
-  lot(294, 797, CENTRAL, "6", { idSuffix: "b", pendingRenumber: true, isAmended: true }),  // amended in 08B (WAPC202888)
+  lot(292, 525, CENTRAL, "6"),
+  lot(294, 595, CENTRAL, "6", { idSuffix: "a", pendingRenumber: true }),
+  lot(294, 525, CENTRAL, "6", { idSuffix: "b", pendingRenumber: true }),
   lot(295, 691, CENTRAL, "6"),
   lot(296, 680, CENTRAL, "6"),
   lot(297, 680, CENTRAL, "6"),
@@ -197,11 +197,11 @@ export const LOTS: LotData[] = [
   lot(299, 680, CENTRAL, "6"),
   lot(300, 680, CENTRAL, "6"),
   lot(301, 680, CENTRAL, "6"),
-  lot(302, 580, CENTRAL, "6", { isAmended: true }),  // amended in 08B (WAPC202888)
+  lot(302, 680, CENTRAL, "6"),
   lot(303, 680, CENTRAL, "6"),
   lot(304, 600, CENTRAL, "6"),
-  lot(305, 610, CENTRAL, "6", { isAmended: true }),  // amended in 08B (WAPC202888)
-  lot(306, 650, CENTRAL, "6", { isAmended: true }),  // amended in 08B (WAPC202888)
+  lot(305, 600, CENTRAL, "6"),
+  lot(306, 603, CENTRAL, "6"),
 
   // Stage 7 — Collins Road (29 lots)
   lot(352, 593, COLLINS, "7"),
