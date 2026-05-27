@@ -418,8 +418,15 @@ export default function PlanView({
             Ray White agent reported (2026-05-26). */}
         {POLYGONS.streetLabels.map((s, i) => {
           const FONT = 6.5;
-          // approx half text width (em ≈ 0.6 + 1 letter-spacing unit per char)
-          const halfW = (s.text.length * (FONT * 0.6 + 1)) / 2;
+          // Horizontal half-extent for the edge clamp. For rotated (vertical)
+          // labels the on-screen width is ~one line height, NOT the text
+          // length — so they can sit right at the estate boundary (David Road
+          // left margin, Sutcliffe Road North right margin) without being
+          // shoved inward over the lots.
+          const isRotated = Math.abs(s.rotation || 0) >= 45;
+          const halfW = isRotated
+            ? FONT * 0.6
+            : (s.text.length * (FONT * 0.6 + 1)) / 2;
           const margin = 3;
           const x = Math.min(
             Math.max(s.x, halfW + margin),

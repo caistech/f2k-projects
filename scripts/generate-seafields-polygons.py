@@ -138,13 +138,49 @@ def collect_polys(msp, layer):
     return out
 
 
-def collect_lines(msp, layer):
+# Carriageway "entrance cap" lines/arcs to DROP from Cad-Rd-Car so each road
+# mouth renders open (kerb-return arcs are kept). Confirmed with Dennis
+# 2026-05-27 via the labelled-render review (scripts/_capprobe/, source of
+# truth confirmed_caps.json): cap LINEs 3,5,16,20,27,28,30,37 + cap ARCs A24,A33.
+# Matched by DWG endpoint pair (order-independent) — entity iteration order is
+# NOT stable, but coordinates are.
+CAP_EXCLUSION_TOL = 0.5
+CAP_EXCLUSIONS = [
+    ((269893.835, 6821646.676), (269925.035, 6821646.737)),  # line 3
+    ((269912.857, 6821751.919), (269912.907, 6821721.919)),  # line 5
+    ((270086.798, 6821707.727), (270107.959, 6821719.05)),   # line 16
+    ((270157.754, 6821986.652), (270187.754, 6821986.709)),  # line 20
+    ((270243.753, 6821986.813), (270273.753, 6821986.869)),  # line 27
+    ((270244.562, 6821760.158), (270274.56, 6821761.287)),   # line 28
+    ((270261.966, 6821859.849), (270262.015, 6821829.849)),  # line 30
+    ((270323.983, 6821986.963), (270353.983, 6821987.019)),  # line 37
+    ((270204.163, 6821758.638), (270164.529, 6821749.123)),  # arc A24
+    ((270336.232, 6821854.798), (270346.804, 6821838.436)),  # arc A33
+]
+
+
+def _is_capped(p0, p1):
+    t = CAP_EXCLUSION_TOL
+    for a, b in CAP_EXCLUSIONS:
+        if ((abs(p0[0] - a[0]) <= t and abs(p0[1] - a[1]) <= t and
+             abs(p1[0] - b[0]) <= t and abs(p1[1] - b[1]) <= t) or
+            (abs(p0[0] - b[0]) <= t and abs(p0[1] - b[1]) <= t and
+             abs(p1[0] - a[0]) <= t and abs(p1[1] - a[1]) <= t)):
+            return True
+    return False
+
+
+def collect_lines(msp, layer, drop_caps=False):
     out = []
     for e in msp:
         if e.dxf.layer != layer:
             continue
         if e.dxftype() == "LINE":
-            out.append([(e.dxf.start.x, e.dxf.start.y), (e.dxf.end.x, e.dxf.end.y)])
+            p0 = (e.dxf.start.x, e.dxf.start.y)
+            p1 = (e.dxf.end.x, e.dxf.end.y)
+            if drop_caps and _is_capped(p0, p1):
+                continue
+            out.append([p0, p1])
         elif e.dxftype() in ("LWPOLYLINE", "POLYLINE", "ARC"):
             pts = _flatten_entity(e)
             if not pts and e.dxftype() in ("LWPOLYLINE", "POLYLINE"):
@@ -155,6 +191,8 @@ def collect_lines(msp, layer):
                         pts = [(v.dxf.location.x, v.dxf.location.y) for v in e.vertices]
                 except Exception:
                     pts = []
+            if drop_caps and len(pts) >= 2 and _is_capped(pts[0], pts[-1]):
+                continue
             for i in range(len(pts) - 1):
                 out.append([pts[i], pts[i + 1]])
     return out
@@ -192,13 +230,12 @@ def collect_area_labels(msp):
     return out
 
 
-# Known DWG N-Stname corruptions -> correct public street name. The 3027-08B
-# layer carries "PEAD FAIRWAY" (an MTEXT/extraction artifact); the DA and Ray
-# White's listing plan both name it POND FAIRWAY (Nicky Banks, 2026-05-26).
-# Map any such corruption here so a regeneration stays correct.
-STREET_NAME_FIX = {
-    "PEAD FAIRWAY": "POND FAIRWAY",
-}
+# DWG N-Stname text fixes. NOTE (2026-05-27): the earlier PEAD FAIRWAY ->
+# POND FAIRWAY rename (commit 71625d6, Nicky Banks 2026-05-26) was REVERSED by
+# Dennis — the road is PEAD FAIRWAY. The fairway label is now emitted as a
+# manual VERTICAL label in main() (the DWG N-Stname fairway label is dropped),
+# so no rename is applied here.
+STREET_NAME_FIX = {}
 
 
 def collect_street_labels(msp):
@@ -250,7 +287,7 @@ def main():
     pos_polys = collect_polys(msp, "Cad-Poly POS")
     subject_polys = collect_polys(msp, "G-Bndy Subject Area")
     parent_polys = collect_polys(msp, "G-Bndy Parent Lot")
-    road_lines = collect_lines(msp, "Cad-Rd-Car")
+    road_lines = collect_lines(msp, "Cad-Rd-Car", drop_caps=True)
     rr_lines = collect_lines(msp, "Cad-RR")
     lot_labels = collect_lot_labels(msp)
     area_labels = collect_area_labels(msp)
@@ -349,6 +386,21 @@ def main():
             print(f"  [envelope] failed: {e}")
             return None, 0.0
 
+    # FINAL street labels (Dennis, 2026-05-27): keep COLLINS ROAD horizontal
+    # (from the DWG, projected); re-emit DAVID ROAD, PEAD FAIRWAY and SUTCLIFFE
+    # ROAD NORTH as VERTICAL (rotation 90) manual labels at the reviewed SVG
+    # positions; drop Pepper Gate / Pirrotina Link / Half Moon Drive entirely.
+    final_street_labels = []
+    for s in street_labels:
+        if s["text"].strip().upper() == "COLLINS ROAD":
+            px, py = proj(s["x"], s["y"])
+            final_street_labels.append({"text": s["text"], "x": px, "y": py, "rotation": 0})
+    final_street_labels += [
+        {"text": "DAVID ROAD", "x": 22.0, "y": 536.0, "rotation": 90},
+        {"text": "PEAD FAIRWAY", "x": 752.0, "y": 279.0, "rotation": 90},
+        {"text": "SUTCLIFFE ROAD NORTH", "x": 975.0, "y": 240.0, "rotation": 90},
+    ]
+
     out = {
         "_comment": "Generated by scripts/generate-seafields-polygons.py from CLE 3027-08B DA (Cad-Poly layer = the approved DA; WAPC202888 NOT used). Polygon areas validated against the DWG Areas layer. Do not hand-edit.",
         "viewBox": f"0 0 {VIEW_W} {round(view_h, 2)}",
@@ -366,11 +418,7 @@ def main():
         "buildableEnvelopes": {},
         "roads": [[proj(*a), proj(*b)] for a, b in road_lines],
         "roadReserves": [[proj(*a), proj(*b)] for a, b in rr_lines],
-        "streetLabels": [
-            {"text": s["text"], "x": proj(s["x"], s["y"])[0],
-             "y": proj(s["x"], s["y"])[1], "rotation": s["rotation"]}
-            for s in street_labels
-        ],
+        "streetLabels": final_street_labels,
         "daAreasM2": {},  # DA Areas-layer figure per lot (authoritative for display)
     }
 
