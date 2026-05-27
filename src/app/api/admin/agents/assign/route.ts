@@ -3,12 +3,14 @@ import { z } from "zod";
 import { getAdminUser, hasPermission } from "@/lib/admin-auth";
 import { createSupabaseService } from "@/lib/supabase-service";
 
-// Assign (or clear) the agent that owns a Seafields registration. This is the
+// Assign (or clear) the agent that owns a registration. This is the
 // explicit-agent_id ownership mechanism (D1): admin links a buyer to an agent
 // so it appears in that agent's "My Clients". agent_id=null unlinks.
+// estate-aware: defaults to seafields (backward-compatible) or branscombe.
 const schema = z.object({
   registration_id: z.string().uuid(),
   agent_id: z.string().uuid().nullable(),
+  estate: z.enum(["seafields", "branscombe"]).default("seafields"),
 });
 
 export async function POST(request: Request) {
@@ -20,10 +22,14 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
   }
-  const { registration_id, agent_id } = parsed.data;
+  const { registration_id, agent_id, estate } = parsed.data;
   const service = createSupabaseService();
+  const table =
+    estate === "branscombe"
+      ? "branscombe_registrations"
+      : "seafields_registrations";
 
-  // If assigning, confirm the agent exists + has Seafields access.
+  // If assigning, confirm the agent exists + has access to THIS estate.
   if (agent_id) {
     const { data: agent } = await (service.from("agents") as any)
       .select("id, estate_access, active")
@@ -35,15 +41,15 @@ export async function POST(request: Request) {
     if (!agent.active) {
       return NextResponse.json({ error: "That agent is blocked" }, { status: 400 });
     }
-    if (!Array.isArray(agent.estate_access) || !agent.estate_access.includes("seafields")) {
+    if (!Array.isArray(agent.estate_access) || !agent.estate_access.includes(estate)) {
       return NextResponse.json(
-        { error: "That agent doesn't have Seafields access" },
+        { error: `That agent doesn't have ${estate} access` },
         { status: 400 },
       );
     }
   }
 
-  const { data, error } = await (service.from("seafields_registrations") as any)
+  const { data, error } = await (service.from(table) as any)
     .update({ agent_id })
     .eq("id", registration_id)
     .select("id, agent_id")
@@ -55,9 +61,9 @@ export async function POST(request: Request) {
   await service.from("audit_log").insert({
     actor_email: admin.email,
     action: agent_id ? "registration_assigned_to_agent" : "registration_unassigned_from_agent",
-    entity_type: "seafields_registration",
+    entity_type: `${estate}_registration`,
     entity_id: registration_id,
-    details: { agent_id },
+    details: { agent_id, estate },
   });
 
   return NextResponse.json({ ok: true, registration_id, agent_id });

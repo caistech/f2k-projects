@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getAgentUser } from "@/lib/agents/agent-auth";
 import { AgentTopBar } from "@/components/agent/AgentTopBar";
+import { AgentProvider } from "@/components/agent/AgentContext";
 
 export const dynamic = "force-dynamic";
 
@@ -16,9 +17,11 @@ export default async function AgentPortalLayout({
   if (!agent) redirect("/agent/login");
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <AgentTopBar name={agent.name} />
-      <main className="max-w-5xl mx-auto px-4 py-6">{children}</main>
-    </div>
+    <AgentProvider value={{ name: agent.name, estateAccess: agent.estate_access ?? [] }}>
+      <div className="min-h-screen bg-slate-50">
+        <AgentTopBar name={agent.name} />
+        <main className="max-w-5xl mx-auto px-4 py-6">{children}</main>
+      </div>
+    </AgentProvider>
   );
 }
