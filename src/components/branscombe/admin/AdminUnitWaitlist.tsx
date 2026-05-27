@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 interface Registration {
   id: string;
+  agent_id: string | null;
   first_name: string;
   last_name: string;
   email: string;
@@ -22,6 +23,14 @@ interface Registration {
   referrer_company: string | null;
   notes: string | null;
   created_at: string;
+}
+
+interface AgentOption {
+  id: string;
+  name: string;
+  agency: string | null;
+  estate_access: string[];
+  active: boolean;
 }
 
 interface Props {
@@ -56,6 +65,8 @@ export default function AdminUnitWaitlist({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actingOn, setActingOn] = useState<string | null>(null);
+  const [agents, setAgents] = useState<AgentOption[]>([]);
+  const [assigningId, setAssigningId] = useState<string | null>(null);
 
   const fetchWaitlist = useCallback(async () => {
     setLoading(true);
@@ -80,6 +91,22 @@ export default function AdminUnitWaitlist({
   useEffect(() => {
     fetchWaitlist();
   }, [fetchWaitlist]);
+
+  useEffect(() => {
+    fetch("/api/admin/agents")
+      .then((r) => (r.ok ? r.json() : { agents: [] }))
+      .then((d: { agents?: AgentOption[] }) =>
+        setAgents(
+          (d.agents ?? []).filter(
+            (a) =>
+              a.active &&
+              Array.isArray(a.estate_access) &&
+              a.estate_access.includes("branscombe"),
+          ),
+        ),
+      )
+      .catch(() => {});
+  }, []);
 
   async function patchAllocation(
     body: Record<string, unknown>,
@@ -147,6 +174,39 @@ export default function AdminUnitWaitlist({
       return;
     }
     onConvertedToAllocation(fullName);
+  }
+
+  async function assignAgent(registrationId: string, agentId: string | null) {
+    setAssigningId(registrationId);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/agents/assign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          registration_id: registrationId,
+          agent_id: agentId,
+          estate: "branscombe",
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || "Assign failed");
+        return;
+      }
+      // agent_id lives on the parent registration — reflect it locally so the
+      // dropdown shows the saved value immediately (the buyer may sit on several
+      // units; each waitlist refetches on open).
+      setRegistrations((prev) =>
+        prev.map((r) =>
+          r.id === registrationId ? { ...r, agent_id: agentId } : r,
+        ),
+      );
+    } catch {
+      setError("Network error during assign");
+    } finally {
+      setAssigningId(null);
+    }
   }
 
   const lockedReg = registrations.find(
@@ -297,6 +357,34 @@ export default function AdminUnitWaitlist({
                 {r.notes && (
                   <div className="mt-2 text-[11px] text-slate-600 italic">
                     &ldquo;{r.notes}&rdquo;
+                  </div>
+                )}
+
+                {agents.length > 0 && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <label className="text-[11px] text-slate-500 whitespace-nowrap">
+                      Credit to agent
+                    </label>
+                    <select
+                      value={r.agent_id ?? ""}
+                      disabled={assigningId === r.id}
+                      onChange={(e) =>
+                        assignAgent(r.id, e.target.value || null)
+                      }
+                      className="text-xs border border-slate-300 rounded px-2 py-1 flex-1 min-w-0 disabled:opacity-50"
+                      title="Credit this buyer to an agent — they appear in that agent's My Clients. Applies to this buyer across Branscombe."
+                    >
+                      <option value="">— Unassigned —</option>
+                      {agents.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.name}
+                          {a.agency ? ` (${a.agency})` : ""}
+                        </option>
+                      ))}
+                    </select>
+                    {assigningId === r.id && (
+                      <span className="text-[11px] text-slate-400">Saving…</span>
+                    )}
                   </div>
                 )}
 

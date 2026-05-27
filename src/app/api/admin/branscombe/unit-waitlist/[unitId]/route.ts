@@ -29,7 +29,7 @@ export async function GET(
     supabase.from("branscombe_registrations") as any
   )
     .select(
-      "id, first_name, last_name, email, phone, suburb, postcode, buyer_type, buyer_profile, current_housing, purchase_timeline, finance_status, units_selected, price_preferences, referrer_type, referrer_name, referrer_company, notes, created_at",
+      "id, agent_id, first_name, last_name, email, phone, suburb, postcode, buyer_type, buyer_profile, current_housing, purchase_timeline, finance_status, units_selected, price_preferences, referrer_type, referrer_name, referrer_company, notes, created_at",
     )
     .contains("units_selected", [unitId])
     .order("created_at", { ascending: false });
