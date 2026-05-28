@@ -96,7 +96,8 @@ export function validateLotPricing(
 
   if (
     expectedTotalPrice !== null &&
-    viewRow?.total_price !== null &&
+    viewRow &&
+    viewRow.total_price !== null &&
     Math.abs(expectedTotalPrice - viewRow.total_price) > tolerance
   ) {
     totalPriceMatches = false;
