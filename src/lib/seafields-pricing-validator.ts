@@ -84,7 +84,8 @@ export function validateLotPricing(
 
   if (
     expectedLandTotal !== null &&
-    viewRow?.land_total !== null &&
+    viewRow &&
+    viewRow.land_total !== null &&
     Math.abs(expectedLandTotal - viewRow.land_total) > tolerance
   ) {
     landPriceMatches = false;
