@@ -1,0 +1,43 @@
+{
+ "confirmed_cap_lines": [
+  3,
+  5,
+  16,
+  20,
+  27,
+  28,
+  30,
+  37
+ ],
+ "confirmed_cap_arcs": [
+  24,
+  33
+ ],
+ "delete_all_original_street_labels": true,
+ "final_street_labels": [
+  {
+   "text": "COLLINS ROAD",
+   "keep_existing_pos": true,
+   "rotation": 0
+  },
+  {
+   "text": "DAVID ROAD",
+   "x": 40,
+   "y": 536,
+   "rotation": 90
+  },
+  {
+   "text": "PEAD FAIRWAY",
+   "x": 752,
+   "y": 279,
+   "rotation": 90
+  },
+  {
+   "text": "SUTCLIFFE ROAD NORTH",
+   "x": 1000,
+   "y": 230,
+   "rotation": 90
+  }
+ ],
+ "note": "2026-05-27 FINAL CONFIRMED: caps=8 lines+arcs A24,A33. Streets: Collins kept horizontal; David Rd/Pead Fairway/Sutcliffe Rd North re-added VERTICAL (rot90) at Dennis red-annotation positions; Pepper Gate/Pirrotina Link/Half Moon Drive deleted entirely; POND->PEAD rename (reverses 71625d6). Vertical positions are proposed from markup, pending Dennis preview OK."
+}

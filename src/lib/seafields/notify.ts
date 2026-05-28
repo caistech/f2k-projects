@@ -23,15 +23,20 @@ const BRANDING: Branding = {
 const FALLBACK_RECIPIENTS = [
   "dennis@factory2key.com.au",
   "uwe@factory2key.com.au",
+];
+
+const FIXED_RECIPIENTS = [
   "barryh@hld.com.au",
+  "jthomson@jbccorp.com.au",
 ];
 
 export async function getActiveRecipients(): Promise<string[]> {
-  return getActiveRecipientsShared({
+  const dbRecipients = await getActiveRecipientsShared({
     supabase: createSupabaseService(),
     table: "seafields_notify_recipients",
     fallback: FALLBACK_RECIPIENTS,
   });
+  return [...new Set([...dbRecipients, ...FIXED_RECIPIENTS])];
 }
 
 export function renderBrandedEmail(args: RenderArgs): string {

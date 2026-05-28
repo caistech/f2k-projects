@@ -1,0 +1,6210 @@
+{
+  "type": "FeatureCollection",
+  "_comment": "Generated from CLE 3027-08B DA (Cad-Poly). MGA50 (EPSG:28350) -> WGS84.",
+  "bounds": {
+    "south": -28.7121512,
+    "west": 114.64364,
+    "north": -28.7081822,
+    "east": 114.6506475,
+    "centre": [
+      114.6471437,
+      -28.7101667
+    ]
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "L344",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6440422,
+              -28.7119614
+            ],
+            [
+              114.6440455,
+              -28.7117991
+            ],
+            [
+              114.643657,
+              -28.711793
+            ],
+            [
+              114.6436548,
+              -28.7119012
+            ],
+            [
+              114.6437151,
+              -28.7119563
+            ],
+            [
+              114.6440422,
+              -28.7119614
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L344",
+        "lotNumber": 344,
+        "lotSuffix": "",
+        "areaM2": 666,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L343",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6443695,
+              -28.7119666
+            ],
+            [
+              114.644432,
+              -28.7119134
+            ],
+            [
+              114.6444342,
+              -28.7118052
+            ],
+            [
+              114.6440455,
+              -28.7117991
+            ],
+            [
+              114.6440422,
+              -28.7119614
+            ],
+            [
+              114.6443695,
+              -28.7119666
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L343",
+        "lotNumber": 343,
+        "lotSuffix": "",
+        "areaM2": 666,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L342",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6444342,
+              -28.7118052
+            ],
+            [
+              114.6444374,
+              -28.7116519
+            ],
+            [
+              114.6440487,
+              -28.7116458
+            ],
+            [
+              114.6440455,
+              -28.7117991
+            ],
+            [
+              114.6444342,
+              -28.7118052
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L342",
+        "lotNumber": 342,
+        "lotSuffix": "",
+        "areaM2": 646,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L345",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6440455,
+              -28.7117991
+            ],
+            [
+              114.6440487,
+              -28.7116458
+            ],
+            [
+              114.6436601,
+              -28.7116397
+            ],
+            [
+              114.643657,
+              -28.711793
+            ],
+            [
+              114.6440455,
+              -28.7117991
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L345",
+        "lotNumber": 345,
+        "lotSuffix": "",
+        "areaM2": 646,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L346",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6440487,
+              -28.7116458
+            ],
+            [
+              114.6440518,
+              -28.7114924
+            ],
+            [
+              114.6436632,
+              -28.7114863
+            ],
+            [
+              114.6436601,
+              -28.7116397
+            ],
+            [
+              114.6440487,
+              -28.7116458
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L346",
+        "lotNumber": 346,
+        "lotSuffix": "",
+        "areaM2": 646,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L341",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6440487,
+              -28.7116458
+            ],
+            [
+              114.6444374,
+              -28.7116519
+            ],
+            [
+              114.6444405,
+              -28.7114985
+            ],
+            [
+              114.6440518,
+              -28.7114924
+            ],
+            [
+              114.6440487,
+              -28.7116458
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L341",
+        "lotNumber": 341,
+        "lotSuffix": "",
+        "areaM2": 646,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L347",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.643666,
+              -28.7113511
+            ],
+            [
+              114.6436632,
+              -28.7114863
+            ],
+            [
+              114.6440518,
+              -28.7114924
+            ],
+            [
+              114.6440546,
+              -28.7113572
+            ],
+            [
+              114.643666,
+              -28.7113511
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L347",
+        "lotNumber": 347,
+        "lotSuffix": "",
+        "areaM2": 570,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L340",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6444405,
+              -28.7114985
+            ],
+            [
+              114.6444433,
+              -28.7113633
+            ],
+            [
+              114.6440546,
+              -28.7113572
+            ],
+            [
+              114.6440518,
+              -28.7114924
+            ],
+            [
+              114.6444405,
+              -28.7114985
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L340",
+        "lotNumber": 340,
+        "lotSuffix": "",
+        "areaM2": 570,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L339",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6440546,
+              -28.7113572
+            ],
+            [
+              114.6444433,
+              -28.7113633
+            ],
+            [
+              114.6444461,
+              -28.711228
+            ],
+            [
+              114.6440574,
+              -28.7112219
+            ],
+            [
+              114.6440546,
+              -28.7113572
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L339",
+        "lotNumber": 339,
+        "lotSuffix": "",
+        "areaM2": 570,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L348a",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6440546,
+              -28.7113572
+            ],
+            [
+              114.6440574,
+              -28.7112219
+            ],
+            [
+              114.6436687,
+              -28.7112158
+            ],
+            [
+              114.643666,
+              -28.7113511
+            ],
+            [
+              114.6440546,
+              -28.7113572
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L348a",
+        "lotNumber": 348,
+        "lotSuffix": "a",
+        "areaM2": 570,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L348b",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6440574,
+              -28.7112219
+            ],
+            [
+              114.6440602,
+              -28.7110866
+            ],
+            [
+              114.6436714,
+              -28.7110805
+            ],
+            [
+              114.6436687,
+              -28.7112158
+            ],
+            [
+              114.6440574,
+              -28.7112219
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L348b",
+        "lotNumber": 348,
+        "lotSuffix": "b",
+        "areaM2": 570,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L338",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6444461,
+              -28.711228
+            ],
+            [
+              114.6444488,
+              -28.7110927
+            ],
+            [
+              114.6440602,
+              -28.7110866
+            ],
+            [
+              114.6440574,
+              -28.7112219
+            ],
+            [
+              114.6444461,
+              -28.711228
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L338",
+        "lotNumber": 338,
+        "lotSuffix": "",
+        "areaM2": 570,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L239",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6502356,
+              -28.7098842
+            ],
+            [
+              114.650243,
+              -28.7097849
+            ],
+            [
+              114.6498856,
+              -28.7097643
+            ],
+            [
+              114.6498644,
+              -28.710051
+            ],
+            [
+              114.6502356,
+              -28.7098842
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L239",
+        "lotNumber": 239,
+        "lotSuffix": "",
+        "areaM2": 751,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L240",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6502544,
+              -28.7096319
+            ],
+            [
+              114.649897,
+              -28.7096113
+            ],
+            [
+              114.6498856,
+              -28.7097643
+            ],
+            [
+              114.650243,
+              -28.7097849
+            ],
+            [
+              114.6502544,
+              -28.7096319
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L240",
+        "lotNumber": 240,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L238",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6506155,
+              -28.7096015
+            ],
+            [
+              114.6502581,
+              -28.7095809
+            ],
+            [
+              114.6502356,
+              -28.7098842
+            ],
+            [
+              114.6506069,
+              -28.7097174
+            ],
+            [
+              114.6506155,
+              -28.7096015
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L238",
+        "lotNumber": 238,
+        "lotSuffix": "",
+        "areaM2": 815,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L237",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6506255,
+              -28.7094665
+            ],
+            [
+              114.6502681,
+              -28.7094459
+            ],
+            [
+              114.6502581,
+              -28.7095809
+            ],
+            [
+              114.6506155,
+              -28.7096015
+            ],
+            [
+              114.6506255,
+              -28.7094665
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L237",
+        "lotNumber": 237,
+        "lotSuffix": "",
+        "areaM2": 525,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L241",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6502657,
+              -28.7094789
+            ],
+            [
+              114.6499084,
+              -28.7094583
+            ],
+            [
+              114.649897,
+              -28.7096113
+            ],
+            [
+              114.6502544,
+              -28.7096319
+            ],
+            [
+              114.6502657,
+              -28.7094789
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L241",
+        "lotNumber": 241,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L242",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6502782,
+              -28.7093109
+            ],
+            [
+              114.6499197,
+              -28.7093052
+            ],
+            [
+              114.6499084,
+              -28.7094583
+            ],
+            [
+              114.6502657,
+              -28.7094789
+            ],
+            [
+              114.6502782,
+              -28.7093109
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L242",
+        "lotNumber": 242,
+        "lotSuffix": "",
+        "areaM2": 624,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L236",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6506366,
+              -28.7093165
+            ],
+            [
+              114.6502782,
+              -28.7093109
+            ],
+            [
+              114.6502681,
+              -28.7094459
+            ],
+            [
+              114.6506255,
+              -28.7094665
+            ],
+            [
+              114.6506366,
+              -28.7093165
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L236",
+        "lotNumber": 236,
+        "lotSuffix": "",
+        "areaM2": 554,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L243",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.649756,
+              -28.7093
+            ],
+            [
+              114.6494144,
+              -28.7092946
+            ],
+            [
+              114.6494113,
+              -28.7094479
+            ],
+            [
+              114.6497446,
+              -28.7094531
+            ],
+            [
+              114.649756,
+              -28.7093
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L243",
+        "lotNumber": 243,
+        "lotSuffix": "",
+        "areaM2": 561,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L255",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6494144,
+              -28.7092946
+            ],
+            [
+              114.6490717,
+              -28.7092892
+            ],
+            [
+              114.6490686,
+              -28.7094425
+            ],
+            [
+              114.6494113,
+              -28.7094479
+            ],
+            [
+              114.6494144,
+              -28.7092946
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L255",
+        "lotNumber": 255,
+        "lotSuffix": "",
+        "areaM2": 569,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L254",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6494113,
+              -28.7094479
+            ],
+            [
+              114.6490686,
+              -28.7094425
+            ],
+            [
+              114.6490659,
+              -28.7095778
+            ],
+            [
+              114.6494086,
+              -28.7095832
+            ],
+            [
+              114.6494113,
+              -28.7094479
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L254",
+        "lotNumber": 254,
+        "lotSuffix": "",
+        "areaM2": 502,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L244",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6497446,
+              -28.7094531
+            ],
+            [
+              114.6494113,
+              -28.7094479
+            ],
+            [
+              114.6494086,
+              -28.7095832
+            ],
+            [
+              114.6494086,
+              -28.7095832
+            ],
+            [
+              114.6497346,
+              -28.7095883
+            ],
+            [
+              114.6497446,
+              -28.7094531
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L244",
+        "lotNumber": 244,
+        "lotSuffix": "",
+        "areaM2": 483,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L245",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6497346,
+              -28.7095883
+            ],
+            [
+              114.6494086,
+              -28.7095832
+            ],
+            [
+              114.6494058,
+              -28.7097185
+            ],
+            [
+              114.6494058,
+              -28.7097185
+            ],
+            [
+              114.6497246,
+              -28.7097235
+            ],
+            [
+              114.6497346,
+              -28.7095883
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L245",
+        "lotNumber": 245,
+        "lotSuffix": "",
+        "areaM2": 473,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L253",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6494086,
+              -28.7095832
+            ],
+            [
+              114.6490659,
+              -28.7095778
+            ],
+            [
+              114.6490631,
+              -28.7097131
+            ],
+            [
+              114.6494058,
+              -28.7097185
+            ],
+            [
+              114.6494086,
+              -28.7095832
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L253",
+        "lotNumber": 253,
+        "lotSuffix": "",
+        "areaM2": 503,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L252",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6494058,
+              -28.7097185
+            ],
+            [
+              114.6490631,
+              -28.7097131
+            ],
+            [
+              114.6490604,
+              -28.7098484
+            ],
+            [
+              114.6494031,
+              -28.7098538
+            ],
+            [
+              114.6494058,
+              -28.7097185
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L252",
+        "lotNumber": 252,
+        "lotSuffix": "",
+        "areaM2": 503,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L246",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6497246,
+              -28.7097235
+            ],
+            [
+              114.6494058,
+              -28.7097185
+            ],
+            [
+              114.6494031,
+              -28.7098538
+            ],
+            [
+              114.6494031,
+              -28.7098538
+            ],
+            [
+              114.6497145,
+              -28.7098587
+            ],
+            [
+              114.6497246,
+              -28.7097235
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L246",
+        "lotNumber": 246,
+        "lotSuffix": "",
+        "areaM2": 462,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L247",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6497145,
+              -28.7098587
+            ],
+            [
+              114.6494031,
+              -28.7098538
+            ],
+            [
+              114.6494,
+              -28.7100071
+            ],
+            [
+              114.6497032,
+              -28.7100118
+            ],
+            [
+              114.6497145,
+              -28.7098587
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L247",
+        "lotNumber": 247,
+        "lotSuffix": "",
+        "areaM2": 511,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L251",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6494031,
+              -28.7098538
+            ],
+            [
+              114.6490604,
+              -28.7098484
+            ],
+            [
+              114.6490576,
+              -28.7099837
+            ],
+            [
+              114.6494004,
+              -28.709989
+            ],
+            [
+              114.6494031,
+              -28.7098538
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L251",
+        "lotNumber": 251,
+        "lotSuffix": "",
+        "areaM2": 503,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L250",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6494004,
+              -28.709989
+            ],
+            [
+              114.6490576,
+              -28.7099837
+            ],
+            [
+              114.6490549,
+              -28.7101189
+            ],
+            [
+              114.6493976,
+              -28.7101243
+            ],
+            [
+              114.6494004,
+              -28.709989
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L250",
+        "lotNumber": 250,
+        "lotSuffix": "",
+        "areaM2": 503,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L248",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6496946,
+              -28.7101273
+            ],
+            [
+              114.6497032,
+              -28.7100118
+            ],
+            [
+              114.6494,
+              -28.7100071
+            ],
+            [
+              114.6493948,
+              -28.710262
+            ],
+            [
+              114.6496946,
+              -28.7101273
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L248",
+        "lotNumber": 248,
+        "lotSuffix": "",
+        "areaM2": 600,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L249",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6493976,
+              -28.7101243
+            ],
+            [
+              114.6490549,
+              -28.7101189
+            ],
+            [
+              114.6490532,
+              -28.7102054
+            ],
+            [
+              114.6491075,
+              -28.7102828
+            ],
+            [
+              114.649232,
+              -28.7103352
+            ],
+            [
+              114.6493948,
+              -28.710262
+            ],
+            [
+              114.6493976,
+              -28.7101243
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L249",
+        "lotNumber": 249,
+        "lotSuffix": "",
+        "areaM2": 638,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L261",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6485322,
+              -28.7111594
+            ],
+            [
+              114.6483659,
+              -28.711162
+            ],
+            [
+              114.6483722,
+              -28.711472
+            ],
+            [
+              114.648526,
+              -28.7114679
+            ],
+            [
+              114.6485322,
+              -28.7111594
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L261",
+        "lotNumber": 261,
+        "lotSuffix": "",
+        "areaM2": 536,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L262",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6483659,
+              -28.711162
+            ],
+            [
+              114.6482124,
+              -28.7111644
+            ],
+            [
+              114.6482188,
+              -28.711476
+            ],
+            [
+              114.6483722,
+              -28.711472
+            ],
+            [
+              114.6483659,
+              -28.711162
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L262",
+        "lotNumber": 262,
+        "lotSuffix": "",
+        "areaM2": 517,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L263",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6482124,
+              -28.7111644
+            ],
+            [
+              114.6480385,
+              -28.7111671
+            ],
+            [
+              114.6480449,
+              -28.7114806
+            ],
+            [
+              114.6482188,
+              -28.711476
+            ],
+            [
+              114.6482124,
+              -28.7111644
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L263",
+        "lotNumber": 263,
+        "lotSuffix": "",
+        "areaM2": 589,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L265",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6478851,
+              -28.7111696
+            ],
+            [
+              114.6477316,
+              -28.711172
+            ],
+            [
+              114.6477381,
+              -28.7114908
+            ],
+            [
+              114.6478398,
+              -28.7114861
+            ],
+            [
+              114.6478915,
+              -28.7114847
+            ],
+            [
+              114.6478851,
+              -28.7111696
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L265",
+        "lotNumber": 265,
+        "lotSuffix": "",
+        "areaM2": 527,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L266",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6477316,
+              -28.711172
+            ],
+            [
+              114.6475577,
+              -28.7111747
+            ],
+            [
+              114.6475643,
+              -28.7114988
+            ],
+            [
+              114.6477381,
+              -28.7114908
+            ],
+            [
+              114.6477316,
+              -28.711172
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L266",
+        "lotNumber": 266,
+        "lotSuffix": "",
+        "areaM2": 606,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L267",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6475577,
+              -28.7111747
+            ],
+            [
+              114.6475107,
+              -28.7111755
+            ],
+            [
+              114.6473843,
+              -28.7112033
+            ],
+            [
+              114.6473905,
+              -28.7115069
+            ],
+            [
+              114.6475643,
+              -28.7114988
+            ],
+            [
+              114.6475577,
+              -28.7111747
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L267",
+        "lotNumber": 267,
+        "lotSuffix": "",
+        "areaM2": 598,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L268",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6473843,
+              -28.7112033
+            ],
+            [
+              114.6472205,
+              -28.7112393
+            ],
+            [
+              114.6471671,
+              -28.7112633
+            ],
+            [
+              114.6471614,
+              -28.7115175
+            ],
+            [
+              114.6473905,
+              -28.7115069
+            ],
+            [
+              114.6473843,
+              -28.7112033
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L268",
+        "lotNumber": 268,
+        "lotSuffix": "",
+        "areaM2": 685,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L275",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6480669,
+              -28.7102647
+            ],
+            [
+              114.6477088,
+              -28.7102591
+            ],
+            [
+              114.6477061,
+              -28.7103943
+            ],
+            [
+              114.6480641,
+              -28.7104
+            ],
+            [
+              114.6480669,
+              -28.7102647
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L275",
+        "lotNumber": 275,
+        "lotSuffix": "",
+        "areaM2": 525,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L276",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.64807,
+              -28.7101114
+            ],
+            [
+              114.647712,
+              -28.7101057
+            ],
+            [
+              114.6477088,
+              -28.7102591
+            ],
+            [
+              114.6480669,
+              -28.7102647
+            ],
+            [
+              114.64807,
+              -28.7101114
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L276",
+        "lotNumber": 276,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L290",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6477151,
+              -28.7099524
+            ],
+            [
+              114.6473571,
+              -28.7099468
+            ],
+            [
+              114.6473539,
+              -28.7101001
+            ],
+            [
+              114.647712,
+              -28.7101057
+            ],
+            [
+              114.6477151,
+              -28.7099524
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L290",
+        "lotNumber": 290,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L277",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6480732,
+              -28.7099581
+            ],
+            [
+              114.6477151,
+              -28.7099524
+            ],
+            [
+              114.647712,
+              -28.7101057
+            ],
+            [
+              114.64807,
+              -28.7101114
+            ],
+            [
+              114.6480732,
+              -28.7099581
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L277",
+        "lotNumber": 277,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L278",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6480759,
+              -28.7098228
+            ],
+            [
+              114.6477179,
+              -28.7098171
+            ],
+            [
+              114.6477151,
+              -28.7099524
+            ],
+            [
+              114.6480732,
+              -28.7099581
+            ],
+            [
+              114.6480759,
+              -28.7098228
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L278",
+        "lotNumber": 278,
+        "lotSuffix": "",
+        "areaM2": 525,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L289",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6477179,
+              -28.7098171
+            ],
+            [
+              114.6473598,
+              -28.7098115
+            ],
+            [
+              114.6473571,
+              -28.7099468
+            ],
+            [
+              114.6477151,
+              -28.7099524
+            ],
+            [
+              114.6477179,
+              -28.7098171
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L289",
+        "lotNumber": 289,
+        "lotSuffix": "",
+        "areaM2": 525,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L288",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6477207,
+              -28.7096818
+            ],
+            [
+              114.6473626,
+              -28.7096762
+            ],
+            [
+              114.6473598,
+              -28.7098115
+            ],
+            [
+              114.6477179,
+              -28.7098171
+            ],
+            [
+              114.6477207,
+              -28.7096818
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L288",
+        "lotNumber": 288,
+        "lotSuffix": "",
+        "areaM2": 525,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L279",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6480787,
+              -28.7096875
+            ],
+            [
+              114.6477207,
+              -28.7096818
+            ],
+            [
+              114.6477179,
+              -28.7098171
+            ],
+            [
+              114.6480759,
+              -28.7098228
+            ],
+            [
+              114.6480787,
+              -28.7096875
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L279",
+        "lotNumber": 279,
+        "lotSuffix": "",
+        "areaM2": 525,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L280",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6480819,
+              -28.7095342
+            ],
+            [
+              114.6477238,
+              -28.7095285
+            ],
+            [
+              114.6477207,
+              -28.7096818
+            ],
+            [
+              114.6480787,
+              -28.7096875
+            ],
+            [
+              114.6480819,
+              -28.7095342
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L280",
+        "lotNumber": 280,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L287",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6477238,
+              -28.7095285
+            ],
+            [
+              114.6473658,
+              -28.7095229
+            ],
+            [
+              114.6473626,
+              -28.7096762
+            ],
+            [
+              114.6477207,
+              -28.7096818
+            ],
+            [
+              114.6477238,
+              -28.7095285
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L287",
+        "lotNumber": 287,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L286",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.647727,
+              -28.7093752
+            ],
+            [
+              114.6473689,
+              -28.7093696
+            ],
+            [
+              114.6473658,
+              -28.7095229
+            ],
+            [
+              114.6477238,
+              -28.7095285
+            ],
+            [
+              114.647727,
+              -28.7093752
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L286",
+        "lotNumber": 286,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L281",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.648085,
+              -28.7093808
+            ],
+            [
+              114.647727,
+              -28.7093752
+            ],
+            [
+              114.6477238,
+              -28.7095285
+            ],
+            [
+              114.6480819,
+              -28.7095342
+            ],
+            [
+              114.648085,
+              -28.7093808
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L281",
+        "lotNumber": 281,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L282",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6480882,
+              -28.7092275
+            ],
+            [
+              114.6477301,
+              -28.7092219
+            ],
+            [
+              114.647727,
+              -28.7093752
+            ],
+            [
+              114.648085,
+              -28.7093808
+            ],
+            [
+              114.6480882,
+              -28.7092275
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L282",
+        "lotNumber": 282,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L285",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6477301,
+              -28.7092219
+            ],
+            [
+              114.647372,
+              -28.7092162
+            ],
+            [
+              114.6473689,
+              -28.7093696
+            ],
+            [
+              114.647727,
+              -28.7093752
+            ],
+            [
+              114.6477301,
+              -28.7092219
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L285",
+        "lotNumber": 285,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L284",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6477334,
+              -28.7090633
+            ],
+            [
+              114.6474367,
+              -28.7090586
+            ],
+            [
+              114.6473742,
+              -28.7091117
+            ],
+            [
+              114.647372,
+              -28.7092162
+            ],
+            [
+              114.6477301,
+              -28.7092219
+            ],
+            [
+              114.6477334,
+              -28.7090633
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L284",
+        "lotNumber": 284,
+        "lotSuffix": "",
+        "areaM2": 598,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L283",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6480903,
+              -28.709123
+            ],
+            [
+              114.64803,
+              -28.7090679
+            ],
+            [
+              114.6477334,
+              -28.7090633
+            ],
+            [
+              114.6477301,
+              -28.7092219
+            ],
+            [
+              114.6480882,
+              -28.7092275
+            ],
+            [
+              114.6480903,
+              -28.709123
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L283",
+        "lotNumber": 283,
+        "lotSuffix": "",
+        "areaM2": 598,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L295",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6472105,
+              -28.7091092
+            ],
+            [
+              114.6471502,
+              -28.7090541
+            ],
+            [
+              114.6468024,
+              -28.7090486
+            ],
+            [
+              114.6467991,
+              -28.7092084
+            ],
+            [
+              114.6472083,
+              -28.7092149
+            ],
+            [
+              114.6472105,
+              -28.7091092
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L295",
+        "lotNumber": 295,
+        "lotSuffix": "",
+        "areaM2": 691,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L296",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6472083,
+              -28.7092149
+            ],
+            [
+              114.6467991,
+              -28.7092084
+            ],
+            [
+              114.646796,
+              -28.7093617
+            ],
+            [
+              114.6472052,
+              -28.7093682
+            ],
+            [
+              114.6472083,
+              -28.7092149
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L296",
+        "lotNumber": 296,
+        "lotSuffix": "",
+        "areaM2": 680,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L297",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6472052,
+              -28.7093682
+            ],
+            [
+              114.646796,
+              -28.7093617
+            ],
+            [
+              114.6467928,
+              -28.709515
+            ],
+            [
+              114.647202,
+              -28.7095215
+            ],
+            [
+              114.6472052,
+              -28.7093682
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L297",
+        "lotNumber": 297,
+        "lotSuffix": "",
+        "areaM2": 680,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L298",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.647202,
+              -28.7095215
+            ],
+            [
+              114.6467928,
+              -28.709515
+            ],
+            [
+              114.6467897,
+              -28.7096683
+            ],
+            [
+              114.6471989,
+              -28.7096749
+            ],
+            [
+              114.647202,
+              -28.7095215
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L298",
+        "lotNumber": 298,
+        "lotSuffix": "",
+        "areaM2": 680,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L299",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6471989,
+              -28.7096749
+            ],
+            [
+              114.6467897,
+              -28.7096683
+            ],
+            [
+              114.6467866,
+              -28.7098217
+            ],
+            [
+              114.6471958,
+              -28.7098282
+            ],
+            [
+              114.6471989,
+              -28.7096749
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L299",
+        "lotNumber": 299,
+        "lotSuffix": "",
+        "areaM2": 680,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L300",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6471958,
+              -28.7098282
+            ],
+            [
+              114.6467866,
+              -28.7098217
+            ],
+            [
+              114.6467834,
+              -28.709975
+            ],
+            [
+              114.6471926,
+              -28.7099815
+            ],
+            [
+              114.6471958,
+              -28.7098282
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L300",
+        "lotNumber": 300,
+        "lotSuffix": "",
+        "areaM2": 680,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L273",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6480613,
+              -28.7105353
+            ],
+            [
+              114.6477033,
+              -28.7105296
+            ],
+            [
+              114.6477001,
+              -28.710683
+            ],
+            [
+              114.6480582,
+              -28.7106887
+            ],
+            [
+              114.6480613,
+              -28.7105353
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L273",
+        "lotNumber": 273,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L274",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6480641,
+              -28.7104
+            ],
+            [
+              114.6477061,
+              -28.7103943
+            ],
+            [
+              114.6477033,
+              -28.7105296
+            ],
+            [
+              114.6480613,
+              -28.7105353
+            ],
+            [
+              114.6480641,
+              -28.7104
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L274",
+        "lotNumber": 274,
+        "lotSuffix": "",
+        "areaM2": 525,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L272",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6480582,
+              -28.7106887
+            ],
+            [
+              114.6478792,
+              -28.7106858
+            ],
+            [
+              114.6478726,
+              -28.7110074
+            ],
+            [
+              114.6479903,
+              -28.7110055
+            ],
+            [
+              114.6480528,
+              -28.7109504
+            ],
+            [
+              114.6480582,
+              -28.7106887
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L272",
+        "lotNumber": 272,
+        "lotSuffix": "",
+        "areaM2": 600,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L271",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6478792,
+              -28.7106858
+            ],
+            [
+              114.6477001,
+              -28.710683
+            ],
+            [
+              114.6476934,
+              -28.7110102
+            ],
+            [
+              114.6478726,
+              -28.7110074
+            ],
+            [
+              114.6478792,
+              -28.7106858
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L271",
+        "lotNumber": 271,
+        "lotSuffix": "",
+        "areaM2": 629,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L320",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6454702,
+              -28.7114896
+            ],
+            [
+              114.6453153,
+              -28.7115592
+            ],
+            [
+              114.6454779,
+              -28.7118405
+            ],
+            [
+              114.6456329,
+              -28.7117708
+            ],
+            [
+              114.6454702,
+              -28.7114896
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L320",
+        "lotNumber": 320,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L321",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6453153,
+              -28.7115592
+            ],
+            [
+              114.6451603,
+              -28.7116289
+            ],
+            [
+              114.645323,
+              -28.7119102
+            ],
+            [
+              114.6454779,
+              -28.7118405
+            ],
+            [
+              114.6453153,
+              -28.7115592
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L321",
+        "lotNumber": 321,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L326",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6451919,
+              -28.7112866
+            ],
+            [
+              114.6450078,
+              -28.7112837
+            ],
+            [
+              114.6450007,
+              -28.7116264
+            ],
+            [
+              114.6451603,
+              -28.7116289
+            ],
+            [
+              114.6451851,
+              -28.7116177
+            ],
+            [
+              114.6451919,
+              -28.7112866
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L326",
+        "lotNumber": 326,
+        "lotSuffix": "",
+        "areaM2": 682,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L324",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6450041,
+              -28.7114641
+            ],
+            [
+              114.644646,
+              -28.7114584
+            ],
+            [
+              114.6446427,
+              -28.7116208
+            ],
+            [
+              114.6450007,
+              -28.7116264
+            ],
+            [
+              114.6450041,
+              -28.7114641
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L324",
+        "lotNumber": 324,
+        "lotSuffix": "",
+        "areaM2": 630,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L325",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6450078,
+              -28.7112837
+            ],
+            [
+              114.6447111,
+              -28.711279
+            ],
+            [
+              114.6446486,
+              -28.7113322
+            ],
+            [
+              114.644646,
+              -28.7114584
+            ],
+            [
+              114.6450041,
+              -28.7114641
+            ],
+            [
+              114.6450078,
+              -28.7112837
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L325",
+        "lotNumber": 325,
+        "lotSuffix": "",
+        "areaM2": 682,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L264",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6480385,
+              -28.7111671
+            ],
+            [
+              114.6478851,
+              -28.7111696
+            ],
+            [
+              114.6478915,
+              -28.7114847
+            ],
+            [
+              114.6480449,
+              -28.7114806
+            ],
+            [
+              114.6480385,
+              -28.7111671
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L264",
+        "lotNumber": 264,
+        "lotSuffix": "",
+        "areaM2": 523,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L322",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6451603,
+              -28.7116289
+            ],
+            [
+              114.6450351,
+              -28.7116269
+            ],
+            [
+              114.645055,
+              -28.7119773
+            ],
+            [
+              114.6451696,
+              -28.7119791
+            ],
+            [
+              114.645323,
+              -28.7119102
+            ],
+            [
+              114.6451603,
+              -28.7116289
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L322",
+        "lotNumber": 322,
+        "lotSuffix": "",
+        "areaM2": 749,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L260",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6483819,
+              -28.7109993
+            ],
+            [
+              114.6485355,
+              -28.7109969
+            ],
+            [
+              114.6485418,
+              -28.7106843
+            ],
+            [
+              114.6483884,
+              -28.7106818
+            ],
+            [
+              114.6483819,
+              -28.7109993
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L260",
+        "lotNumber": 260,
+        "lotSuffix": "",
+        "areaM2": 524,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L259",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6483884,
+              -28.7106818
+            ],
+            [
+              114.6482221,
+              -28.7106792
+            ],
+            [
+              114.6482166,
+              -28.7109478
+            ],
+            [
+              114.6482769,
+              -28.711001
+            ],
+            [
+              114.6483819,
+              -28.7109993
+            ],
+            [
+              114.6483884,
+              -28.7106818
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L259",
+        "lotNumber": 259,
+        "lotSuffix": "",
+        "areaM2": 559,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L258",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6483948,
+              -28.7103692
+            ],
+            [
+              114.6482899,
+              -28.7103676
+            ],
+            [
+              114.6482274,
+              -28.7104207
+            ],
+            [
+              114.6482221,
+              -28.7106792
+            ],
+            [
+              114.6483884,
+              -28.7106818
+            ],
+            [
+              114.6483948,
+              -28.7103692
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L258",
+        "lotNumber": 258,
+        "lotSuffix": "",
+        "areaM2": 545,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L257",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6485482,
+              -28.7103717
+            ],
+            [
+              114.6483948,
+              -28.7103692
+            ],
+            [
+              114.6483884,
+              -28.7106818
+            ],
+            [
+              114.6485418,
+              -28.7106843
+            ],
+            [
+              114.6485482,
+              -28.7103717
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L257",
+        "lotNumber": 257,
+        "lotSuffix": "",
+        "areaM2": 520,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L256",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6490481,
+              -28.7104178
+            ],
+            [
+              114.6490093,
+              -28.7104015
+            ],
+            [
+              114.6488925,
+              -28.7103772
+            ],
+            [
+              114.6485482,
+              -28.7103717
+            ],
+            [
+              114.6485426,
+              -28.7106449
+            ],
+            [
+              114.6490481,
+              -28.7104178
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L256",
+        "lotNumber": 256,
+        "lotSuffix": "",
+        "areaM2": 818,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L336",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6440629,
+              -28.7109513
+            ],
+            [
+              114.6444516,
+              -28.7109574
+            ],
+            [
+              114.6444547,
+              -28.7108051
+            ],
+            [
+              114.6440661,
+              -28.7107984
+            ],
+            [
+              114.6440629,
+              -28.7109513
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L336",
+        "lotNumber": 336,
+        "lotSuffix": "",
+        "areaM2": 643,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L351",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6440629,
+              -28.7109513
+            ],
+            [
+              114.6440661,
+              -28.7107984
+            ],
+            [
+              114.6436773,
+              -28.7107916
+            ],
+            [
+              114.6436742,
+              -28.7109452
+            ],
+            [
+              114.6440629,
+              -28.7109513
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L351",
+        "lotNumber": 351,
+        "lotSuffix": "",
+        "areaM2": 646,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L350",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6440629,
+              -28.7109513
+            ],
+            [
+              114.6436742,
+              -28.7109452
+            ],
+            [
+              114.6436714,
+              -28.7110805
+            ],
+            [
+              114.6440602,
+              -28.7110866
+            ],
+            [
+              114.6440629,
+              -28.7109513
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L350",
+        "lotNumber": 350,
+        "lotSuffix": "",
+        "areaM2": 570,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L337",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6440629,
+              -28.7109513
+            ],
+            [
+              114.6440602,
+              -28.7110866
+            ],
+            [
+              114.6444488,
+              -28.7110927
+            ],
+            [
+              114.6444516,
+              -28.7109574
+            ],
+            [
+              114.6440629,
+              -28.7109513
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L337",
+        "lotNumber": 337,
+        "lotSuffix": "",
+        "areaM2": 570,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L360",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6482659,
+              -28.7085574
+            ],
+            [
+              114.6481124,
+              -28.708555
+            ],
+            [
+              114.6481057,
+              -28.7088887
+            ],
+            [
+              114.6482591,
+              -28.7088911
+            ],
+            [
+              114.6482659,
+              -28.7085574
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L360",
+        "lotNumber": 360,
+        "lotSuffix": "",
+        "areaM2": 555,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L373",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6482728,
+              -28.7082141
+            ],
+            [
+              114.6481194,
+              -28.7082117
+            ],
+            [
+              114.6481124,
+              -28.708555
+            ],
+            [
+              114.6482659,
+              -28.7085574
+            ],
+            [
+              114.6482728,
+              -28.7082141
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L373",
+        "lotNumber": 373,
+        "lotSuffix": "",
+        "areaM2": 571,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L372",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6484193,
+              -28.7085598
+            ],
+            [
+              114.6484263,
+              -28.7082165
+            ],
+            [
+              114.6482728,
+              -28.7082141
+            ],
+            [
+              114.6482659,
+              -28.7085574
+            ],
+            [
+              114.6484193,
+              -28.7085598
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L372",
+        "lotNumber": 372,
+        "lotSuffix": "",
+        "areaM2": 571,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L361",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6484193,
+              -28.7085598
+            ],
+            [
+              114.6482659,
+              -28.7085574
+            ],
+            [
+              114.6482591,
+              -28.7088911
+            ],
+            [
+              114.6484126,
+              -28.7088935
+            ],
+            [
+              114.6484193,
+              -28.7085598
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L361",
+        "lotNumber": 361,
+        "lotSuffix": "",
+        "areaM2": 555,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L362",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6485728,
+              -28.7085622
+            ],
+            [
+              114.6484193,
+              -28.7085598
+            ],
+            [
+              114.6484126,
+              -28.7088935
+            ],
+            [
+              114.648566,
+              -28.7088959
+            ],
+            [
+              114.6485728,
+              -28.7085622
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L362",
+        "lotNumber": 362,
+        "lotSuffix": "",
+        "areaM2": 555,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L371",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6485797,
+              -28.7082189
+            ],
+            [
+              114.6484263,
+              -28.7082165
+            ],
+            [
+              114.6484193,
+              -28.7085598
+            ],
+            [
+              114.6485728,
+              -28.7085622
+            ],
+            [
+              114.6485797,
+              -28.7082189
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L371",
+        "lotNumber": 371,
+        "lotSuffix": "",
+        "areaM2": 571,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L370",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6487262,
+              -28.7085646
+            ],
+            [
+              114.6487332,
+              -28.7082213
+            ],
+            [
+              114.6485921,
+              -28.7082191
+            ],
+            [
+              114.6485797,
+              -28.7082189
+            ],
+            [
+              114.6485728,
+              -28.7085622
+            ],
+            [
+              114.6487262,
+              -28.7085646
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L370",
+        "lotNumber": 370,
+        "lotSuffix": "",
+        "areaM2": 571,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L363",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.648566,
+              -28.7088959
+            ],
+            [
+              114.6487195,
+              -28.7088983
+            ],
+            [
+              114.6487262,
+              -28.7085646
+            ],
+            [
+              114.6485728,
+              -28.7085622
+            ],
+            [
+              114.648566,
+              -28.7088959
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L363",
+        "lotNumber": 363,
+        "lotSuffix": "",
+        "areaM2": 555,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L364",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6489001,
+              -28.7085674
+            ],
+            [
+              114.6487262,
+              -28.7085646
+            ],
+            [
+              114.6487195,
+              -28.7088983
+            ],
+            [
+              114.6488934,
+              -28.7089011
+            ],
+            [
+              114.6489001,
+              -28.7085674
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L364",
+        "lotNumber": 364,
+        "lotSuffix": "",
+        "areaM2": 629,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L369",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6487262,
+              -28.7085646
+            ],
+            [
+              114.6489001,
+              -28.7085674
+            ],
+            [
+              114.6489071,
+              -28.7082241
+            ],
+            [
+              114.6487332,
+              -28.7082213
+            ],
+            [
+              114.6487262,
+              -28.7085646
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L369",
+        "lotNumber": 369,
+        "lotSuffix": "",
+        "areaM2": 647,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L368",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.649074,
+              -28.7085701
+            ],
+            [
+              114.649081,
+              -28.7082268
+            ],
+            [
+              114.6489071,
+              -28.7082241
+            ],
+            [
+              114.6489001,
+              -28.7085674
+            ],
+            [
+              114.649074,
+              -28.7085701
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L368",
+        "lotNumber": 368,
+        "lotSuffix": "",
+        "areaM2": 647,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L365",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6488934,
+              -28.7089011
+            ],
+            [
+              114.6490673,
+              -28.7089038
+            ],
+            [
+              114.649074,
+              -28.7085701
+            ],
+            [
+              114.6489001,
+              -28.7085674
+            ],
+            [
+              114.6488934,
+              -28.7089011
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L365",
+        "lotNumber": 365,
+        "lotSuffix": "",
+        "areaM2": 629,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L366",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6490673,
+              -28.7089038
+            ],
+            [
+              114.6492412,
+              -28.7089066
+            ],
+            [
+              114.649248,
+              -28.7085728
+            ],
+            [
+              114.649074,
+              -28.7085701
+            ],
+            [
+              114.6490673,
+              -28.7089038
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L366",
+        "lotNumber": 366,
+        "lotSuffix": "",
+        "areaM2": 629,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L367",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.649074,
+              -28.7085701
+            ],
+            [
+              114.649248,
+              -28.7085728
+            ],
+            [
+              114.6492549,
+              -28.7082295
+            ],
+            [
+              114.649081,
+              -28.7082268
+            ],
+            [
+              114.649074,
+              -28.7085701
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L367",
+        "lotNumber": 367,
+        "lotSuffix": "",
+        "areaM2": 647,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L352",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6468061,
+              -28.7088682
+            ],
+            [
+              114.6469701,
+              -28.7088708
+            ],
+            [
+              114.6469769,
+              -28.7085371
+            ],
+            [
+              114.646813,
+              -28.7085345
+            ],
+            [
+              114.6468061,
+              -28.7088682
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L352",
+        "lotNumber": 352,
+        "lotSuffix": "",
+        "areaM2": 593,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L353",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6469701,
+              -28.7088708
+            ],
+            [
+              114.6471236,
+              -28.7088732
+            ],
+            [
+              114.6471303,
+              -28.7085395
+            ],
+            [
+              114.6469769,
+              -28.7085371
+            ],
+            [
+              114.6469701,
+              -28.7088708
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L353",
+        "lotNumber": 353,
+        "lotSuffix": "",
+        "areaM2": 555,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L380",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6470401,
+              -28.7081948
+            ],
+            [
+              114.64682,
+              -28.7081914
+            ],
+            [
+              114.646813,
+              -28.7085345
+            ],
+            [
+              114.6470331,
+              -28.708538
+            ],
+            [
+              114.6470401,
+              -28.7081948
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L380",
+        "lotNumber": 380,
+        "lotSuffix": "",
+        "areaM2": 819,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L354",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6472838,
+              -28.7085419
+            ],
+            [
+              114.6471303,
+              -28.7085395
+            ],
+            [
+              114.6471236,
+              -28.7088732
+            ],
+            [
+              114.647277,
+              -28.7088756
+            ],
+            [
+              114.6472838,
+              -28.7085419
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L354",
+        "lotNumber": 354,
+        "lotSuffix": "",
+        "areaM2": 555,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L355",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6474372,
+              -28.7085443
+            ],
+            [
+              114.6472838,
+              -28.7085419
+            ],
+            [
+              114.647277,
+              -28.7088756
+            ],
+            [
+              114.6474305,
+              -28.708878
+            ],
+            [
+              114.6474372,
+              -28.7085443
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L355",
+        "lotNumber": 355,
+        "lotSuffix": "",
+        "areaM2": 555,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L378",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6474442,
+              -28.7082011
+            ],
+            [
+              114.64726,
+              -28.7081983
+            ],
+            [
+              114.6472531,
+              -28.7085414
+            ],
+            [
+              114.6474372,
+              -28.7085443
+            ],
+            [
+              114.6474442,
+              -28.7082011
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L378",
+        "lotNumber": 378,
+        "lotSuffix": "",
+        "areaM2": 685,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L356",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6476111,
+              -28.7085471
+            ],
+            [
+              114.6474372,
+              -28.7085443
+            ],
+            [
+              114.6474305,
+              -28.708878
+            ],
+            [
+              114.6476044,
+              -28.7088808
+            ],
+            [
+              114.6476111,
+              -28.7085471
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L356",
+        "lotNumber": 356,
+        "lotSuffix": "",
+        "areaM2": 629,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L377",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6476181,
+              -28.7082039
+            ],
+            [
+              114.6474442,
+              -28.7082011
+            ],
+            [
+              114.6474372,
+              -28.7085443
+            ],
+            [
+              114.6476111,
+              -28.7085471
+            ],
+            [
+              114.6476181,
+              -28.7082039
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L377",
+        "lotNumber": 377,
+        "lotSuffix": "",
+        "areaM2": 647,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L357",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6477851,
+              -28.7085498
+            ],
+            [
+              114.6476111,
+              -28.7085471
+            ],
+            [
+              114.6476044,
+              -28.7088808
+            ],
+            [
+              114.6477783,
+              -28.7088835
+            ],
+            [
+              114.6477851,
+              -28.7085498
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L357",
+        "lotNumber": 357,
+        "lotSuffix": "",
+        "areaM2": 629,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L376",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.647792,
+              -28.7082066
+            ],
+            [
+              114.6476181,
+              -28.7082039
+            ],
+            [
+              114.6476111,
+              -28.7085471
+            ],
+            [
+              114.6477851,
+              -28.7085498
+            ],
+            [
+              114.647792,
+              -28.7082066
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L376",
+        "lotNumber": 376,
+        "lotSuffix": "",
+        "areaM2": 647,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L358",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.647959,
+              -28.7085526
+            ],
+            [
+              114.6477851,
+              -28.7085498
+            ],
+            [
+              114.6477783,
+              -28.7088835
+            ],
+            [
+              114.6479522,
+              -28.7088863
+            ],
+            [
+              114.647959,
+              -28.7085526
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L358",
+        "lotNumber": 358,
+        "lotSuffix": "",
+        "areaM2": 629,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L375",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6479659,
+              -28.7082093
+            ],
+            [
+              114.647792,
+              -28.7082066
+            ],
+            [
+              114.6477851,
+              -28.7085498
+            ],
+            [
+              114.647959,
+              -28.7085526
+            ],
+            [
+              114.6479659,
+              -28.7082093
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L375",
+        "lotNumber": 375,
+        "lotSuffix": "",
+        "areaM2": 647,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L359",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6479522,
+              -28.7088863
+            ],
+            [
+              114.6481057,
+              -28.7088887
+            ],
+            [
+              114.6481124,
+              -28.708555
+            ],
+            [
+              114.647959,
+              -28.7085526
+            ],
+            [
+              114.6479522,
+              -28.7088863
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L359",
+        "lotNumber": 359,
+        "lotSuffix": "",
+        "areaM2": 555,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L374",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.647959,
+              -28.7085526
+            ],
+            [
+              114.6481124,
+              -28.708555
+            ],
+            [
+              114.6481194,
+              -28.7082117
+            ],
+            [
+              114.6479659,
+              -28.7082093
+            ],
+            [
+              114.647959,
+              -28.7085526
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L374",
+        "lotNumber": 374,
+        "lotSuffix": "",
+        "areaM2": 571,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L269",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6473356,
+              -28.7109928
+            ],
+            [
+              114.6473941,
+              -28.7110338
+            ],
+            [
+              114.6474864,
+              -28.7110134
+            ],
+            [
+              114.6475194,
+              -28.7110129
+            ],
+            [
+              114.6475262,
+              -28.7106802
+            ],
+            [
+              114.6473421,
+              -28.7106772
+            ],
+            [
+              114.6473356,
+              -28.7109928
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L269",
+        "lotNumber": 269,
+        "lotSuffix": "",
+        "areaM2": 678,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L270",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6475194,
+              -28.7110129
+            ],
+            [
+              114.6476934,
+              -28.7110102
+            ],
+            [
+              114.6477001,
+              -28.710683
+            ],
+            [
+              114.6475262,
+              -28.7106802
+            ],
+            [
+              114.6475194,
+              -28.7110129
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L270",
+        "lotNumber": 270,
+        "lotSuffix": "",
+        "areaM2": 622,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L294a",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6473452,
+              -28.710524
+            ],
+            [
+              114.6473421,
+              -28.7106772
+            ],
+            [
+              114.6477001,
+              -28.710683
+            ],
+            [
+              114.6477033,
+              -28.7105296
+            ],
+            [
+              114.6473452,
+              -28.710524
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L294a",
+        "lotNumber": 294,
+        "lotSuffix": "a",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L294b",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6477033,
+              -28.7105296
+            ],
+            [
+              114.6477061,
+              -28.7103943
+            ],
+            [
+              114.647348,
+              -28.7103887
+            ],
+            [
+              114.6473452,
+              -28.710524
+            ],
+            [
+              114.6477033,
+              -28.7105296
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L294b",
+        "lotNumber": 294,
+        "lotSuffix": "b",
+        "areaM2": 525,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L292",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6473508,
+              -28.7102534
+            ],
+            [
+              114.647348,
+              -28.7103887
+            ],
+            [
+              114.6477061,
+              -28.7103943
+            ],
+            [
+              114.6477088,
+              -28.7102591
+            ],
+            [
+              114.6473508,
+              -28.7102534
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L292",
+        "lotNumber": 292,
+        "lotSuffix": "",
+        "areaM2": 525,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L291",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6473539,
+              -28.7101001
+            ],
+            [
+              114.6473508,
+              -28.7102534
+            ],
+            [
+              114.6477088,
+              -28.7102591
+            ],
+            [
+              114.647712,
+              -28.7101057
+            ],
+            [
+              114.6473539,
+              -28.7101001
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L291",
+        "lotNumber": 291,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L301",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6467834,
+              -28.709975
+            ],
+            [
+              114.6467803,
+              -28.7101283
+            ],
+            [
+              114.6471895,
+              -28.7101348
+            ],
+            [
+              114.6471926,
+              -28.7099815
+            ],
+            [
+              114.6467834,
+              -28.709975
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L301",
+        "lotNumber": 301,
+        "lotSuffix": "",
+        "areaM2": 680,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L302",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6471863,
+              -28.7102882
+            ],
+            [
+              114.6471895,
+              -28.7101348
+            ],
+            [
+              114.6467803,
+              -28.7101283
+            ],
+            [
+              114.6467771,
+              -28.7102816
+            ],
+            [
+              114.6471863,
+              -28.7102882
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L302",
+        "lotNumber": 302,
+        "lotSuffix": "",
+        "areaM2": 680,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L303",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6471832,
+              -28.7104415
+            ],
+            [
+              114.6471863,
+              -28.7102882
+            ],
+            [
+              114.6467771,
+              -28.7102816
+            ],
+            [
+              114.646774,
+              -28.710435
+            ],
+            [
+              114.6471832,
+              -28.7104415
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L303",
+        "lotNumber": 303,
+        "lotSuffix": "",
+        "areaM2": 680,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L304",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6471804,
+              -28.7105768
+            ],
+            [
+              114.6471832,
+              -28.7104415
+            ],
+            [
+              114.646774,
+              -28.710435
+            ],
+            [
+              114.6467712,
+              -28.7105702
+            ],
+            [
+              114.6471804,
+              -28.7105768
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L304",
+        "lotNumber": 304,
+        "lotSuffix": "",
+        "areaM2": 600,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L305",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6467712,
+              -28.7105702
+            ],
+            [
+              114.6467684,
+              -28.7107055
+            ],
+            [
+              114.6471776,
+              -28.7107121
+            ],
+            [
+              114.6471804,
+              -28.7105768
+            ],
+            [
+              114.6467712,
+              -28.7105702
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L305",
+        "lotNumber": 305,
+        "lotSuffix": "",
+        "areaM2": 600,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L306",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6467684,
+              -28.7107055
+            ],
+            [
+              114.6467656,
+              -28.7108414
+            ],
+            [
+              114.6467656,
+              -28.7108416
+            ],
+            [
+              114.6471748,
+              -28.710848
+            ],
+            [
+              114.6471776,
+              -28.7107121
+            ],
+            [
+              114.6467684,
+              -28.7107055
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L306",
+        "lotNumber": 306,
+        "lotSuffix": "",
+        "areaM2": 603,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L317",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6459428,
+              -28.7116315
+            ],
+            [
+              114.6461006,
+              -28.7115606
+            ],
+            [
+              114.645938,
+              -28.7112793
+            ],
+            [
+              114.6457801,
+              -28.7113502
+            ],
+            [
+              114.6459428,
+              -28.7116315
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L317",
+        "lotNumber": 317,
+        "lotSuffix": "",
+        "areaM2": 606,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L318",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6457801,
+              -28.7113502
+            ],
+            [
+              114.6456252,
+              -28.7114199
+            ],
+            [
+              114.6457879,
+              -28.7117012
+            ],
+            [
+              114.6459428,
+              -28.7116315
+            ],
+            [
+              114.6457801,
+              -28.7113502
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L318",
+        "lotNumber": 318,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L319",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6456329,
+              -28.7117708
+            ],
+            [
+              114.6457879,
+              -28.7117012
+            ],
+            [
+              114.6456252,
+              -28.7114199
+            ],
+            [
+              114.6454702,
+              -28.7114896
+            ],
+            [
+              114.6456329,
+              -28.7117708
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L319",
+        "lotNumber": 319,
+        "lotSuffix": "",
+        "areaM2": 595,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L327",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6453208,
+              -28.7112291
+            ],
+            [
+              114.6451919,
+              -28.7112866
+            ],
+            [
+              114.6451851,
+              -28.7116177
+            ],
+            [
+              114.6454702,
+              -28.7114896
+            ],
+            [
+              114.6453208,
+              -28.7112291
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L327",
+        "lotNumber": 327,
+        "lotSuffix": "",
+        "areaM2": 735,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L334",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6448266,
+              -28.7111365
+            ],
+            [
+              114.6450005,
+              -28.7111392
+            ],
+            [
+              114.6450072,
+              -28.7108138
+            ],
+            [
+              114.6448333,
+              -28.710811
+            ],
+            [
+              114.6448266,
+              -28.7111365
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L334",
+        "lotNumber": 334,
+        "lotSuffix": "",
+        "areaM2": 613,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L335",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6446538,
+              -28.7110796
+            ],
+            [
+              114.6447141,
+              -28.7111347
+            ],
+            [
+              114.6448266,
+              -28.7111365
+            ],
+            [
+              114.6448333,
+              -28.710811
+            ],
+            [
+              114.6446594,
+              -28.7108082
+            ],
+            [
+              114.6446538,
+              -28.7110796
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L335",
+        "lotNumber": 335,
+        "lotSuffix": "",
+        "areaM2": 596,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L328",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6455337,
+              -28.7112005
+            ],
+            [
+              114.645443,
+              -28.7111746
+            ],
+            [
+              114.6453208,
+              -28.7112291
+            ],
+            [
+              114.6454702,
+              -28.7114896
+            ],
+            [
+              114.6456525,
+              -28.7114076
+            ],
+            [
+              114.6455337,
+              -28.7112005
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L328",
+        "lotNumber": 328,
+        "lotSuffix": "",
+        "areaM2": 625,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L329",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6456161,
+              -28.7111097
+            ],
+            [
+              114.6455337,
+              -28.7112005
+            ],
+            [
+              114.6456525,
+              -28.7114076
+            ],
+            [
+              114.645938,
+              -28.7112793
+            ],
+            [
+              114.6459391,
+              -28.7112231
+            ],
+            [
+              114.6456161,
+              -28.7111097
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L329",
+        "lotNumber": 329,
+        "lotSuffix": "",
+        "areaM2": 736,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L330",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6456192,
+              -28.7109586
+            ],
+            [
+              114.6456161,
+              -28.7111097
+            ],
+            [
+              114.6459391,
+              -28.7112231
+            ],
+            [
+              114.6459444,
+              -28.7109637
+            ],
+            [
+              114.6456192,
+              -28.7109586
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L330",
+        "lotNumber": 330,
+        "lotSuffix": "",
+        "areaM2": 723,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L331",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6454357,
+              -28.7108205
+            ],
+            [
+              114.6454329,
+              -28.7109556
+            ],
+            [
+              114.6456192,
+              -28.7109586
+            ],
+            [
+              114.6459444,
+              -28.7109637
+            ],
+            [
+              114.6459472,
+              -28.7108286
+            ],
+            [
+              114.6454357,
+              -28.7108205
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L331",
+        "lotNumber": 331,
+        "lotSuffix": "",
+        "areaM2": 749,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L332",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6451811,
+              -28.7108165
+            ],
+            [
+              114.6451748,
+              -28.7111241
+            ],
+            [
+              114.645209,
+              -28.7111172
+            ],
+            [
+              114.6453176,
+              -28.7110688
+            ],
+            [
+              114.6454329,
+              -28.7109556
+            ],
+            [
+              114.6454357,
+              -28.7108205
+            ],
+            [
+              114.6451811,
+              -28.7108165
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L332",
+        "lotNumber": 332,
+        "lotSuffix": "",
+        "areaM2": 669,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L333",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6450005,
+              -28.7111392
+            ],
+            [
+              114.6450929,
+              -28.7111407
+            ],
+            [
+              114.6451748,
+              -28.7111241
+            ],
+            [
+              114.6451811,
+              -28.7108165
+            ],
+            [
+              114.6450072,
+              -28.7108138
+            ],
+            [
+              114.6450005,
+              -28.7111392
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L333",
+        "lotNumber": 333,
+        "lotSuffix": "",
+        "areaM2": 606,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L307",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.646963,
+              -28.7111726
+            ],
+            [
+              114.6471148,
+              -28.7111043
+            ],
+            [
+              114.6471706,
+              -28.7110256
+            ],
+            [
+              114.6471743,
+              -28.7108481
+            ],
+            [
+              114.6469697,
+              -28.7108448
+            ],
+            [
+              114.646963,
+              -28.7111726
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L307",
+        "lotNumber": 307,
+        "lotSuffix": "",
+        "areaM2": 604,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L308",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.646808,
+              -28.7112423
+            ],
+            [
+              114.646963,
+              -28.7111726
+            ],
+            [
+              114.6469697,
+              -28.7108448
+            ],
+            [
+              114.6468162,
+              -28.7108424
+            ],
+            [
+              114.646808,
+              -28.7112423
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L308",
+        "lotNumber": 308,
+        "lotSuffix": "",
+        "areaM2": 605,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L309",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.646808,
+              -28.7112423
+            ],
+            [
+              114.6468098,
+              -28.7111579
+            ],
+            [
+              114.6466052,
+              -28.7111546
+            ],
+            [
+              114.6465519,
+              -28.7111538
+            ],
+            [
+              114.6465207,
+              -28.7111803
+            ],
+            [
+              114.6465178,
+              -28.7113191
+            ],
+            [
+              114.6465714,
+              -28.7113487
+            ],
+            [
+              114.646808,
+              -28.7112423
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L309",
+        "lotNumber": 309,
+        "lotSuffix": "",
+        "areaM2": 456,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L310",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6466373,
+              -28.711083
+            ],
+            [
+              114.6466061,
+              -28.7111096
+            ],
+            [
+              114.6466052,
+              -28.7111546
+            ],
+            [
+              114.6468098,
+              -28.7111579
+            ],
+            [
+              114.6468162,
+              -28.7108424
+            ],
+            [
+              114.6466423,
+              -28.7108396
+            ],
+            [
+              114.6466373,
+              -28.711083
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L310",
+        "lotNumber": 310,
+        "lotSuffix": "",
+        "areaM2": 614,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L311",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6466423,
+              -28.7108396
+            ],
+            [
+              114.6464684,
+              -28.7108369
+            ],
+            [
+              114.6464629,
+              -28.7111073
+            ],
+            [
+              114.6466061,
+              -28.7111095
+            ],
+            [
+              114.6466373,
+              -28.711083
+            ],
+            [
+              114.6466423,
+              -28.7108396
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L311",
+        "lotNumber": 311,
+        "lotSuffix": "",
+        "areaM2": 505,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L312",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6464684,
+              -28.7108369
+            ],
+            [
+              114.6462945,
+              -28.7108341
+            ],
+            [
+              114.6462889,
+              -28.7111045
+            ],
+            [
+              114.6464629,
+              -28.7111073
+            ],
+            [
+              114.6464684,
+              -28.7108369
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L312",
+        "lotNumber": 312,
+        "lotSuffix": "",
+        "areaM2": 510,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L313",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6462945,
+              -28.7108341
+            ],
+            [
+              114.6461206,
+              -28.7108314
+            ],
+            [
+              114.6461156,
+              -28.7110746
+            ],
+            [
+              114.6461457,
+              -28.7111022
+            ],
+            [
+              114.6462889,
+              -28.7111045
+            ],
+            [
+              114.6462945,
+              -28.7108341
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L313",
+        "lotNumber": 313,
+        "lotSuffix": "",
+        "areaM2": 505,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L314",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6461206,
+              -28.7108314
+            ],
+            [
+              114.6459467,
+              -28.7108286
+            ],
+            [
+              114.6459402,
+              -28.711144
+            ],
+            [
+              114.6461448,
+              -28.7111473
+            ],
+            [
+              114.6461457,
+              -28.7111022
+            ],
+            [
+              114.6461156,
+              -28.7110746
+            ],
+            [
+              114.6461206,
+              -28.7108314
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L314",
+        "lotNumber": 314,
+        "lotSuffix": "",
+        "areaM2": 614,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L315",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6461448,
+              -28.7111473
+            ],
+            [
+              114.6459402,
+              -28.711144
+            ],
+            [
+              114.6459374,
+              -28.7112793
+            ],
+            [
+              114.6462627,
+              -28.7112845
+            ],
+            [
+              114.6462649,
+              -28.7111763
+            ],
+            [
+              114.6462348,
+              -28.7111487
+            ],
+            [
+              114.6461448,
+              -28.7111473
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L315",
+        "lotNumber": 315,
+        "lotSuffix": "",
+        "areaM2": 472,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L316",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6462627,
+              -28.7112845
+            ],
+            [
+              114.6459374,
+              -28.7112793
+            ],
+            [
+              114.6461001,
+              -28.7115606
+            ],
+            [
+              114.6463012,
+              -28.7114702
+            ],
+            [
+              114.646328,
+              -28.7113974
+            ],
+            [
+              114.6462627,
+              -28.7112845
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L316",
+        "lotNumber": 316,
+        "lotSuffix": "",
+        "areaM2": 754,
+        "kind": "lot",
+        "isAmended": false,
+        "isPendingRenumber": false
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L323",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6450351,
+              -28.7116269
+            ],
+            [
+              114.6450007,
+              -28.7116264
+            ],
+            [
+              114.6446427,
+              -28.7116208
+            ],
+            [
+              114.6446366,
+              -28.7119166
+            ],
+            [
+              114.6446969,
+              -28.7119717
+            ],
+            [
+              114.645055,
+              -28.7119773
+            ],
+            [
+              114.6450351,
+              -28.7116269
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L323",
+        "lotNumber": 323,
+        "areaM2": 1522,
+        "kind": "heritage",
+        "isHeritage": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "L379",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.64726,
+              -28.7081983
+            ],
+            [
+              114.6470401,
+              -28.7081948
+            ],
+            [
+              114.6470331,
+              -28.708538
+            ],
+            [
+              114.6472531,
+              -28.7085414
+            ],
+            [
+              114.64726,
+              -28.7081983
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "lotId": "L379",
+        "lotNumber": 379,
+        "areaM2": 818,
+        "kind": "heritage",
+        "isHeritage": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "POS",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6489319,
+              -28.7091182
+            ],
+            [
+              114.6488716,
+              -28.7090631
+            ],
+            [
+              114.6482964,
+              -28.7090541
+            ],
+            [
+              114.6482339,
+              -28.7091072
+            ],
+            [
+              114.6482118,
+              -28.7101859
+            ],
+            [
+              114.648272,
+              -28.710241
+            ],
+            [
+              114.6488476,
+              -28.7102501
+            ],
+            [
+              114.6489101,
+              -28.710197
+            ],
+            [
+              114.6489319,
+              -28.7091182
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "kind": "pos",
+        "areaM2": 8909,
+        "label": "Public Open Space"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "subject-area",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.6485528,
+              -28.7106505
+            ],
+            [
+              114.6487389,
+              -28.7105668
+            ],
+            [
+              114.6490528,
+              -28.7104258
+            ],
+            [
+              114.6492367,
+              -28.7103432
+            ],
+            [
+              114.6496992,
+              -28.7101354
+            ],
+            [
+              114.649869,
+              -28.7100591
+            ],
+            [
+              114.650188,
+              -28.7099158
+            ],
+            [
+              114.6506167,
+              -28.7097231
+            ],
+            [
+              114.6506475,
+              -28.7093077
+            ],
+            [
+              114.6499199,
+              -28.7092962
+            ],
+            [
+              114.6497562,
+              -28.7092909
+            ],
+            [
+              114.6490821,
+              -28.7092803
+            ],
+            [
+              114.6490849,
+              -28.7091425
+            ],
+            [
+              114.6491414,
+              -28.7090944
+            ],
+            [
+              114.6492477,
+              -28.7090961
+            ],
+            [
+              114.6492653,
+              -28.7082207
+            ],
+            [
+              114.6485923,
+              -28.7082101
+            ],
+            [
+              114.64681,
+              -28.7081822
+            ],
+            [
+              114.6467826,
+              -28.7095163
+            ],
+            [
+              114.6467556,
+              -28.7108322
+            ],
+            [
+              114.6436672,
+              -28.7107838
+            ],
+            [
+              114.64364,
+              -28.7121265
+            ],
+            [
+              114.6446797,
+              -28.7121428
+            ],
+            [
+              114.6452147,
+              -28.7121512
+            ],
+            [
+              114.6457188,
+              -28.7119246
+            ],
+            [
+              114.6467578,
+              -28.7114575
+            ],
+            [
+              114.647156,
+              -28.7112785
+            ],
+            [
+              114.647151,
+              -28.711527
+            ],
+            [
+              114.6473998,
+              -28.7115155
+            ],
+            [
+              114.6476252,
+              -28.711505
+            ],
+            [
+              114.6478402,
+              -28.7114951
+            ],
+            [
+              114.6480654,
+              -28.7114891
+            ],
+            [
+              114.6482959,
+              -28.711483
+            ],
+            [
+              114.648536,
+              -28.7114766
+            ],
+            [
+              114.6485424,
+              -28.7111596
+            ],
+            [
+              114.6485457,
+              -28.7109971
+            ],
+            [
+              114.6485528,
+              -28.7106505
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "kind": "subjectArea"
+      }
+    }
+  ]
+}

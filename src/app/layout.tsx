@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display, Archivo, IBM_Plex_Mono } from "next/font/google";
+import { SayFixButton } from "@/components/SayFixButton";
 import "./globals.css";
 
 const inter = Inter({
@@ -43,7 +44,10 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${playfair.variable} ${archivo.variable} ${ibmMono.variable}`}
     >
-      <body className="min-h-screen font-sans">{children}</body>
+      <body className="min-h-screen font-sans">
+        {children}
+        <SayFixButton />
+      </body>
     </html>
   );
 }

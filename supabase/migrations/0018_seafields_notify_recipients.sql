@@ -4,8 +4,9 @@
 -- emails (new registrations, lot changes, daily digest). Replaces the
 -- hardcoded to-array in src/app/api/seafields/register/route.ts.
 --
--- Seeded with Dennis, Uwe, Barry — the three people Uwe + Dennis nominated
--- on 2026-05-22 as needing visibility on every Seafields event.
+-- Seeded with Dennis + Uwe — the only two people who can edit the
+-- recipient list via the admin UI. Barry and John are hardcoded as
+-- fixed recipients (receive alerts but cannot edit).
 
 CREATE TABLE IF NOT EXISTS seafields_notify_recipients (
   email       TEXT PRIMARY KEY,
@@ -50,8 +51,7 @@ END $$;
 INSERT INTO seafields_notify_recipients (email, name, active)
 VALUES
   ('dennis@factory2key.com.au', 'Dennis McMahon', TRUE),
-  ('uwe@factory2key.com.au',    'Uwe Jacobs',     TRUE),
-  ('barryh@hld.com.au',         'Barry Humfrey',  TRUE)
+  ('uwe@factory2key.com.au',    'Uwe Jacobs',     TRUE)
 ON CONFLICT (email) DO NOTHING;
 
 COMMENT ON TABLE seafields_notify_recipients IS

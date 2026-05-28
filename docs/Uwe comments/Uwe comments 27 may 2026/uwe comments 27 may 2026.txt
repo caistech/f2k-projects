@@ -1,0 +1,263 @@
+uwe comments 
+
+f2k-projects
+
+comment 1
+
+None selected 
+
+Skip to content
+Using Property Friends Mail with screen readers
+
+14 of 3,113
+Seafields & Branscombe — estate menus now scoped to each estate (done)
+External
+Inbox
+Summarize this email
+
+Dennis McMahon
+Tue, May 26, 7:51 PM (11 hours ago)
+to Property, me
+
+Hi Uwe,
+
+Done — the top menu on each estate page now shows only that estate's own pages, so a visitor on one estate is never cross-linked to the others (the confusion you flagged). Each estate's menu is now just its own "Blog & Gallery" plus "About F2K".
+
+Seafields:
+https://tinyurl.com/seafields-estate
+Menu: Seafields Blog & Gallery + About F2K
+
+Branscombe:
+https://tinyurl.com/branscombe
+Menu: Branscombe Blog & Gallery + About F2K
+
+Hemp Homes and the main Projects landing page are unchanged
+
+On the links: those short links are quick stand-ins. We can upgrade them to proper branded addresses on our own domain — seafields.factory2key.com.au and branscombe.factory2key.com.au — which look more professional, are easier to remember, and carry the Factory2Key name. To switch that on I just need two small DNS records added wherever factory2key.com.au is managed (the registrar / IT side), or access to add them myself. Could you let me know who controls the factory2key.com.au domain settings? I'll then send the exact two records — it's about a two-minute change, and once it's live I'll point everything (including these short links) at the branded addresses.
+
+Have a look at the pages when you get a moment, and let me know on the domain question.
+
+Best regards,
+Dennis
+
+Factory2key
+7:01 AM (31 minutes ago)
+to Dennis, me
+
+Hi Dennis,
+Brilliant, thank you.
+
+I see that you have registered interest in U14.  Is this serious or did you just do some testing.  Reason why I am asking is that I am finalising the first release of 10 Units and I was going to use U14 as one of those...
+
+If you want it - GR8, if you were just testing, please remove your interest, - by the way how do I delete an iterest lodged?
+
+Best regards,
+
+photo		
+Uwe Jacobs
+Director, Factory2Key
+0400 417 043 | uwe@factory2key.com.au
+
+www.Factory2Key.com.au
+
+PO Box 1390, Upwey, Vic. 3158
+facebook
+
+instagram
+
+linkedin
+
+twitter
+
+youtube
+
+IMPORTANT: The contents of this email and any attachments are confidential. They are intended for the named recipient(s) only. If you have received this email by mistake, please notify the sender immediately and do not disclose the contents to anyone or make copies thereof.
+
+Join Newsletter App
+
+Unsubscribe from our emails?  Reply Unsubscribe.
+
+
+
+
+__tpx__
+Attachments area
+Preview YouTube video Property Friends LIVE Property Investment Update September 2025 including RBAPreview YouTube video Property Friends LIVE Property Investment Update September 2025 including RBA
+
+
+
+comment 2
+
+None selected 
+
+Skip to content
+Using Property Friends Mail with screen readers
+
+8 of 3,113
+Branscomb - confused again
+Inbox
+
+Property Friends
+7:14 AM (19 minutes ago)
+to me
+
+Hi Dennis,
+I am confused with the statement:
+Setting any value flips the home to Reserved on the public site. Leave blank to keep Available.
+image.png
+I have now allocated 10 lots, as per entry for the first release tomorrow at 9AM.
+
+If you can please make sure that they are available and that Patrick and Ant have access to register interested buyers.
+
+Thanks, going to bed now, appreciate your help.
+
+
+	 Uwe Jacobs
+ Director, Property Friends
+ (03) 9758 5331 | 0400 417 043 | uwe@propertyfriends.com.au
+ www.propertyfriends.com.au
+ PO BOX 1390, Upwey, VIC 3158
+     
+IMPORTANT: The contents of this email and any attachments are confidential. They are intended for the named recipient(s) only. If you have received this email by mistake, please notify the sender immediately and do not disclose the contents to anyone or make copies thereof.
+
+image related to comment 2 "C:\Users\denni\Downloads\uwecomment 2.png"
+
+
+comment 3
+
+None selected 
+
+Skip to content
+Using Property Friends Mail with screen readers
+
+7 of 3,113
+Branscomb - confused even more
+Inbox
+
+Property Friends
+7:17 AM (18 minutes ago)
+to me
+
+Hi Dennis,
+Where does this come from.  
+Are you suggesting that people can enter a price range that is below the initial launch price?
+
+Hmmmm, after thinking about it - not a bad idea, it provides ultimate flexibility, whilst I have to admit I am in two minds about it.
+
+Leave it for now and we see what happens...
+
+
+	 Uwe Jacobs
+ Director, Property Friends
+ (03) 9758 5331 | 0400 417 043 | uwe@propertyfriends.com.au
+ www.propertyfriends.com.au
+ PO BOX 1390, Upwey, VIC 3158
+     
+IMPORTANT: The contents of this email and any attachments are confidential. They are intended for the named recipient(s) only. If you have received this email by mistake, please notify the sender immediately and do not disclose the contents to anyone or make copies thereof.
+
+
+
+
+Displaying image.png.
+
+comment 4
+
+None selected 
+
+Skip to content
+Using Property Friends Mail with screen readers
+
+2 of 3,113
+Branscomb - improvement suggestion
+Inbox
+
+Property Friends
+7:24 AM (11 minutes ago)
+to me
+
+Hi Dennis,
+Is there a possiblity that you enable the highlighting on the map if one clicks on a lot in the admin screen.
+It would make it soooo much easier to reference the lot that one is working on input.
+
+Thanks & regards
+
+
+
+	 Uwe Jacobs
+ Director, Property Friends
+ (03) 9758 5331 | 0400 417 043 | uwe@propertyfriends.com.au
+ www.propertyfriends.com.au
+ PO BOX 1390, Upwey, VIC 3158
+     
+IMPORTANT: The contents of this email and any attachments are confidential. They are intended for the named recipient(s) only. If you have received this email by mistake, please notify the sender immediately and do not disclose the contents to anyone or make copies thereof.
+
+
+
+
+Displaying image.png.
+
+comment 5
+
+None selected 
+
+Skip to content
+Using Property Friends Mail with screen readers
+
+1 of 3,113
+Your own logon to the Seafields website
+External
+Inbox
+Summarize this email
+
+Factory2Key
+Mon, May 25, 5:47 AM (2 days ago)
+Subject: Seafields Estate - your agent portal (invite on its way) Hi Henry, Quick heads-up. We've set up an online agent portal for Seafields Estate, and I'm ad
+3
+
+Dennis Patrick McMahon
+Tue, May 26, 4:26 AM (1 day ago)
+Let me know what you want them to be able to do when they lig on
+
+Factory2Key
+7:26 AM (9 minutes ago)
+to me
+
+Hi Dennis,
+I guess all they need to see is:
+Lot#, descriptions, number of interests, by whome, offered prices, I think this is it for now...
+
+Best regards,
+
+photo		
+Uwe Jacobs
+Director, Factory2Key
+0400 417 043 | uwe@factory2key.com.au
+
+www.Factory2Key.com.au
+
+PO Box 1390, Upwey, Vic. 3158
+facebook
+
+instagram
+
+linkedin
+
+twitter
+
+youtube
+
+IMPORTANT: The contents of this email and any attachments are confidential. They are intended for the named recipient(s) only. If you have received this email by mistake, please notify the sender immediately and do not disclose the contents to anyone or make copies thereof.
+
+Join Newsletter App
+
+Unsubscribe from our emails?  Reply Unsubscribe.
+
+
+
+
+__tpx__
+
+
+
+Displaying image.png.
+
