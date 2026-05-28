@@ -15,7 +15,7 @@
  *   curl http://localhost:54321/functions/v1/seafields-pricing-audit
  */
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
+import { createClient } from "@supabase/supabase-js";
 
 interface AllocationRow {
   lot_number: number;
