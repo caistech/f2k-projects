@@ -32,6 +32,9 @@ export function AgentTopBar({ name }: { name: string }) {
             <a href="/agent/availability" className="px-3 py-2 rounded text-sm hover:bg-white/10 transition-colors">
               Availability
             </a>
+            <a href="/agent/profile" className="px-3 py-2 rounded text-sm hover:bg-white/10 transition-colors">
+              Profile
+            </a>
           </nav>
         </div>
         <div className="flex items-center gap-3 text-sm">
