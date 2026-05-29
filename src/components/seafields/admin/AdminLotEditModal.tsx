@@ -614,7 +614,7 @@ export default function AdminLotEditModal({
                     landOnly ? "text-slate-400" : "text-slate-600"
                   }`}
                 >
-                  House cost
+                  House cost (added to land for H&amp;L total)
                 </label>
                 <input
                   type="number"
@@ -654,7 +654,7 @@ export default function AdminLotEditModal({
               </div>
               <div>
                 <label className="block text-xs text-slate-600 mb-1">
-                  Retail (AUD)
+                  Land &amp; Build Retail (AUD) — land component only
                 </label>
                 <input
                   type="number"

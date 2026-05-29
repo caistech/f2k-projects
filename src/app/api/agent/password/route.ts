@@ -32,7 +32,7 @@ export async function PATCH(request: Request) {
   }
 
   // Now update the password
-  const { error: updateError } = await service.auth.admin.updateUser(
+  const { error: updateError } = await (service.auth.admin as any).updateUser(
     agent.auth_user_id,
     { password: newPassword }
   );
