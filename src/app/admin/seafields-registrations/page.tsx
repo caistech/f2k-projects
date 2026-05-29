@@ -470,23 +470,23 @@ export default function SeafieldsRegistrationsPage() {
                   </td>
                   <td className="px-3 py-2">
                     <div className="font-semibold text-slate-900">
-                      {r.registration.first_name} {r.registration.last_name}
+                      {r.registration?.first_name} {r.registration?.last_name}
                     </div>
                     <div className="text-xs text-slate-500">
-                      {r.registration.buyer_type ?? ""}
-                      {r.registration.purchase_timeline
+                      {r.registration?.buyer_type ?? ""}
+                      {r.registration?.purchase_timeline
                         ? ` · ${r.registration.purchase_timeline}`
                         : ""}
                     </div>
                   </td>
                   <td className="px-3 py-2 text-slate-600">
                     <a
-                      href={`mailto:${r.registration.email}`}
+                      href={`mailto:${r.registration?.email}`}
                       className="text-[#00B5AD] hover:underline text-sm"
                     >
-                      {r.registration.email}
+                      {r.registration?.email}
                     </a>
-                    {r.registration.phone && (
+                    {r.registration?.phone && (
                       <div className="text-xs text-slate-500">
                         <a
                           href={`tel:${r.registration.phone}`}
@@ -499,9 +499,9 @@ export default function SeafieldsRegistrationsPage() {
                   </td>
                   <td className="px-3 py-2 whitespace-nowrap">
                     <select
-                      value={r.registration.agent_id ?? ""}
+                      value={r.registration?.agent_id ?? ""}
                       onChange={(e) =>
-                        assignAgent(r.registration.id, e.target.value || null)
+                        assignAgent(r.registration?.id, e.target.value || null)
                       }
                       className="text-xs border border-slate-300 rounded px-2 py-1 max-w-[150px]"
                       title="Assign this buyer to an agent (shows in their My Clients)"
