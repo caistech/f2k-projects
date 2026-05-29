@@ -16,11 +16,24 @@ interface UnifiedRegistration {
   buyer_type: string | null;
   purchase_timeline: string | null;
   finance_status: string | null;
+  agent_name: string | null;
 }
 
 async function loadRegistrations(filter: ProjectFilter, search: string): Promise<UnifiedRegistration[]> {
   const supabase = createSupabaseService();
   const out: UnifiedRegistration[] = [];
+
+  // Load agents for lookups
+  const { data: allAgents } = await (supabase.from("agents") as any)
+    .select("id, name, agency")
+    .eq("active", true);
+  const agentMap = new Map((allAgents || []).map((a: { id: string; name: string; agency: string | null }) => [a.id, a]));
+
+  function getAgentName(agentId: string | null): string | null {
+    if (!agentId) return null;
+    const agent = agentMap.get(agentId) as { id: string; name: string; agency: string | null } | undefined;
+    return agent ? `${agent.name}${agent.agency ? ` (${agent.agency})` : ""}` : null;
+  }
 
   if (filter === "all" || filter === "seafields") {
     const { data } = await (supabase.from("seafields_registrations") as any)
@@ -38,6 +51,7 @@ async function loadRegistrations(filter: ProjectFilter, search: string): Promise
         buyer_type: r.buyer_type,
         purchase_timeline: r.purchase_timeline,
         finance_status: r.finance_status,
+        agent_name: getAgentName(r.agent_id),
       });
     }
   }
@@ -58,6 +72,7 @@ async function loadRegistrations(filter: ProjectFilter, search: string): Promise
         buyer_type: r.buyer_type,
         purchase_timeline: r.purchase_timeline,
         finance_status: r.finance_status,
+        agent_name: getAgentName(r.agent_id),
       });
     }
   }
@@ -79,6 +94,7 @@ async function loadRegistrations(filter: ProjectFilter, search: string): Promise
           buyer_type: r.i_am_a,
           purchase_timeline: r.timeframe,
           finance_status: r.finance_status,
+          agent_name: null, // Hemp Homes doesn't have agent assignment
         });
       }
     } catch {
@@ -205,12 +221,13 @@ export default async function RegistrationsPage({
               <th className="px-4 py-2 font-semibold">Items</th>
               <th className="px-4 py-2 font-semibold">Buyer</th>
               <th className="px-4 py-2 font-semibold">Timeline</th>
+              <th className="px-4 py-2 font-semibold">Agent</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {registrations.length === 0 ? (
               <tr>
-                <td className="px-4 py-8 text-center text-slate-500" colSpan={7}>
+                <td className="px-4 py-8 text-center text-slate-500" colSpan={8}>
                   No registrations match these filters.
                 </td>
               </tr>
@@ -263,6 +280,9 @@ export default async function RegistrationsPage({
                   </td>
                   <td className="px-4 py-2 text-xs text-slate-600">
                     {r.purchase_timeline ?? "—"}
+                  </td>
+                  <td className="px-4 py-2 text-xs text-slate-600">
+                    {r.agent_name ?? "—"}
                   </td>
                 </tr>
               ))
