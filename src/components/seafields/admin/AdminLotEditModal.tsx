@@ -786,6 +786,11 @@ export default function AdminLotEditModal({
           )}
         </div>
 
+        {error && (
+          <div className="sticky bottom-0 bg-red-50 border-t border-red-300 px-6 py-3 text-red-700 text-sm font-medium">
+            ⚠️ {error}
+          </div>
+        )}
         <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-3 flex items-center justify-between gap-3">
           {allocation?.allocated_to ||
           (allocation?.allocation_bucket &&
