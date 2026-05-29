@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { UNITS, HOUSE_TYPE_INFO, type HouseType } from "@/lib/branscombe-units";
 import SiteMap from "./SiteMap";
@@ -119,6 +119,23 @@ export default function RegistrationForm() {
   const [referrerName, setReferrerName] = useState("");
   const [referrerCompany, setReferrerCompany] = useState("");
   const [referrerContact, setReferrerContact] = useState("");
+  const [referrerAgentId, setReferrerAgentId] = useState("");
+  const [agents, setAgents] = useState<{ id: string; name: string; agency: string | null }[]>([]);
+  const [agentsLoading, setAgentsLoading] = useState(false);
+
+  // Fetch agents when "Real Estate Agent" is selected
+  useEffect(() => {
+    if (referrerType === "Real Estate Agent" && agents.length === 0) {
+      setAgentsLoading(true);
+      fetch("/api/public/agents")
+        .then(r => r.json())
+        .then(data => {
+          setAgents(data.agents || []);
+          setAgentsLoading(false);
+        })
+        .catch(() => setAgentsLoading(false));
+    }
+  }, [referrerType]);
 
   // Expanded unit detail panel
   const [expandedUnit, setExpandedUnit] = useState<string | null>(null);
@@ -199,6 +216,7 @@ export default function RegistrationForm() {
           referrer_name: referrerName.trim() || null,
           referrer_company: referrerCompany.trim() || null,
           referrer_contact: referrerContact.trim() || null,
+          referrer_agent_id: referrerAgentId || null,
           notes: notes.trim() || null,
           consent,
         }),
@@ -972,6 +990,36 @@ export default function RegistrationForm() {
 
               {referrerType && (
                 <>
+                  {referrerType === "Real Estate Agent" && (
+                    <div className="bg-[#00B5AD]/10 border border-[#00B5AD]/30 rounded-lg p-4">
+                      <label htmlFor="br-referrerAgent" className="block font-semibold text-slate-900 mb-2">
+                        If an agent is working with you, please select them here so your agent can look after you properly
+                      </label>
+                      <select
+                        id="br-referrerAgent"
+                        value={referrerAgentId}
+                        onChange={(e) => {
+                          setReferrerAgentId(e.target.value);
+                          const agent = agents.find(a => a.id === e.target.value);
+                          if (agent) {
+                            setReferrerName(agent.name);
+                            setReferrerCompany(agent.agency || "");
+                          }
+                        }}
+                        className={selectClass}
+                        disabled={agentsLoading}
+                      >
+                        <option value="no-agent">
+                          {agentsLoading ? "Loading agents..." : "— No Agent —"}
+                        </option>
+                        {agents.map(a => (
+                          <option key={a.id} value={a.id}>
+                            {a.name} {a.agency ? `(${a.agency})` : ""}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="referrerName" className={labelClass}>

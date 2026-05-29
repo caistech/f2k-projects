@@ -34,6 +34,7 @@ const schema = z.object({
   referrer_name: z.string().max(200).nullable().optional(),
   referrer_company: z.string().max(200).nullable().optional(),
   referrer_contact: z.string().max(200).nullable().optional(),
+  referrer_agent_id: z.string().uuid().nullable().optional(),
   notes: z.string().max(2000).nullable().optional(),
   consent: z.literal(true, {
     errorMap: () => ({
@@ -75,6 +76,7 @@ export async function POST(request: Request) {
     referrer_name: d.referrer_name ?? null,
     referrer_company: d.referrer_company ?? null,
     referrer_contact: d.referrer_contact ?? null,
+    agent_id: d.referrer_agent_id ?? null,
     notes: d.notes ?? null,
     consent: true,
     source: "web-roi",

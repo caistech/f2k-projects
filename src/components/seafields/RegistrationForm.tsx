@@ -1241,9 +1241,9 @@ export default function RegistrationForm() {
               {referrerType && (
                 <>
                   {referrerType === "Real Estate Agent" ? (
-                    <div>
-                      <label htmlFor="sf-referrerAgent" className={labelClass}>
-                        Select your agent
+                    <div className="bg-[#00B5AD]/10 border border-[#00B5AD]/30 rounded-lg p-4">
+                      <label htmlFor="sf-referrerAgent" className="block font-semibold text-slate-900 mb-2">
+                        If an agent is working with you, please select them here so your agent can look after you properly
                       </label>
                       <select
                         id="sf-referrerAgent"
@@ -1259,8 +1259,8 @@ export default function RegistrationForm() {
                         className={selectClass}
                         disabled={agentsLoading}
                       >
-                        <option value="">
-                          {agentsLoading ? "Loading agents..." : "— Select agent —"}
+                        <option value="no-agent">
+                          {agentsLoading ? "Loading agents..." : "— No Agent —"}
                         </option>
                         {agents.map(a => (
                           <option key={a.id} value={a.id}>
