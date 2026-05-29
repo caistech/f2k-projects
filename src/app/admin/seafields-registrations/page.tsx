@@ -429,7 +429,7 @@ export default function SeafieldsRegistrationsPage() {
                     {fmtDateTime(r.created_at)}
                   </td>
                   <td className="px-3 py-2 font-mono font-semibold text-slate-900">
-                    L{r.lot_number}
+                    L
                   </td>
                   <td className="px-3 py-2 text-xs text-slate-600 whitespace-nowrap">
                     {r.stage_number != null
