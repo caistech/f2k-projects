@@ -12,36 +12,38 @@ interface NavItem {
 const NAV: NavItem[] = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/registrations", label: "All Registrations", group: "Inbox" },
-  // Each estate group leads with the same two items — Blog, Media — in the same
-  // order, so the nav reads consistently across estates. Estate-specific tools follow.
+  // Seafields
   { href: "/admin/estates/seafields/posts", label: "Blog", group: "Seafields" },
   { href: "/admin/estates/seafields/media", label: "Media", group: "Seafields" },
-  { href: "/admin/seafields-registrations", label: "Seafields Pipeline", group: "Seafields" },
-  { href: "/admin/seafields-stages", label: "Seafields Stages", group: "Seafields" },
-  { href: "/admin/seafields-dwelling-types", label: "Seafields Dwelling Types", group: "Seafields" },
-  { href: "/admin/seafields-lots", label: "Seafields Lots", group: "Seafields" },
-  { href: "/admin/seafields-import", label: "Seafields Workbook Import", group: "Seafields" },
+  { href: "/admin/seafields-registrations", label: "Pipeline", group: "Seafields" },
+  { href: "/admin/seafields-stages", label: "Stages", group: "Seafields" },
+  { href: "/admin/seafields-lots", label: "Lots", group: "Seafields" },
+  { href: "/admin/seafields-import", label: "Import", group: "Seafields" },
+  // Branscombe
   { href: "/admin/estates/branscombe/posts", label: "Blog", group: "Branscombe" },
   { href: "/admin/estates/branscombe/media", label: "Media", group: "Branscombe" },
-  { href: "/admin/branscombe-units", label: "Branscombe Units", group: "Branscombe" },
-  { href: "/admin/branscombe-registrations", label: "Branscombe Pipeline", group: "Branscombe" },
-  { href: "/admin/branscombe-pipeline", label: "Branscombe Pipeline Alt", group: "Branscombe" },
+  { href: "/admin/branscombe-registrations", label: "Pipeline", group: "Branscombe" },
+  { href: "/admin/branscombe-units", label: "Units", group: "Branscombe" },
+  { href: "/admin/branscombe-pipeline", label: "Pipeline Alt", group: "Branscombe" },
+  // Wavecrest
   { href: "/admin/wavecrest/posts", label: "Blog", group: "Wavecrest" },
   { href: "/admin/wavecrest/media", label: "Media", group: "Wavecrest" },
-  { href: "/admin/wavecrest-registrations", label: "Wavecrest Pipeline", group: "Wavecrest" },
-  { href: "/admin/wavecrest-stages", label: "Wavecrest Stages", group: "Wavecrest" },
-  { href: "/admin/wavecrest-dwelling-types", label: "Wavecrest Dwelling Types", group: "Wavecrest" },
-  { href: "/admin/wavecrest-lots", label: "Wavecrest Lots", group: "Wavecrest" },
-  { href: "/admin/wavecrest-import", label: "Wavecrest Workbook Import", group: "Wavecrest" },
+  { href: "/admin/wavecrest-registrations", label: "Pipeline", group: "Wavecrest" },
+  { href: "/admin/wavecrest-stages", label: "Stages", group: "Wavecrest" },
+  { href: "/admin/wavecrest-lots", label: "Lots", group: "Wavecrest" },
+  { href: "/admin/wavecrest-import", label: "Import", group: "Wavecrest" },
+  // Hemp Homes
   { href: "/admin/hemp-homes/posts", label: "Blog", group: "Hemp Homes" },
   { href: "/admin/hemp-homes/media", label: "Media", group: "Hemp Homes" },
-  { href: "/admin/hemp-homes/journey", label: "Journey Timeline", group: "Hemp Homes" },
-  { href: "/admin/hemp-homes/prospects", label: "Community Prospects", group: "Hemp Homes" },
-  { href: "/admin/hemp-homes/outreach/queue", label: "Outreach Queue", group: "Hemp Homes" },
-  { href: "/admin/hemp-homes/outreach/templates", label: "Outreach Templates", group: "Hemp Homes" },
+  { href: "/admin/hemp-homes/journey", label: "Journey", group: "Hemp Homes" },
+  { href: "/admin/hemp-homes/prospects", label: "Prospects", group: "Hemp Homes" },
+  { href: "/admin/hemp-homes/outreach/queue", label: "Outreach", group: "Hemp Homes" },
+  // Team
   { href: "/admin/agents", label: "Agents", group: "Team" },
+  // Compliance
   { href: "/admin/email-templates", label: "Email Templates", group: "Compliance" },
   { href: "/admin/audit-log", label: "Audit Log", group: "Compliance" },
+  // Account
   { href: "/admin/settings", label: "Settings", group: "Account" },
 ];
 
