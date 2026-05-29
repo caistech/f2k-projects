@@ -74,17 +74,19 @@ export async function GET(request: Request) {
     seafields_registrations: RegistrationJoinRow["registration"];
   };
 
-  const rows: RegistrationJoinRow[] = ((data as Raw[]) || []).map((r) => ({
-    joinId: r.id,
-    lot_number: r.lot_number,
-    stage_number: r.stages?.stage_number ?? null,
-    stage_label: r.stages?.stage_label ?? null,
-    registration_type: r.registration_type,
-    status: r.status,
-    position_in_queue: r.position_in_queue,
-    created_at: r.created_at,
-    registration: r.seafields_registrations,
-  }));
+  const rows: RegistrationJoinRow[] = ((data as Raw[]) || [])
+    .filter((r) => r.seafields_registrations?.first_name)
+    .map((r) => ({
+      joinId: r.id,
+      lot_number: r.lot_number,
+      stage_number: r.stages?.stage_number ?? null,
+      stage_label: r.stages?.stage_label ?? null,
+      registration_type: r.registration_type,
+      status: r.status,
+      position_in_queue: r.position_in_queue,
+      created_at: r.created_at,
+      registration: r.seafields_registrations,
+    }));
 
   const formatted = rows.map((r) => ({
     id: r.registration.id,
