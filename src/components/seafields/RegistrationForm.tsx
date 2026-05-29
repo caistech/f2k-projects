@@ -188,6 +188,23 @@ export default function RegistrationForm() {
   const [referrerName, setReferrerName] = useState("");
   const [referrerCompany, setReferrerCompany] = useState("");
   const [referrerContact, setReferrerContact] = useState("");
+  const [referrerAgentId, setReferrerAgentId] = useState("");
+  const [agents, setAgents] = useState<{ id: string; name: string; agency: string | null }[]>([]);
+  const [agentsLoading, setAgentsLoading] = useState(false);
+
+  // Fetch agents when "Real Estate Agent" is selected
+  useEffect(() => {
+    if (referrerType === "Real Estate Agent" && agents.length === 0) {
+      setAgentsLoading(true);
+      fetch("/api/public/agents")
+        .then(r => r.json())
+        .then(data => {
+          setAgents(data.agents || []);
+          setAgentsLoading(false);
+        })
+        .catch(() => setAgentsLoading(false));
+    }
+  }, [referrerType]);
 
   // Expanded lot panel
   const [expandedLot, setExpandedLot] = useState<string | null>(null);
@@ -347,6 +364,7 @@ export default function RegistrationForm() {
           referrer_name: referrerName.trim() || null,
           referrer_company: referrerCompany.trim() || null,
           referrer_contact: referrerContact.trim() || null,
+          referrer_agent_id: referrerAgentId || null,
           notes: notes.trim() || null,
           consent,
           source: refTag ?? undefined,
@@ -1222,34 +1240,65 @@ export default function RegistrationForm() {
 
               {referrerType && (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {referrerType === "Real Estate Agent" ? (
                     <div>
-                      <label htmlFor="sf-referrerName" className={labelClass}>
-                        Referrer Name
+                      <label htmlFor="sf-referrerAgent" className={labelClass}>
+                        Select your agent
                       </label>
-                      <input
-                        id="sf-referrerName"
-                        type="text"
-                        value={referrerName}
-                        onChange={(e) => setReferrerName(e.target.value)}
-                        className={inputClass}
-                        placeholder="John Doe"
-                      />
+                      <select
+                        id="sf-referrerAgent"
+                        value={referrerAgentId}
+                        onChange={(e) => {
+                          setReferrerAgentId(e.target.value);
+                          const agent = agents.find(a => a.id === e.target.value);
+                          if (agent) {
+                            setReferrerName(agent.name);
+                            setReferrerCompany(agent.agency || "");
+                          }
+                        }}
+                        className={selectClass}
+                        disabled={agentsLoading}
+                      >
+                        <option value="">
+                          {agentsLoading ? "Loading agents..." : "— Select agent —"}
+                        </option>
+                        {agents.map(a => (
+                          <option key={a.id} value={a.id}>
+                            {a.name} {a.agency ? `(${a.agency})` : ""}
+                          </option>
+                        ))}
+                      </select>
                     </div>
-                    <div>
-                      <label htmlFor="sf-referrerCompany" className={labelClass}>
-                        Agency / Company
-                      </label>
-                      <input
-                        id="sf-referrerCompany"
-                        type="text"
-                        value={referrerCompany}
-                        onChange={(e) => setReferrerCompany(e.target.value)}
-                        className={inputClass}
-                        placeholder="ABC Real Estate"
-                      />
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="sf-referrerName" className={labelClass}>
+                          Referrer Name
+                        </label>
+                        <input
+                          id="sf-referrerName"
+                          type="text"
+                          value={referrerName}
+                          onChange={(e) => setReferrerName(e.target.value)}
+                          className={inputClass}
+                          placeholder="John Doe"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="sf-referrerCompany" className={labelClass}>
+                          Agency / Company
+                        </label>
+                        <input
+                          id="sf-referrerCompany"
+                          type="text"
+                          value={referrerCompany}
+                          onChange={(e) => setReferrerCompany(e.target.value)}
+                          className={inputClass}
+                          placeholder="ABC Real Estate"
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
                   <div>
                     <label htmlFor="sf-referrerContact" className={labelClass}>
                       Referrer Email or Phone

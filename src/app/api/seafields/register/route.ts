@@ -44,6 +44,7 @@ const schema = z.object({
   referrer_name: z.string().max(200).nullable().optional(),
   referrer_company: z.string().max(200).nullable().optional(),
   referrer_contact: z.string().max(200).nullable().optional(),
+  referrer_agent_id: z.string().uuid().nullable().optional(),
   // Lead-source tag carried by partner QR codes / short links (?ref=<tag>).
   // Defaults to "web-roi" server-side when absent.
   source: z
@@ -150,6 +151,7 @@ export async function POST(request: Request) {
       referrer_name: d.referrer_name ?? null,
       referrer_company: d.referrer_company ?? null,
       referrer_contact: d.referrer_contact ?? null,
+      agent_id: d.referrer_agent_id ?? null,
       notes: d.notes ?? null,
       consent: true,
       source: d.source ?? "web-roi",
