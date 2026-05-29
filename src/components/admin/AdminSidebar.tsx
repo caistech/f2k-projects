@@ -22,9 +22,8 @@ const NAV: NavItem[] = [
   // Branscombe
   { href: "/admin/estates/branscombe/posts", label: "Blog", group: "Branscombe" },
   { href: "/admin/estates/branscombe/media", label: "Media", group: "Branscombe" },
-  { href: "/admin/branscombe-registrations", label: "Pipeline", group: "Branscombe" },
+  { href: "/admin/branscombe-pipeline", label: "Pipeline", group: "Branscombe" },
   { href: "/admin/branscombe-units", label: "Units", group: "Branscombe" },
-  { href: "/admin/branscombe-pipeline", label: "Pipeline Alt", group: "Branscombe" },
   // Wavecrest
   { href: "/admin/wavecrest/posts", label: "Blog", group: "Wavecrest" },
   { href: "/admin/wavecrest/media", label: "Media", group: "Wavecrest" },
