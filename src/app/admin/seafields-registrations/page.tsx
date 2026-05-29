@@ -133,11 +133,12 @@ export default function SeafieldsRegistrationsPage() {
     const TEST_PATTERNS = /test|qa|marcus|testerton|testbuyer|qatester/i;
 
     let filtered = rows.filter((r) => {
-      if (!r.registration) return false;
+      const reg = r.registration;
+      if (!reg?.first_name) return false;
       if (hideTestData) {
-        const name = `${r.registration.first_name} ${r.registration.last_name}`.toLowerCase();
-        const email = r.registration.email.toLowerCase();
-        const phone = r.registration.phone || "";
+        const name = `${reg.first_name} ${reg.last_name}`.toLowerCase();
+        const email = reg.email.toLowerCase();
+        const phone = reg.phone || "";
         if (TEST_PATTERNS.test(name) || TEST_PATTERNS.test(email) || TEST_PATTERNS.test(phone)) {
           return false;
         }
@@ -146,7 +147,7 @@ export default function SeafieldsRegistrationsPage() {
       if (stageFilter !== "all" && String(r.stage_number) !== stageFilter)
         return false;
       if (q) {
-        const haystack = `${r.registration.first_name} ${r.registration.last_name} ${r.registration.email} L${r.lot_number}`.toLowerCase();
+        const haystack = `${reg.first_name} ${reg.last_name} ${reg.email} L${r.lot_number}`.toLowerCase();
         if (!haystack.includes(q)) return false;
       }
       return true;
@@ -154,8 +155,10 @@ export default function SeafieldsRegistrationsPage() {
 
     filtered.sort((a, b) => {
       if (sortBy === "name") {
-        const nameA = `${a.registration.first_name} ${a.registration.last_name}`.toLowerCase();
-        const nameB = `${b.registration.first_name} ${b.registration.last_name}`.toLowerCase();
+        const regA = a.registration;
+        const regB = b.registration;
+        const nameA = regA ? `${regA.first_name} ${regA.last_name}`.toLowerCase() : "";
+        const nameB = regB ? `${regB.first_name} ${regB.last_name}`.toLowerCase() : "";
         return nameA.localeCompare(nameB);
       }
       if (sortBy === "lot") return a.lot_number - b.lot_number;
@@ -174,10 +177,11 @@ export default function SeafieldsRegistrationsPage() {
   const testRecordCount = useMemo(() => {
     const TEST_PATTERNS = /test|qa|marcus|testerton|testbuyer|qatester/i;
     return rows.filter((r) => {
-      if (!r.registration) return false;
-      const name = `${r.registration.first_name} ${r.registration.last_name}`.toLowerCase();
-      const email = r.registration.email.toLowerCase();
-      const phone = r.registration.phone || "";
+      const reg = r.registration;
+      if (!reg?.first_name) return false;
+      const name = `${reg.first_name} ${reg.last_name}`.toLowerCase();
+      const email = reg.email.toLowerCase();
+      const phone = reg.phone || "";
       return TEST_PATTERNS.test(name) || TEST_PATTERNS.test(email) || TEST_PATTERNS.test(phone);
     }).length;
   }, [rows]);
