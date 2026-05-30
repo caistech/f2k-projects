@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { useAgent, canAccess } from "@/components/agent/AgentContext";
 
 interface Client {
@@ -180,24 +181,34 @@ function ClientGrid({ clients, title }: { clients: Client[]; title: string }) {
 }
 
 export default function MyClientsPage() {
-  const { estateAccess } = useAgent();
+  const searchParams = useSearchParams();
+  const viewAsAgentId = searchParams.get("viewAs");
+  const { estateAccess, name: agentName } = useAgent();
   const [seafields, setSeafields] = useState<Client[]>([]);
   const [branscombe, setBranscombe] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewedAgentName, setViewedAgentName] = useState<string | null>(null);
+  const isViewAs = !!viewAsAgentId;
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/agent/my-clients");
+        const url = viewAsAgentId 
+          ? `/api/admin/agents/${viewAsAgentId}/clients`
+          : "/api/agent/my-clients";
+        const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
           setSeafields(data.seafields || []);
           setBranscombe(data.branscombe || []);
+          if (data.agent?.name) {
+            setViewedAgentName(data.agent.name);
+          }
         } else setError("Couldn't load your clients.");
       } catch { setError("Network error."); } finally { setLoading(false); }
     })();
-  }, []);
+  }, [viewAsAgentId]);
 
   const showSeafields = canAccess(estateAccess, "seafields");
   const showBranscombe = canAccess(estateAccess, "branscombe");
@@ -205,6 +216,14 @@ export default function MyClientsPage() {
 
   return (
     <div>
+      {isViewAs && (
+        <div className="mb-4 p-3 bg-[#00B5AD]/10 border border-[#00B5AD]/30 rounded-lg flex items-center justify-between">
+          <span className="text-sm text-[#00766f]">
+            Viewing as agent: <strong>{viewedAgentName || agentName}</strong> (read-only preview)
+          </span>
+          <a href="/admin/agents" className="text-sm text-[#00766f] hover:underline">← Back to admin</a>
+        </div>
+      )}
       <h1 className="text-2xl font-bold text-slate-900 mb-1">My Clients</h1>
       <p className="text-sm text-slate-500 mb-6 max-w-2xl">The buyers registered to you. These are the registrations linked to your agent account — you see their full details; all other buyers stay private.</p>
       {error && <div className="bg-red-50 border border-red-200 rounded px-3 py-2 text-sm text-red-700 mb-4">{error}</div>}

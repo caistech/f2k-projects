@@ -16,6 +16,12 @@ export async function GET(
   const { id: agentId } = await params;
   const service = createSupabaseService();
 
+  const { data: agent } = await service
+    .from("agents")
+    .select("name, estate_access")
+    .eq("id", agentId)
+    .single();
+
   const { data, error } = await service
     .from("agent_registrations_view")
     .select("registration_id, first_name, last_name, email, phone, buyer_type, purchase_timeline, created_at, estate, lots_selected, stage_name, lead_status, lot_statuses")
@@ -30,5 +36,9 @@ export async function GET(
   const seafields = (data ?? []).filter((r: any) => r.estate === "seafields");
   const branscombe = (data ?? []).filter((r: any) => r.estate === "branscombe");
 
-  return NextResponse.json({ seafields, branscombe });
+  return NextResponse.json({ 
+    seafields, 
+    branscombe,
+    agent: agent || null
+  });
 }
