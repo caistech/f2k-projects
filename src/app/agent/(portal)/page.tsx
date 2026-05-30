@@ -31,12 +31,12 @@ function ClientGrid({ clients, title }: { clients: Client[]; title: string }) {
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
   const stages = useMemo(() => {
-    const s = new Set(clients.map((c) => c.stage_name).filter(Boolean));
+    const s = new Set(clients.map((c) => c.stage_name).filter((v): v is string => v !== null && v !== undefined));
     return Array.from(s).sort();
   }, [clients]);
 
   const statuses = useMemo(() => {
-    const s = new Set(clients.map((c) => c.lead_status).filter(Boolean));
+    const s = new Set(clients.map((c) => c.lead_status).filter((v): v is string => v !== null && v !== undefined));
     return Array.from(s).sort();
   }, [clients]);
 

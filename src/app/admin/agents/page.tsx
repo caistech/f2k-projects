@@ -176,7 +176,7 @@ export default function AdminAgentsPage() {
                   View
                 </button>
                 <button
-                  onClick={() => setViewingAsAgent(a)}
+                  onClick={() => setViewingAgent(a)}
                   className="text-sm px-3 py-1.5 min-h-[40px] rounded border border-[#00B5AD] text-[#00766f] hover:bg-[#00B5AD]/10 font-medium"
                 >
                   View as agent
