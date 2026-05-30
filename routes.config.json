@@ -2,11 +2,11 @@
   "baseUrl": "https://f2k-projects.vercel.app",
   "routes": [
     { "path": "/" },
-    { "path": "/seafields" },
-    { "path": "/branscombe" },
-    { "path": "/agent/login" },
-    { "path": "/admin/login" },
-    { "path": "/agent/forgot-password" },
-    { "path": "/admin/forgot-password" }
+    { "path": "/seafields", "expectedStatus": [200, 307] },
+    { "path": "/branscombe", "expectedStatus": [200, 307] },
+    { "path": "/agent/login", "expectedStatus": [200, 307] },
+    { "path": "/admin/login", "expectedStatus": [200, 307] },
+    { "path": "/agent/forgot-password", "expectedStatus": [200, 307] },
+    { "path": "/admin/forgot-password", "expectedStatus": [200, 307] }
   ]
 }

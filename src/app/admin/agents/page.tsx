@@ -41,6 +41,7 @@ export default function AdminAgentsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null);
   const [viewingAgent, setViewingAgent] = useState<Agent | null>(null);
+  const [viewingAsAgent, setViewingAsAgent] = useState<Agent | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -176,7 +177,7 @@ export default function AdminAgentsPage() {
                   View
                 </button>
                 <button
-                  onClick={() => setViewingAgent(a)}
+                  onClick={() => setViewingAsAgent(a)}
                   className="text-sm px-3 py-1.5 min-h-[40px] rounded border border-[#00B5AD] text-[#00766f] hover:bg-[#00B5AD]/10 font-medium"
                 >
                   View as agent
