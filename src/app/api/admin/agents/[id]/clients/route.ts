@@ -16,40 +16,19 @@ export async function GET(
   const { id: agentId } = await params;
   const service = createSupabaseService();
 
-  const out: { seafields: unknown[]; branscombe: unknown[] } = {
-    seafields: [],
-    branscombe: [],
-  };
+  const { data, error } = await service
+    .from("agent_registrations_view")
+    .select("registration_id, first_name, last_name, email, phone, buyer_type, purchase_timeline, created_at, estate, lots_selected, stage_name, lead_status, lot_statuses")
+    .eq("agent_id", agentId)
+    .order("created_at", { ascending: false });
 
-  const { data: agent } = await service
-    .from("agents")
-    .select("estate_access")
-    .eq("id", agentId)
-    .single();
-
-  if (!agent) {
-    return NextResponse.json({ error: "Agent not found" }, { status: 404 });
+  if (error) {
+    console.error("agent clients error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const estates = agent.estate_access || [];
+  const seafields = (data ?? []).filter((r: any) => r.estate === "seafields");
+  const branscombe = (data ?? []).filter((r: any) => r.estate === "branscombe");
 
-  if (estates.includes("seafields")) {
-    const { data, error } = await (service.from("seafields_registrations") as any)
-      .select("id, first_name, last_name, email, phone, lots_selected, interest_type, buyer_type, purchase_timeline, created_at, stage_name, lead_status, lot_statuses")
-      .eq("agent_id", agentId)
-      .order("created_at", { ascending: false });
-    if (error) console.error("agent clients seafields error:", error);
-    out.seafields = (data ?? []).map((r: any) => ({ ...r, estate: "seafields" }));
-  }
-
-  if (estates.includes("branscombe")) {
-    const { data, error } = await (service.from("branscombe_registrations") as any)
-      .select("id, first_name, last_name, email, phone, units_selected, buyer_type, purchase_timeline, created_at, stage_name, lead_status")
-      .eq("agent_id", agentId)
-      .order("created_at", { ascending: false });
-    if (error) console.error("agent clients branscombe error:", error);
-    out.branscombe = (data ?? []).map((r: any) => ({ ...r, estate: "branscombe" }));
-  }
-
-  return NextResponse.json(out);
+  return NextResponse.json({ seafields, branscombe });
 }

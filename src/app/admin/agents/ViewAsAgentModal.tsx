@@ -11,17 +11,16 @@ interface Agent {
 }
 
 interface Client {
-  id: string;
+  registration_id: string;
   first_name: string | null;
   last_name: string | null;
   email: string | null;
   phone: string | null;
   lots_selected: string[] | null;
-  units_selected: string[] | null;
   buyer_type: string | null;
   purchase_timeline: string | null;
   created_at: string;
-  estate: "seafields" | "branscombe";
+  estate: string;
   stage_name: string | null;
   lead_status: string | null;
 }
@@ -41,8 +40,8 @@ export function ViewAsAgentModal({ agent, onClose }: { agent: Agent; onClose: ()
         if (res.ok) {
           const data = await res.json();
           const allClients: Client[] = [
-            ...(data.seafields || []).map((r: any) => ({ ...r, estate: "seafields" as const })),
-            ...(data.branscombe || []).map((r: any) => ({ ...r, estate: "branscombe" as const })),
+            ...(data.seafields || []),
+            ...(data.branscombe || []),
           ];
           setClients(allClients);
         }
@@ -143,11 +142,11 @@ export function ViewAsAgentModal({ agent, onClose }: { agent: Agent; onClose: ()
                 </thead>
                 <tbody>
                   {filtered.map((r) => (
-                    <tr key={r.id} className="border-b border-slate-100 hover:bg-slate-50">
+                    <tr key={r.registration_id} className="border-b border-slate-100 hover:bg-slate-50">
                       <td className="px-3 py-2 font-medium">{[r.first_name, r.last_name].filter(Boolean).join(" ")}</td>
                       <td className="px-3 py-2 text-slate-600">{r.email}</td>
                       <td className="px-3 py-2 text-slate-600">{r.phone || "-"}</td>
-                      <td className="px-3 py-2 text-slate-600">{r.lots_selected?.join(", ") || r.units_selected?.join(", ") || "-"}</td>
+                      <td className="px-3 py-2 text-slate-600">{r.lots_selected?.join(", ") || "-"}</td>
                       <td className="px-3 py-2 text-slate-600">{r.buyer_type || "-"}</td>
                       <td className="px-3 py-2 text-slate-600">{r.purchase_timeline || "-"}</td>
                       <td className="px-3 py-2 text-slate-600">{r.stage_name || "-"}</td>
