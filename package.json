@@ -2,6 +2,9 @@
   "name": "f2k-projects",
   "version": "0.1.0",
   "private": true,
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "unrs-resolver"]
+  },
   "scripts": {
     "dev": "next dev --port 3001",
     "build": "next build",
