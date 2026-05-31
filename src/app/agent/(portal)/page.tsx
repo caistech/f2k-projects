@@ -225,7 +225,18 @@ export default function MyClientsPage() {
         </div>
       )}
       <h1 className="text-2xl font-bold text-slate-900 mb-1">My Clients</h1>
-      <p className="text-sm text-slate-500 mb-6 max-w-2xl">The buyers registered to you. These are the registrations linked to your agent account — you see their full details; all other buyers stay private.</p>
+      <div className="flex items-center gap-4 mb-6">
+        <p className="text-sm text-slate-500 max-w-2xl">The buyers registered to you. These are the registrations linked to your agent account — you see their full details; all other buyers stay private.</p>
+        <a
+          href="/api/agent/export"
+          className="ml-auto inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#00B5AD] hover:bg-[#009a93] text-white transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Export CSV
+        </a>
+      </div>
       {error && <div className="bg-red-50 border border-red-200 rounded px-3 py-2 text-sm text-red-700 mb-4">{error}</div>}
       {loading ? (
         <div className="text-slate-500">Loading…</div>

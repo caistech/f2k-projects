@@ -76,12 +76,23 @@ export default async function AdminDashboard() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-1">Dashboard</h2>
-        <p className="text-sm text-slate-500">
-          Live counts and recent activity across Factory2Key&apos;s purchaser
-          projects.
-        </p>
+      <div className="flex items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900 mb-1">Dashboard</h2>
+          <p className="text-sm text-slate-500">
+            Live counts and recent activity across Factory2Key&apos;s purchaser
+            projects.
+          </p>
+        </div>
+        <a
+          href="/api/admin/export-registrations"
+          className="ml-auto inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#00B5AD] hover:bg-[#009a93] text-white transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Export All CSV
+        </a>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
