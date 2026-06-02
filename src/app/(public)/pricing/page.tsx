@@ -231,7 +231,7 @@ export default function PricingPage() {
             Ready to Get Started?
           </h2>
           <p className="text-gray-300 mb-8">
-            Start with our free demo to explore the platform, then upgrade when you're ready.
+            Start with our free demo to explore the platform, then upgrade when you&apos;re ready.
             No credit card required for demo.
           </p>
           <div className="flex gap-4 justify-center">
