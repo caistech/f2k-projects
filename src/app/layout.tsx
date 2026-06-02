@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display, Archivo, IBM_Plex_Mono } from "next/font/google";
 import { SayFixButton } from "@/components/SayFixButton";
+import { DemoBanner } from "@/components/DemoBanner";
 import "./globals.css";
+
+const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -45,6 +48,7 @@ export default function RootLayout({
       className={`${inter.variable} ${playfair.variable} ${archivo.variable} ${ibmMono.variable}`}
     >
       <body className="min-h-screen font-sans">
+        {isDemoMode && <DemoBanner />}
         {children}
         <SayFixButton />
       </body>

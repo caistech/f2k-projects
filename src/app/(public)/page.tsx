@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
 const currentDevelopments = [
   {
     name: "Wavecrest Estate",
@@ -67,8 +69,39 @@ export default function HomePage({
     );
   }
 
+  // Show product CTA banner in demo mode
+  const showProductBanner = isDemoMode;
+
   return (
     <>
+      {showProductBanner && (
+        <section className="bg-blue-600 text-white py-4 px-4">
+          <div className="max-w-[1100px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <p className="font-semibold">
+                Build Your Own Estate Sales Platform — $399/month
+              </p>
+              <p className="text-blue-100 text-sm">
+                White-label solution for developers and agents
+              </p>
+            </div>
+            <div className="flex gap-3 shrink-0">
+              <Link
+                href="/pricing"
+                className="px-4 py-2 bg-white text-blue-600 rounded-lg font-medium text-sm hover:bg-blue-50"
+              >
+                View Pricing
+              </Link>
+              <Link
+                href="/admin/login"
+                className="px-4 py-2 bg-blue-700 text-white rounded-lg font-medium text-sm hover:bg-blue-800"
+              >
+                Admin Demo
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
       <section className="bg-off-white py-16 md:py-20 px-4 border-b border-black/5">
         <div className="max-w-[1100px] mx-auto">
           <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-ember mb-4">

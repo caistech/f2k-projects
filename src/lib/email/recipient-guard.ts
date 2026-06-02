@@ -67,13 +67,21 @@ function isNonProduction(): boolean {
   return process.env.VERCEL_ENV !== "production";
 }
 
+/**
+ * Demo mode — when DEMO_MODE=true, all outbound emails are rerouted to the
+ * demo sink (or Dennis) to prevent self-serve demo users from sending real emails.
+ */
+export function isDemoMode(): boolean {
+  return process.env.DEMO_MODE === "true";
+}
+
 export type RecipientGuardResult = {
   /** The recipient list to actually send to. */
   to: string[];
   /** True when the original recipients were replaced. */
   rerouted: boolean;
   /** Why it was rerouted (for audit logging), or null when sent as-is. */
-  reason: "non-production" | "test-actor" | "test-recipient" | null;
+  reason: "non-production" | "test-actor" | "test-recipient" | "demo-mode" | null;
   /** The recipients the caller originally intended (for the audit trail). */
   original: string[];
 };
@@ -93,7 +101,8 @@ export function guardRecipients(
   const original = (Array.isArray(to) ? to : [to]).filter(Boolean);
 
   let reason: RecipientGuardResult["reason"] = null;
-  if (isNonProduction()) reason = "non-production";
+  if (isDemoMode()) reason = "demo-mode";
+  else if (isNonProduction()) reason = "non-production";
   else if (isTestEmail(opts?.triggeredByEmail)) reason = "test-actor";
   else if (original.some(isTestEmail)) reason = "test-recipient";
 
