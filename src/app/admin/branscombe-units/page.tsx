@@ -5,6 +5,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import {
   HOUSE_TYPE_INFO,
   HOUSE_TYPES,
+  NOTIONAL_LAND_M2,
   type HouseType,
 } from "@/data/branscombe";
 import AdminUnitMap, {
@@ -34,6 +35,7 @@ type SortKey =
   | "unit_number"
   | "home_type"
   | "area_m2"
+  | "land_m2"
   | "allocated"
   | "interest"
   | "retail";
@@ -52,6 +54,16 @@ const AUD0 = new Intl.NumberFormat("en-AU", {
 });
 function formatRetail(v: number | null): string {
   return v == null ? "—" : AUD0.format(v);
+}
+
+// Footprint size is owned by the home type, not the per-row DB value. The
+// branscombe_unit_allocations.area_m2 column holds stale polygon-derived areas
+// (93.6 / 108.2 / 112.5 …) from an older extraction; the canonical home areas
+// are Type 1A/1B = 104m², Type 2A/2B/2C = 114m² (HOUSE_TYPE_INFO, the same
+// source the floor plans + public site use). Read m² from the type (Uwe,
+// 2026-06-05).
+function homeAreaFor(homeType: string): number | null {
+  return HOUSE_TYPE_INFO[homeType as HouseType]?.homeAreaM2 ?? null;
 }
 
 function SortableTh({
@@ -194,9 +206,19 @@ export default function BranscombeUnitsPage() {
         case "unit_number":
           return (a.unit_number - b.unit_number) * dir;
         case "area_m2":
-          return ((a.area_m2 ?? 0) - (b.area_m2 ?? 0)) * dir;
+          return (
+            ((homeAreaFor(a.home_type) ?? a.area_m2 ?? 0) -
+              (homeAreaFor(b.home_type) ?? b.area_m2 ?? 0)) *
+            dir
+          );
         case "home_type":
           return (a.home_type || "").localeCompare(b.home_type || "") * dir;
+        case "land_m2":
+          return (
+            ((NOTIONAL_LAND_M2[a.unit_number] ?? 0) -
+              (NOTIONAL_LAND_M2[b.unit_number] ?? 0)) *
+            dir
+          );
         case "retail":
           return ((a.retail_price ?? 0) - (b.retail_price ?? 0)) * dir;
         case "allocated":
@@ -232,8 +254,30 @@ export default function BranscombeUnitsPage() {
       (s, n) => s + n,
       0,
     );
-    return { total, allocated, intentLocked, totalRegistrations };
+    // Overall sales value = sum of every home's retail price (priced homes only).
+    const totalRetail = rows.reduce((s, r) => s + (r.retail_price ?? 0), 0);
+    const pricedHomes = rows.filter((r) => r.retail_price != null).length;
+    return {
+      total,
+      allocated,
+      intentLocked,
+      totalRegistrations,
+      totalRetail,
+      pricedHomes,
+    };
   }, [rows, interestCounts]);
+
+  // Sums for the currently-visible (filtered) homes, so the table footer
+  // reflects whatever filter/search is applied.
+  const filteredRetail = useMemo(
+    () => filtered.reduce((s, r) => s + (r.retail_price ?? 0), 0),
+    [filtered],
+  );
+  const filteredLand = useMemo(
+    () =>
+      filtered.reduce((s, r) => s + (NOTIONAL_LAND_M2[r.unit_number] ?? 0), 0),
+    [filtered],
+  );
 
   const editingAllocation: FullAllocation | null = editing
     ? rows.find((r) => r.unit_number === editing.unitNumber) || null
@@ -316,7 +360,7 @@ export default function BranscombeUnitsPage() {
       </p>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         <div className="bg-white border rounded p-4">
           <div className="text-xs uppercase tracking-wider text-slate-500">
             Total homes
@@ -345,6 +389,17 @@ export default function BranscombeUnitsPage() {
           </div>
           <div className="text-2xl font-bold text-sky-700">
             {stats.totalRegistrations}
+          </div>
+        </div>
+        <div className="bg-white border rounded p-4">
+          <div className="text-xs uppercase tracking-wider text-slate-500">
+            Total sales value
+          </div>
+          <div className="text-2xl font-bold text-emerald-700">
+            {AUD0.format(stats.totalRetail)}
+          </div>
+          <div className="text-[11px] text-slate-400 mt-0.5">
+            {stats.pricedHomes} of {stats.total} homes priced
           </div>
         </div>
       </div>
@@ -512,6 +567,14 @@ export default function BranscombeUnitsPage() {
                       align="right"
                     />
                     <SortableTh
+                      label="Land m²"
+                      sortKey="land_m2"
+                      activeKey={sortKey}
+                      dir={sortDir}
+                      onClick={toggleSort}
+                      align="right"
+                    />
+                    <SortableTh
                       label="Retail"
                       sortKey="retail"
                       activeKey={sortKey}
@@ -579,7 +642,12 @@ export default function BranscombeUnitsPage() {
                           </span>
                         </td>
                         <td className="px-3 py-2 text-right">
-                          {row.area_m2}
+                          {homeAreaFor(row.home_type) ?? row.area_m2}
+                        </td>
+                        <td className="px-3 py-2 text-right text-slate-600">
+                          {NOTIONAL_LAND_M2[row.unit_number] ?? (
+                            <span className="text-slate-300">—</span>
+                          )}
                         </td>
                         <td className="px-3 py-2 text-right whitespace-nowrap">
                           {row.retail_price != null ? (
@@ -630,6 +698,21 @@ export default function BranscombeUnitsPage() {
                     );
                   })}
                 </tbody>
+                <tfoot className="sticky bottom-0 z-10 bg-slate-100 font-semibold text-slate-800">
+                  <tr className="border-t-2 border-slate-300">
+                    <td className="px-3 py-2" colSpan={3}>
+                      Total ({filtered.length} home
+                      {filtered.length === 1 ? "" : "s"})
+                    </td>
+                    <td className="px-3 py-2 text-right tabular-nums">
+                      {filteredLand.toLocaleString("en-AU")}
+                    </td>
+                    <td className="px-3 py-2 text-right whitespace-nowrap text-emerald-700">
+                      {AUD0.format(filteredRetail)}
+                    </td>
+                    <td className="px-3 py-2" colSpan={3} />
+                  </tr>
+                </tfoot>
               </table>
             </div>
           )}

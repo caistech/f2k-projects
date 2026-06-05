@@ -16,19 +16,33 @@ interface BulkEmailModalProps {
 }
 
 export function BulkEmailModal({ agentIds, agents, onClose, onSent }: BulkEmailModalProps) {
-  const [subject, setSubject] = useState("");
+  const [subject, setSubject] = useState("Your Factory2Key buyer registrations");
   const [message, setMessage] = useState("");
+  const [includeRegistrants, setIncludeRegistrants] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ sent: number; failed: number } | null>(null);
 
   async function handleSend() {
-    if (!subject.trim() || !message.trim()) {
-      setError("Subject and message are required");
+    if (!subject.trim()) {
+      setError("Subject is required");
+      return;
+    }
+    // When the registrant list is attached it carries the content, so a written
+    // message is optional. Otherwise the message is required.
+    if (!includeRegistrants && !message.trim()) {
+      setError("Message is required");
       return;
     }
 
-    if (!confirm(`Send email to ${agents.length} agent(s)?`)) return;
+    if (
+      !confirm(
+        includeRegistrants
+          ? `Send each of the ${agents.length} agent(s) their own allocated-registrant list?`
+          : `Send email to ${agents.length} agent(s)?`,
+      )
+    )
+      return;
 
     setSending(true);
     setError(null);
@@ -37,7 +51,7 @@ export function BulkEmailModal({ agentIds, agents, onClose, onSent }: BulkEmailM
       const res = await fetch("/api/admin/agents/bulk-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ agentIds, subject, message }),
+        body: JSON.stringify({ agentIds, subject, message, includeRegistrants }),
       });
 
       const data = await res.json();
@@ -96,14 +110,38 @@ export function BulkEmailModal({ agentIds, agents, onClose, onSent }: BulkEmailM
               />
             </div>
 
+            <label className="flex items-start gap-2 rounded border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm cursor-pointer">
+              <input
+                type="checkbox"
+                checked={includeRegistrants}
+                onChange={(e) => setIncludeRegistrants(e.target.checked)}
+                className="h-4 w-4 mt-0.5"
+              />
+              <span>
+                <span className="font-medium text-slate-800">
+                  Include each agent&apos;s allocated registrant list
+                </span>
+                <span className="block text-xs text-slate-500">
+                  Each recipient gets a table of their own buyers (name, contact,
+                  lot/unit, stage, status). Personalised per agent.
+                </span>
+              </span>
+            </label>
+
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Message *</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Message {includeRegistrants ? "(optional)" : "*"}
+              </label>
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={6}
                 className="w-full border border-slate-300 rounded px-3 py-2.5 text-sm"
-                placeholder="Write your message..."
+                placeholder={
+                  includeRegistrants
+                    ? "Optional intro note above the registrant table…"
+                    : "Write your message..."
+                }
               />
             </div>
 
@@ -122,7 +160,11 @@ export function BulkEmailModal({ agentIds, agents, onClose, onSent }: BulkEmailM
               </button>
               <button
                 onClick={handleSend}
-                disabled={sending || !subject.trim() || !message.trim()}
+                disabled={
+                  sending ||
+                  !subject.trim() ||
+                  (!includeRegistrants && !message.trim())
+                }
                 className="flex-1 bg-[#00B5AD] text-white px-5 py-2.5 rounded text-sm font-semibold hover:bg-[#009d94] disabled:opacity-50"
               >
                 {sending ? "Sending..." : "Send Email"}

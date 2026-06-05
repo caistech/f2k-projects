@@ -10,6 +10,7 @@ export {
   UNIT_BY_ID,
   HOUSE_TYPES,
   HOUSE_TYPE_INFO,
+  NOTIONAL_LAND_M2,
   type UnitData,
   type HouseType,
 } from "./units";

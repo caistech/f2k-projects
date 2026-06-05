@@ -100,6 +100,21 @@ export const HOUSE_TYPE_INFO: Record<HouseType, {
   "2C": { label: "Type 2C", size: "114m²", homeAreaM2: 114, deckAreaM2: 24, deck: "24m² deck", beds: 3, baths: 2, color: "#303F9F", border: "#1B2563" },
 };
 
+/**
+ * Notional land area per unit (m²), keyed by unit number.
+ * Source: Branscombe_Unit_Schedule.xlsx → "Unit Schedule" sheet, "Notional land
+ * (m²)" column (DA Branscombe Modular GFA Foundation Model, 23 Dec 2025).
+ * Per-unit apportioned land — not a surveyed lot boundary (these are strata-style
+ * dwellings on a single title). Imported 2026-06-05.
+ */
+export const NOTIONAL_LAND_M2: Record<number, number> = {
+  1: 550, 2: 545, 3: 545, 4: 535, 5: 540, 6: 535, 7: 510, 8: 510, 9: 515,
+  10: 510, 11: 520, 12: 490, 13: 485, 14: 455, 15: 480, 16: 450, 17: 480,
+  18: 450, 19: 480, 20: 450, 21: 480, 22: 445, 23: 495, 24: 455, 25: 500,
+  26: 460, 27: 495, 28: 460, 29: 505, 30: 510, 31: 375, 32: 350, 33: 405,
+  34: 350, 35: 370, 36: 385, 37: 410,
+};
+
 /** Convenience lookup: unit id -> UnitData. */
 export const UNIT_BY_ID: Record<string, UnitData> = Object.fromEntries(
   UNITS.map((u) => [u.id, u]),
