@@ -1,7 +1,7 @@
 // @explanatory-header-exempt — nested workflow page; entry-point header lives on the parent surface
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { NotifyRecipientsCard } from "@caistech/property-launch-kit/components";
 
 type Status =
@@ -81,6 +81,10 @@ export default function SeafieldsRegistrationsPage() {
   const [hideTestData, setHideTestData] = useState(false);
   const [sortBy, setSortBy] = useState<"date" | "name" | "lot">("date");
   const [deleting, setDeleting] = useState(false);
+  // F2KSFLDS-24/26: see AdminLotEditModal — only dismiss the edit modal when
+  // the press both started and ended on the backdrop, so a text-selection
+  // drag that releases over the backdrop doesn't close the dialog.
+  const pressStartedOnBackdrop = useRef(false);
   const [editing, setEditing] = useState<{
     joinId: string;
     field: "status" | "registration_type";
@@ -535,7 +539,14 @@ export default function SeafieldsRegistrationsPage() {
       {editing && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          onClick={() => setEditing(null)}
+          onMouseDown={(e) => {
+            pressStartedOnBackdrop.current = e.target === e.currentTarget;
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget && pressStartedOnBackdrop.current) {
+              setEditing(null);
+            }
+          }}
         >
           <div
             onClick={(e) => e.stopPropagation()}

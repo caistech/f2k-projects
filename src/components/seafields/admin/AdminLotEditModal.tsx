@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { LOTS } from "@/data/seafields";
 import AdminLotWaitlist from "./AdminLotWaitlist";
 
@@ -175,6 +175,11 @@ export default function AdminLotEditModal({
   const [retail, setRetail] = useState(numToStr(allocation?.retail_price ?? null));
   const [notes, setNotes] = useState(allocation?.notes ?? "");
   const [reason, setReason] = useState("");
+  // F2KSFLDS-24/26: only treat a backdrop click as "dismiss" when the press
+  // both started AND ended on the backdrop. A text-selection drag that begins
+  // inside an input and releases over the backdrop must NOT close the modal
+  // (that bug made the reason field feel un-typeable and kicked users out).
+  const pressStartedOnBackdrop = useRef(false);
 
   // FK options
   const [stages, setStages] = useState<StageOption[]>([]);
@@ -394,7 +399,14 @@ export default function AdminLotEditModal({
       aria-modal="true"
       aria-labelledby="edit-lot-heading"
       className="fixed inset-0 z-50 flex items-stretch justify-end bg-black/40"
-      onClick={onClose}
+      onMouseDown={(e) => {
+        pressStartedOnBackdrop.current = e.target === e.currentTarget;
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget && pressStartedOnBackdrop.current) {
+          onClose();
+        }
+      }}
     >
       <div
         className="bg-white w-full max-w-md h-full overflow-y-auto shadow-2xl"
