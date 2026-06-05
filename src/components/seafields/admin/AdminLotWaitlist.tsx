@@ -148,8 +148,13 @@ export default function AdminLotWaitlist({
     }
     setActingOn(reg.id);
     setError(null);
+    // F2KSFLDS-24/25: allocated_to is a material field — the server requires a
+    // reason (≥10 chars) or it 400s, which previously blocked this action
+    // entirely. Supply a descriptive default. The server also auto-flips the
+    // lot to Reserved when a firm allocation lands on an available lot.
     const result = await patchAllocation({
       allocated_to: fullName,
+      reason: `Firm allocation to ${fullName} from the lot waitlist`,
     });
     setActingOn(null);
     if (!result.ok) {

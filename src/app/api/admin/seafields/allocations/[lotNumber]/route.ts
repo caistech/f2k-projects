@@ -222,6 +222,28 @@ export async function PATCH(
     .maybeSingle();
   const priorStatus: string | null = priorRow?.status ?? null;
 
+  // F2KSFLDS-25: a firm allocation locks the lot from the public market.
+  // When a lot is allocated to a named buyer (`allocated_to` set) and the
+  // admin didn't explicitly choose a status, auto-flip an Available lot to
+  // Reserved so it can no longer be registered-for or double-allocated.
+  // Public registrations of interest stay multi-interest (heat map intact) —
+  // the lock lives on the admin allocation action, per product decision
+  // 2026-06-06. Allocation-derived reserves do NOT fan out the registrant
+  // "reserved" emails below (matches prior allocation behaviour and avoids an
+  // email blast during bulk reconciliation); an explicit status change still
+  // notifies as before.
+  const statusExplicitlyChanged = rawUpdates.status !== undefined;
+  let autoReservedFromAllocation = false;
+  if (
+    !statusExplicitlyChanged &&
+    "allocated_to" in updates &&
+    updates.allocated_to &&
+    priorStatus === "available"
+  ) {
+    updates.status = "reserved";
+    autoReservedFromAllocation = true;
+  }
+
   // Attributed write — audit trigger (migration 0008) records actor_email
   // and reason on every per-field row.
   const attributed = createSupabaseServiceWithActor(admin.email, reason ?? null);
@@ -305,7 +327,7 @@ export async function PATCH(
   // position so they know they can convert.
   try {
     const newStatus = (updates.status as string | undefined) ?? null;
-    if (newStatus && newStatus !== priorStatus) {
+    if (newStatus && newStatus !== priorStatus && !autoReservedFromAllocation) {
       const fromAvailable = priorStatus === "available";
       const fromReserved = priorStatus === "reserved";
       const toReserved = newStatus === "reserved";
