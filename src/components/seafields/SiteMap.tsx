@@ -233,11 +233,11 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
           Status:
         </span>
         {[
-          { k: "available", label: "Available" },
-          { k: "one", label: "1 interested" },
-          { k: "two", label: "2 interested" },
-          { k: "three", label: "3+ interested" },
-          { k: "reserved", label: "Reserved" },
+          { k: "available", label: "Available · no registrations" },
+          { k: "one", label: "Available · 1 registered" },
+          { k: "two", label: "Available · 2 registered" },
+          { k: "three", label: "Available · 3+ registered" },
+          { k: "reserved", label: "Reserved (off market)" },
           { k: "comingSoon", label: "Coming soon" },
           { k: "selected", label: "Your selection" },
         ].map((item) => {
@@ -253,6 +253,15 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
           );
         })}
       </div>
+
+      {/* F2KSFLDS-27: explain why an available lot can change colour — the
+          warm colours are interest heat, not a different availability state. */}
+      <p className="-mt-2 mb-4 text-[11px] text-slate/70 font-archivo max-w-prose">
+        Teal lots are open with no registrations yet. Warmer colours
+        (amber&nbsp;→&nbsp;red) show how many buyers have registered interest —
+        those lots are still available to register on until one is formally
+        reserved, when it turns slate and leaves the market.
+      </p>
 
       {/* Stage legend */}
       <div className="flex flex-wrap gap-3 mb-6 text-xs font-archivo items-center">

@@ -24,8 +24,27 @@ interface Registration {
   referrer_type: string | null;
   referrer_name: string | null;
   referrer_company: string | null;
+  // F2KSFLDS-22: lead source — linked referring agent name (resolved server
+  // side) and the source channel tag carried from the ROI form (?ref=).
+  agent_id: string | null;
+  agent_name: string | null;
+  source: string | null;
   notes: string | null;
   created_at: string;
+}
+
+// F2KSFLDS-22: human label for where a lead came from. Prefers the linked
+// agent ("Henry"), then the free-text referrer, then the source channel tag.
+function leadSourceLabel(r: Registration): string | null {
+  if (r.agent_name) return `Agent: ${r.agent_name}`;
+  if (r.referrer_name)
+    return `Referred by: ${r.referrer_name}${r.referrer_company ? ` (${r.referrer_company})` : ""}`;
+  const src = (r.source || "").toLowerCase();
+  if (!src || src === "web-roi") return "Internet (direct web enquiry)";
+  if (src.includes("raywhite")) return "Ray White signage";
+  // Prettify any other partner/campaign tag: "spring-campaign" → "Spring campaign".
+  const pretty = src.replace(/[-_]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  return pretty;
 }
 
 interface Props {
@@ -268,6 +287,14 @@ export default function AdminLotWaitlist({
                       Registered {formatDate(r.created_at)}
                       {otherLots > 0 && ` · also interested in ${otherLots} other lot${otherLots > 1 ? "s" : ""}`}
                     </div>
+                    {leadSourceLabel(r) && (
+                      <div className="text-[11px] mt-0.5">
+                        <span className="text-slate-500">Lead source:</span>{" "}
+                        <span className="font-medium text-slate-700">
+                          {leadSourceLabel(r)}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
 

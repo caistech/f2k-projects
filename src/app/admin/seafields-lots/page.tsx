@@ -121,6 +121,26 @@ function effectiveBucket(r: {
   return null;
 }
 
+/**
+ * F2KSFLDS-21: a lot is "allocated / not available" if it has a named buyer,
+ * OR a non-public allocation bucket (GROH, Baurimus, withheld, …), OR a status
+ * that isn't "available" (reserved/sold/withheld/backup_list_only). Keying the
+ * summary + filter off `allocated_to` alone (the prior behaviour) made
+ * bucket-only allocations like GROH read as available and vanish from the
+ * reconciliation summary (lots 312, 334, 325).
+ */
+function isEffectivelyAllocated(r: {
+  allocated_to: string | null;
+  allocation_bucket: string | null;
+  status: string | null;
+}): boolean {
+  if (r.allocated_to) return true;
+  if (r.status && r.status !== "available") return true;
+  const bucket = effectiveBucket(r);
+  if (bucket && bucket !== "public") return true;
+  return false;
+}
+
 // Sort priority for status when used as a sort key.
 const STATUS_SORT_ORDER: Record<string, number> = {
   available: 0,
@@ -273,8 +293,10 @@ export default function SeafieldsLotsPage() {
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
-      if (filterAllocated === "allocated" && !r.allocated_to) return false;
-      if (filterAllocated === "available" && r.allocated_to) return false;
+      if (filterAllocated === "allocated" && !isEffectivelyAllocated(r))
+        return false;
+      if (filterAllocated === "available" && isEffectivelyAllocated(r))
+        return false;
       if (filterStage !== "all") {
         if (filterStage === "unstaged" && r.stage) return false;
         if (filterStage !== "unstaged" && r.stage !== filterStage) return false;
@@ -382,9 +404,9 @@ export default function SeafieldsLotsPage() {
 
   const stats = useMemo(() => {
     const total = rows.length;
-    const allocated = rows.filter((r) => r.allocated_to).length;
+    const allocated = rows.filter(isEffectivelyAllocated).length;
     const intentLocked = rows.filter(
-      (r) => !r.allocated_to && r.intent_locked_to_registration_id,
+      (r) => !isEffectivelyAllocated(r) && r.intent_locked_to_registration_id,
     ).length;
     const totalRegistrations = Object.values(interestCounts).reduce(
       (s, n) => s + n,
