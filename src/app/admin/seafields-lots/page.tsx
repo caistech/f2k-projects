@@ -141,6 +141,26 @@ function isEffectivelyAllocated(r: {
   return false;
 }
 
+/**
+ * F2KSFLDS-23: the ALLOCATED column shows a non-public pool's self-label
+ * (e.g. "Tarken"), NOT the raw allocated_to — which can hold a stale import
+ * value like "Initial allocation" that the edit modal can't clear (the
+ * allocated_to text field only appears for the Public pool, per
+ * AdminLotEditModal). Public lots still show their named buyer from
+ * allocated_to.
+ */
+const BUCKET_LABEL: Record<string, string> = Object.fromEntries(
+  BUCKET_OPTIONS.filter((o) => o.value !== "all").map((o) => [o.value, o.label]),
+);
+function allocationDisplayLabel(r: {
+  allocated_to: string | null;
+  allocation_bucket: string | null;
+}): string | null {
+  const bucket = effectiveBucket(r);
+  if (bucket && bucket !== "public") return BUCKET_LABEL[bucket] ?? bucket;
+  return r.allocated_to || null;
+}
+
 // Sort priority for status when used as a sort key.
 const STATUS_SORT_ORDER: Record<string, number> = {
   available: 0,
@@ -704,9 +724,9 @@ export default function SeafieldsLotsPage() {
                               S{row.stage}
                             </span>
                           )}
-                          {row.allocated_to ? (
+                          {allocationDisplayLabel(row) ? (
                             <span className="inline-block bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs font-medium">
-                              {row.allocated_to}
+                              {allocationDisplayLabel(row)}
                             </span>
                           ) : hasIntent ? (
                             <span className="inline-block bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs font-medium">
@@ -824,9 +844,9 @@ export default function SeafieldsLotsPage() {
                         </td>
                         <td className="px-3 py-2">{row.sqm}</td>
                         <td className="px-3 py-2">
-                          {row.allocated_to ? (
+                          {allocationDisplayLabel(row) ? (
                             <span className="inline-block bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs font-medium">
-                              {row.allocated_to}
+                              {allocationDisplayLabel(row)}
                             </span>
                           ) : hasIntent ? (
                             <span className="inline-block bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs font-medium">
