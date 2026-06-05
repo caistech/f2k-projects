@@ -315,7 +315,14 @@ export default function SeafieldsLotsPage() {
     return rows.filter((r) => {
       if (filterAllocated === "allocated" && !isEffectivelyAllocated(r))
         return false;
-      if (filterAllocated === "available" && isEffectivelyAllocated(r))
+      // F2KSFLDS-25: a soft-allocation (intent-lock / reservation request) means
+      // the lot is spoken for — keep it OUT of "Available" so it can't be
+      // double-allocated or missed (Uwe, lot 328). It still isn't a firm
+      // allocation, so it shows its "Soft" badge under All, not under Allocated.
+      if (
+        filterAllocated === "available" &&
+        (isEffectivelyAllocated(r) || r.intent_locked_to_registration_id)
+      )
         return false;
       if (filterStage !== "all") {
         if (filterStage === "unstaged" && r.stage) return false;
