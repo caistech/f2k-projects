@@ -14,6 +14,10 @@ const ELEVATIONS = [
   },
   {
     group: "Type 2 (114m²)",
+    // TODO(F2KSFLDS-20): these three `scheme` strings are placeholders copied
+    // verbatim from Type 1 and do NOT match the Type 2 renders (Uwe, 2026-06-05).
+    // Replace with Uwe's confirmed Type 2 Dulux schedule (keep src + label, swap
+    // only `scheme`), or reword if the schemes are deliberately identical.
     items: [
       { src: "/branscombe/elevation-type2-scheme1.jpeg", label: "Scheme 1 — DA Approved", scheme: "Dulux Domino / Dieskau / Surfmist" },
       { src: "/branscombe/elevation-type2-scheme2.jpeg", label: "Scheme 2 — Dark Contemporary", scheme: "Dulux Domino / Klavier / Monument" },
