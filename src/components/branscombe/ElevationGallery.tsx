@@ -3,27 +3,57 @@
 import { useState } from "react";
 import Image from "next/image";
 
-const ELEVATIONS = [
+// The three colour schemes are shared across Type 1 and Type 2 (confirmed by
+// Unison / Luke Tingley, 2026-06-05 — finishes taken verbatim from the original
+// concept-plan schedules). Defined once and reused for both types so the two
+// galleries can never drift apart again (was F2KSFLDS-20).
+type Finish = { part: string; colour: string; hex: string; note?: string };
+
+const SCHEMES: {
+  id: "scheme1" | "scheme2" | "scheme3";
+  label: string;
+  tag?: string;
+  finishes: Finish[];
+}[] = [
   {
-    group: "Type 1 (104m²)",
-    items: [
-      { src: "/branscombe/elevation-type1-scheme1.jpeg", label: "Scheme 1 — DA Approved", scheme: "Dulux Domino / Dieskau / Surfmist" },
-      { src: "/branscombe/elevation-type1-scheme2.jpeg", label: "Scheme 2 — Dark Contemporary", scheme: "Dulux Domino / Klavier / Monument" },
-      { src: "/branscombe/elevation-type1-scheme3.jpeg", label: "Scheme 3 — Light Coastal", scheme: "Dulux Dieskau / Flooded Gum / Surfmist" },
+    id: "scheme1",
+    label: "Scheme 1 — The Forest",
+    tag: "DA approved",
+    finishes: [
+      { part: "AXON cladding", colour: "Dulux Domino", hex: "#3C3E3F" },
+      { part: "STRIA cladding", colour: "Dulux Dieskau", hex: "#CBC9C5" },
+      { part: "EASYLAP cladding", colour: "Dulux Malay", hex: "#8E7C66", note: "visual approximation" },
+      { part: "Windows / metal", colour: "Colorbond Monument", hex: "#323233" },
+      { part: "Roof", colour: "Colorbond Basalt", hex: "#6D6C6E" },
     ],
   },
   {
-    group: "Type 2 (114m²)",
-    // TODO(F2KSFLDS-20): these three `scheme` strings are placeholders copied
-    // verbatim from Type 1 and do NOT match the Type 2 renders (Uwe, 2026-06-05).
-    // Replace with Uwe's confirmed Type 2 Dulux schedule (keep src + label, swap
-    // only `scheme`), or reword if the schemes are deliberately identical.
-    items: [
-      { src: "/branscombe/elevation-type2-scheme1.jpeg", label: "Scheme 1 — DA Approved", scheme: "Dulux Domino / Dieskau / Surfmist" },
-      { src: "/branscombe/elevation-type2-scheme2.jpeg", label: "Scheme 2 — Dark Contemporary", scheme: "Dulux Domino / Klavier / Monument" },
-      { src: "/branscombe/elevation-type2-scheme3.jpeg", label: "Scheme 3 — Light Coastal", scheme: "Dulux Dieskau / Flooded Gum / Surfmist" },
+    id: "scheme2",
+    label: "Scheme 2 — Dark Contemporary",
+    finishes: [
+      { part: "AXON cladding", colour: "Dulux Domino", hex: "#3C3E3F" },
+      { part: "STRIA cladding", colour: "Dulux Klavier", hex: "#363436" },
+      { part: "EASYLAP cladding", colour: "Dulux Teahouse", hex: "#666966" },
+      { part: "Windows / metal", colour: "Colorbond Monument", hex: "#323233" },
+      { part: "Roof", colour: "Colorbond Ironstone", hex: "#3E434C" },
     ],
   },
+  {
+    id: "scheme3",
+    label: "Scheme 3 — Light Coastal",
+    finishes: [
+      { part: "AXON cladding", colour: "Dulux Dieskau", hex: "#CBC9C5" },
+      { part: "STRIA cladding", colour: "Dulux Flooded Gum", hex: "#A3A29F" },
+      { part: "EASYLAP cladding", colour: "Dulux Natural White", hex: "#EEECE5" },
+      { part: "Windows / metal", colour: "Colorbond Shale Grey", hex: "#BDBFBA" },
+      { part: "Roof", colour: "Colorbond Surfmist", hex: "#E4E2D5" },
+    ],
+  },
+];
+
+const TYPES: { group: string; srcPrefix: string }[] = [
+  { group: "Type 1 (104m²)", srcPrefix: "/branscombe/elevation-type1" },
+  { group: "Type 2 (114m²)", srcPrefix: "/branscombe/elevation-type2" },
 ];
 
 export default function ElevationGallery() {
@@ -32,34 +62,59 @@ export default function ElevationGallery() {
   return (
     <>
       <div className="space-y-10">
-        {ELEVATIONS.map((group) => (
-          <div key={group.group}>
+        {TYPES.map((type) => (
+          <div key={type.group}>
             <h3 className="font-playfair text-xl font-black text-deep-blue mb-4">
-              {group.group}
+              {type.group}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {group.items.map((elev) => (
-                <button
-                  key={elev.src}
-                  type="button"
-                  onClick={() => setExpanded(elev.src)}
-                  className="bg-off-white p-2 border border-black/5 hover:border-[#00B5AD]/40 transition-colors cursor-pointer group text-left"
-                >
-                  <Image
-                    src={elev.src}
-                    alt={`${group.group} ${elev.label}`}
-                    width={600}
-                    height={400}
-                    className="w-full h-auto object-cover"
-                  />
-                  <p className="font-archivo text-sm font-semibold text-deep-blue mt-2 group-hover:text-[#00B5AD] transition-colors">
-                    {elev.label}
-                  </p>
-                  <p className="font-archivo text-[0.65rem] text-slate/50 mt-0.5">
-                    {elev.scheme}
-                  </p>
-                </button>
-              ))}
+              {SCHEMES.map((scheme) => {
+                const src = `${type.srcPrefix}-${scheme.id}.jpeg`;
+                return (
+                  <button
+                    key={src}
+                    type="button"
+                    onClick={() => setExpanded(src)}
+                    className="bg-off-white p-2 border border-black/5 hover:border-[#00B5AD]/40 transition-colors cursor-pointer group text-left"
+                  >
+                    <Image
+                      src={src}
+                      alt={`${type.group} ${scheme.label}`}
+                      width={600}
+                      height={400}
+                      className="w-full h-auto object-cover"
+                    />
+                    <p className="font-archivo text-sm font-semibold text-deep-blue mt-2 group-hover:text-[#00B5AD] transition-colors">
+                      {scheme.label}
+                      {scheme.tag && (
+                        <span className="ml-2 inline-block align-middle bg-[#00B5AD]/10 text-[#0E7C77] text-[0.6rem] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded">
+                          {scheme.tag}
+                        </span>
+                      )}
+                    </p>
+                    <dl className="mt-2 space-y-1">
+                      {scheme.finishes.map((finish) => (
+                        <div key={finish.part} className="flex items-start gap-1.5">
+                          <span
+                            className="mt-[3px] w-2.5 h-2.5 rounded-full border border-black/10 shrink-0"
+                            style={{ backgroundColor: finish.hex }}
+                            aria-hidden="true"
+                          />
+                          <dt className="font-archivo text-[0.65rem] text-slate/60 shrink-0">
+                            {finish.part}:
+                          </dt>
+                          <dd className="font-archivo text-[0.65rem] text-slate/80 font-medium">
+                            {finish.colour}
+                            {finish.note && (
+                              <span className="text-slate/40"> ({finish.note})</span>
+                            )}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </button>
+                );
+              })}
             </div>
           </div>
         ))}

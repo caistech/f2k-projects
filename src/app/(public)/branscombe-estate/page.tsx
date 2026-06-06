@@ -266,8 +266,8 @@ export default function BranscombeEstatePage() {
             Colour Schemes &amp; Elevations
           </h2>
           <p className="text-slate font-archivo leading-relaxed mb-8">
-            Each home type is available in three colour schemes — as per
-            current DA approval, Dark Contemporary, and Light Coastal.
+            Each home type is available in three colour schemes — The Forest
+            (as per current DA approval), Dark Contemporary, and Light Coastal.
             Click any elevation to view it full size.
           </p>
 
