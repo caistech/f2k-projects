@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display, Archivo, IBM_Plex_Mono } from "next/font/google";
-import { SayFixButton } from "@/components/SayFixButton";
+import { SayFixWidget } from "@caistech/sayfix-embed";
 import { DemoBanner } from "@/components/DemoBanner";
 import "./globals.css";
 
@@ -50,7 +50,7 @@ export default function RootLayout({
       <body className="min-h-screen font-sans">
         {isDemoMode && <DemoBanner />}
         {children}
-        <SayFixButton />
+        <SayFixWidget repo="f2k-projects" position="bottom-left" />
       </body>
     </html>
   );
