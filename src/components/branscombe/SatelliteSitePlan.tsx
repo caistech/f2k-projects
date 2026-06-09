@@ -26,7 +26,8 @@ interface Props {
   allocations?: Record<number, AllocationLite>;
   hoveredUnit: string | null;
   setHoveredUnit: (id: string | null) => void;
-  onToggleUnit: (id: string) => void;
+  /** Open the detail/price info card for a home (incl. reserved). */
+  onOpenUnit: (id: string) => void;
   /** Show indicative Voronoi-derived lot boundaries. Off by default. */
   showInferredLots?: boolean;
 }
@@ -106,7 +107,7 @@ export default function SatelliteSitePlan({
   allocations = {},
   hoveredUnit,
   setHoveredUnit,
-  onToggleUnit,
+  onOpenUnit,
   showInferredLots = false,
 }: Props) {
   const mapRef = useRef<MapRef>(null);
@@ -169,8 +170,8 @@ export default function SatelliteSitePlan({
     const top = features[0]?.properties as
       | { unitId?: string; isReserved?: boolean }
       | undefined;
-    if (top?.unitId && !top.isReserved) {
-      onToggleUnit(top.unitId);
+    if (top?.unitId) {
+      onOpenUnit(top.unitId);
     }
   };
 

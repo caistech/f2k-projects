@@ -11,6 +11,7 @@ import {
 } from "@/data/branscombe";
 import PlanView from "./PlanView";
 import UnitBadge from "./UnitBadge";
+import UnitInfoCard from "./UnitInfoCard";
 
 // Lazy-load Mapbox satellite — defers loading mapbox-gl (~200KB gzipped) and
 // react-map-gl until a user activates the satellite tab.
@@ -78,6 +79,8 @@ export default function SiteMap({ selectedUnits, onToggleUnit }: SiteMapProps) {
   const [allocations, setAllocations] = useState<Record<number, AllocationLite>>(
     {},
   );
+  const [prices, setPrices] = useState<Record<number, number | null>>({});
+  const [openUnitId, setOpenUnitId] = useState<string | null>(null);
   const [hoveredUnit, setHoveredUnit] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("plan");
@@ -110,9 +113,10 @@ export default function SiteMap({ selectedUnits, onToggleUnit }: SiteMapProps) {
 
   const fetchCountsAndAllocations = useCallback(async () => {
     try {
-      const [countsRes, allocRes] = await Promise.all([
+      const [countsRes, allocRes, lotsRes] = await Promise.all([
         fetch("/api/branscombe/units"),
         fetch("/api/branscombe/allocations"),
+        fetch("/api/branscombe/lots"),
       ]);
       if (countsRes.ok) {
         const data = await countsRes.json();
@@ -123,6 +127,13 @@ export default function SiteMap({ selectedUnits, onToggleUnit }: SiteMapProps) {
         const byNumber: Record<number, AllocationLite> = {};
         for (const a of data.allocations || []) byNumber[a.unit_number] = a;
         setAllocations(byNumber);
+      }
+      if (lotsRes.ok) {
+        const data = await lotsRes.json();
+        const byNumber: Record<number, number | null> = {};
+        for (const l of data.lots || [])
+          byNumber[l.unit_number] = l.retail_price ?? null;
+        setPrices(byNumber);
       }
     } catch {
       // silently fail
@@ -208,12 +219,13 @@ export default function SiteMap({ selectedUnits, onToggleUnit }: SiteMapProps) {
         </div>
         {viewMode === "plan" && (
           <span className="font-archivo text-xs text-slate/60 ml-2">
-            Vector site plan from Unison 20E92-03 · click a home to select
+            Vector site plan from Unison 20E92-03 · click a home for details &
+            price
           </span>
         )}
         {viewMode === "satellite" && (
           <span className="font-archivo text-xs text-slate/60 ml-2">
-            Satellite imagery via Mapbox · click a home to select
+            Satellite imagery via Mapbox · click a home for details & price
           </span>
         )}
         {viewMode === "schematic" && (
@@ -293,7 +305,7 @@ export default function SiteMap({ selectedUnits, onToggleUnit }: SiteMapProps) {
             allocations={allocations}
             hoveredUnit={hoveredUnit}
             setHoveredUnit={setHoveredUnit}
-            onToggleUnit={onToggleUnit}
+            onOpenUnit={setOpenUnitId}
             showInferredLots={showInferredLots}
           />
         </div>
@@ -308,7 +320,7 @@ export default function SiteMap({ selectedUnits, onToggleUnit }: SiteMapProps) {
             allocations={allocations}
             hoveredUnit={hoveredUnit}
             setHoveredUnit={setHoveredUnit}
-            onToggleUnit={onToggleUnit}
+            onOpenUnit={setOpenUnitId}
             showInferredLots={showInferredLots}
           />
         </div>
@@ -385,9 +397,7 @@ export default function SiteMap({ selectedUnits, onToggleUnit }: SiteMapProps) {
                             isSelected={isSelected}
                             isHovered={isHovered}
                             registrationCount={count}
-                            onClick={
-                              isReserved ? () => {} : () => onToggleUnit(unit.id)
-                            }
+                            onClick={() => setOpenUnitId(unit.id)}
                             onMouseEnter={() => setHoveredUnit(unit.id)}
                             onMouseLeave={() => setHoveredUnit(null)}
                             ariaLabel={ariaLabel}
@@ -417,10 +427,39 @@ export default function SiteMap({ selectedUnits, onToggleUnit }: SiteMapProps) {
         </div>
       )}
 
+      {/* Click-to-open info card (details + suggested price) */}
+      {openUnitId &&
+        (() => {
+          const unit = UNITS.find((u) => u.id === openUnitId);
+          if (!unit) return null;
+          const count = counts[unit.id] || 0;
+          const isSelected = selectedUnits.includes(unit.id);
+          const isReserved = !!allocations[unit.unitNumber]?.allocated_to;
+          const { bg, border } = badgeColors(
+            count,
+            isSelected,
+            isReserved,
+            unit.type,
+          );
+          return (
+            <UnitInfoCard
+              unit={unit}
+              registrationCount={count}
+              retailPrice={prices[unit.unitNumber] ?? null}
+              isReserved={isReserved}
+              isSelected={isSelected}
+              bg={bg}
+              border={border}
+              onClose={() => setOpenUnitId(null)}
+              onToggle={() => onToggleUnit(unit.id)}
+            />
+          );
+        })()}
+
       <div className="mt-3 flex items-center justify-between">
         <p className="text-xs text-slate/50 font-archivo">
-          Click a home to select it. Click again to deselect. Homes are
-          colour-coded by type.
+          Click a home to view its details and price, then add it to your
+          registration. Homes are colour-coded by type.
         </p>
         <a
           href="/branscombe/site-plan.jpg"

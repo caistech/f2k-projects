@@ -21,7 +21,8 @@ interface PlanViewProps {
   allocations?: Record<number, AllocationLite>;
   hoveredUnit: string | null;
   setHoveredUnit: (id: string | null) => void;
-  onToggleUnit: (id: string) => void;
+  /** Open the detail/price info card for a home (incl. reserved). */
+  onOpenUnit: (id: string) => void;
   /** Show indicative Voronoi-derived lot boundaries. Off by default. */
   showInferredLots?: boolean;
 }
@@ -88,7 +89,7 @@ export default function PlanView({
   allocations = {},
   hoveredUnit,
   setHoveredUnit,
-  onToggleUnit,
+  onOpenUnit,
   showInferredLots = false,
 }: PlanViewProps) {
   return (
@@ -198,32 +199,27 @@ export default function PlanView({
               : count > 0
                 ? `, ${count} interested`
                 : "") +
-            (isSelected ? ", selected" : "");
-
-          const handleClick = isReserved ? undefined : () => onToggleUnit(id);
+            (isSelected ? ", selected" : "") +
+            " — view details and price";
 
           return (
             <g
               key={id}
-              role={isReserved ? undefined : "button"}
+              role="button"
               aria-label={ariaLabel}
-              aria-pressed={isReserved ? undefined : isSelected}
-              aria-disabled={isReserved || undefined}
-              tabIndex={isReserved ? -1 : 0}
-              onClick={handleClick}
+              aria-pressed={isSelected}
+              tabIndex={0}
+              onClick={() => onOpenUnit(id)}
               onKeyDown={(e) => {
-                if (
-                  !isReserved &&
-                  (e.key === "Enter" || e.key === " ")
-                ) {
+                if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  onToggleUnit(id);
+                  onOpenUnit(id);
                 }
               }}
               onMouseEnter={() => setHoveredUnit(id)}
               onMouseLeave={() => setHoveredUnit(null)}
               style={{
-                cursor: isReserved ? "not-allowed" : "pointer",
+                cursor: "pointer",
                 outline: "none",
               }}
             >
