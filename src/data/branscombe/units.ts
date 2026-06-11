@@ -114,7 +114,7 @@ export const UNITS: UnitData[] = [
   unit(28, "1B", "SE",         "exterior_beside"),
   unit(29, "2A", "South",      "under_home"),
   unit(30, "2B", "South",      "under_home"),
-  unit(31, "2C", "SE Corner",  "exterior_beside_near"),
+  unit(31, "2C", "SE Corner",  "exterior_beside"),
   unit(32, "1A", "SE Corner",  "exterior_near"),
   unit(33, "1B", "East Lower", "under_home"),
   unit(34, "2A", "East Lower", "exterior_beside"),
