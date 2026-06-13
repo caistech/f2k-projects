@@ -18,6 +18,7 @@
     "@caistech/ghl-client": "^0.1.2",
     "@caistech/mapbox": "^0.2.0",
     "@caistech/property-launch-kit": "^0.3.2",
+    "@caistech/property-services-sdk": "^0.4.0",
     "@caistech/sayfix-embed": "^0.4.0",
     "@elevenlabs/react": "^1.6.7",
     "@supabase/ssr": "0.5.2",

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseService } from "@/lib/supabase-service";
 import { escapeHtml } from "@/lib/html-escape";
+import { runPropertyCheck, propertyCheckEmailBlock } from "@/lib/property-check";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -236,6 +237,28 @@ export async function POST(request: Request) {
     }
   }
 
+  // Kickstart property analysis (best-effort, env-gated, time-bounded — never blocks).
+  // Geocodes the location and pulls wind/bushfire/climate + zoning/LGA/overlays/yield so the
+  // first-pass site DD lands with the enquiry. Stored on the row + shown in the admin email.
+  let propertyCheck = null;
+  try {
+    propertyCheck = await runPropertyCheck(
+      {
+        estate_location: d.estate_location,
+        estate_postcode: d.estate_postcode,
+        lot_plan_reference: d.lot_plan_reference,
+      },
+      15_000,
+    );
+    if (inserted?.id) {
+      await (supabase.from("developer_onboarding") as any)
+        .update({ property_check: propertyCheck } as never)
+        .eq("id", inserted.id);
+    }
+  } catch (err) {
+    console.error("Developer onboarding property check failed:", err);
+  }
+
   // Audit log (best-effort).
   try {
     await supabase.from("audit_log").insert({
@@ -346,6 +369,7 @@ export async function POST(request: Request) {
           ${e.vision ? `<h3 style="color:#1A2744;font-size:14px;margin:20px 0 4px">Vision</h3><p style="font-size:14px;color:#4A5568;line-height:1.6;white-space:pre-wrap">${e.vision}</p>` : ""}
           ${e.deal_preferences ? `<h3 style="color:#1A2744;font-size:14px;margin:20px 0 4px">Deal preferences</h3><p style="font-size:14px;color:#4A5568;line-height:1.6;white-space:pre-wrap">${e.deal_preferences}</p>` : ""}
           ${uploadList ? `<h3 style="color:#1A2744;font-size:14px;margin:20px 0 4px">Uploads</h3><ul style="font-size:14px;color:#4A5568;line-height:1.7">${uploadList}</ul>` : ""}
+          ${propertyCheckEmailBlock(propertyCheck, escapeHtml)}
           ${transcript ? `<h3 style="color:#1A2744;font-size:14px;margin:20px 0 4px">Voice discovery (Morgan)</h3><div style="font-size:13px;color:#4A5568;line-height:1.5;background:#F8FAFC;padding:12px 16px;border-radius:6px">${transcript}</div>` : ""}
         </div>
         <div style="background:#F5F3EE;padding:16px 32px;font-size:11px;color:#999">
