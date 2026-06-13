@@ -10,7 +10,13 @@
 import type { VoiceConfig } from "@caistech/elevenlabs-convai";
 
 export const developerVoiceConfig: VoiceConfig = {
-  agentId: "agent_5901ktzqy26zf9e9eyvxqfr28x47",
+  // Prod uses the dedicated F2K agent (bound to the PROD post-call webhook → prod DB). The demo
+  // deploy overrides this with NEXT_PUBLIC_ELEVENLABS_DEVELOPER_AGENT_ID = its own agent (bound to
+  // the DEMO webhook → demo DB), so demo conversations capture to demo, not prod. One ElevenLabs
+  // agent can only post to one webhook URL, hence a separate agent per environment.
+  agentId:
+    process.env.NEXT_PUBLIC_ELEVENLABS_DEVELOPER_AGENT_ID ||
+    "agent_5901ktzqy26zf9e9eyvxqfr28x47",
   placement: "inline",
   mode: "discovery",
   textFallback: true,

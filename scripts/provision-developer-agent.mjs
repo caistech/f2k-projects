@@ -60,7 +60,10 @@ const baseUrl =
   "https://f2k-projects.vercel.app";
 const existingAgentId = process.env.NEXT_PUBLIC_ELEVENLABS_DEVELOPER_AGENT_ID || undefined;
 
-const AGENT_NAME = "F2K Developer Guide (Morgan)";
+// AGENT_LABEL lets us provision a SEPARATE agent per environment (e.g. " — Demo"), each bound
+// to its own deploy's post-call webhook URL (one ElevenLabs agent → one webhook).
+const AGENT_LABEL = process.env.AGENT_LABEL || "";
+const AGENT_NAME = `F2K Developer Guide (Morgan)${AGENT_LABEL}`;
 
 if (!apiKey) {
   console.error(

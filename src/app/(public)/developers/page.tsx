@@ -142,7 +142,9 @@ export default function DevelopersPage() {
       </section>
 
       {/* ===== CONTACT ===== */}
-      <section className="py-10 px-4 bg-warm-grey">
+      {/* Extra bottom padding leaves clear space for the fixed SayFix pill (bottom-left) to rest
+          over, so it doesn't overlap the Submit CTA or these contact links on mobile. */}
+      <section className="pt-10 pb-28 sm:pb-16 px-4 bg-warm-grey">
         <div className="max-w-[900px] mx-auto text-center">
           <p className="font-archivo text-sm text-slate mb-2">
             Prefer to talk to a person first?
