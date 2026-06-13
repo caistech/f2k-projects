@@ -64,6 +64,12 @@ AREA_TOL_MIN = 8.0
 REPO = Path(__file__).parent.parent
 OUT_JSON = REPO / "src" / "data" / "seafields" / "polygons.json"
 OUT_GEOJSON = REPO / "src" / "data" / "seafields" / "geojson.json"
+# Derived trim: just {lotId: areaM2}. RegistrationForm needs only the buildable
+# area per lot (a single int), not the full polygon geometry — importing this
+# instead of polygons.json keeps the ~155 KB of coordinate arrays out of the
+# initial estate-page bundle (the map components still import polygons.json, but
+# they're lazy-mounted below the fold). Do not hand-edit — regenerated here.
+OUT_AREAS = REPO / "src" / "data" / "seafields" / "buildable-areas.json"
 
 
 def find_oda() -> Optional[Path]:
@@ -465,6 +471,11 @@ def main():
 
     OUT_JSON.write_text(json.dumps(out, indent=2), encoding="utf-8")
     print(f"[write] {OUT_JSON} ({OUT_JSON.stat().st_size:,} bytes)")
+
+    # Derived trim for RegistrationForm: {lotId: areaM2} only (see OUT_AREAS).
+    areas = {lid: env["areaM2"] for lid, env in out["buildableEnvelopes"].items()}
+    OUT_AREAS.write_text(json.dumps(areas, indent=0), encoding="utf-8")
+    print(f"[write] {OUT_AREAS} ({OUT_AREAS.stat().st_size:,} bytes)")
 
     # GeoJSON (Mapbox / WGS84) — base geometry
     features = []

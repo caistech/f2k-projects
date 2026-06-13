@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { LOTS, CATEGORY_INFO } from "@/data/seafields";
-import polygonsData from "@/data/seafields/polygons.json";
+import buildableAreas from "@/data/seafields/buildable-areas.json";
 import LazyVisible from "@/components/LazyVisible";
 import SuburbAutocomplete from "@/components/SuburbAutocomplete";
 
@@ -23,9 +23,10 @@ const SiteMap = dynamic(() => import("./SiteMap"), {
   ),
 });
 
-const BUILDABLE_ENVELOPES = (
-  polygonsData as { buildableEnvelopes: Record<string, { areaM2: number }> }
-).buildableEnvelopes;
+// Just {lotId: areaM2} — the full polygon geometry lives in polygons.json,
+// imported only by the lazy-mounted map components (keeps ~155 KB of coordinate
+// arrays out of this form's chunk / the initial estate-page load).
+const BUILDABLE_AREAS = buildableAreas as Record<string, number>;
 
 const INTEREST_TYPES = [
   "Vacant serviced land only",
@@ -696,8 +697,8 @@ export default function RegistrationForm() {
                             </div>
                             <div className="bg-off-white py-3 px-4">
                               <div className="font-archivo font-bold text-[#00B5AD] text-lg">
-                                {BUILDABLE_ENVELOPES[lot.id]?.areaM2 ?? "—"}
-                                {BUILDABLE_ENVELOPES[lot.id] ? "m²" : ""}
+                                {BUILDABLE_AREAS[lot.id] ?? "—"}
+                                {BUILDABLE_AREAS[lot.id] ? "m²" : ""}
                               </div>
                               <div className="font-ibm-mono text-[0.55rem] text-slate/50 uppercase">
                                 Buildable
