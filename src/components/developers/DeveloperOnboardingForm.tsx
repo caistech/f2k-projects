@@ -40,9 +40,13 @@ const DEAL_PREFERENCES = [
 
 interface Props {
   voiceTranscript: VoiceMessage[];
+  voiceConversationId?: string | null;
 }
 
-export default function DeveloperOnboardingForm({ voiceTranscript }: Props) {
+export default function DeveloperOnboardingForm({
+  voiceTranscript,
+  voiceConversationId,
+}: Props) {
   const [submitterRole, setSubmitterRole] = useState("");
   const [developerName, setDeveloperName] = useState("");
   const [email, setEmail] = useState("");
@@ -155,6 +159,7 @@ export default function DeveloperOnboardingForm({ voiceTranscript }: Props) {
           submitter_role: submitterRole || null,
           landowner_details: landowner,
           voice_transcript: voiceTranscript,
+          voice_conversation_id: voiceConversationId || null,
           consent,
           website_url: "",
         }),

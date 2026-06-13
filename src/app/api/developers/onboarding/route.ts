@@ -58,6 +58,9 @@ const detailsSchema = z.object({
     )
     .max(120)
     .optional(),
+  // ElevenLabs conversation id (from the live Morgan session), so the server-captured
+  // post-call transcript can be linked to this lead.
+  voice_conversation_id: z.string().max(200).nullable().optional(),
   consent: z.literal(true, {
     errorMap: () => ({
       message: "Please confirm you're happy for us to contact you about your project",
@@ -190,6 +193,7 @@ export async function POST(request: Request) {
       site_control: d.site_control ?? null,
       landowner_details: d.landowner_details ?? {},
       voice_transcript: d.voice_transcript ?? [],
+      voice_conversation_id: d.voice_conversation_id ?? null,
       uploads,
       source: "web",
       status: "new",
@@ -210,6 +214,18 @@ export async function POST(request: Request) {
       { error: "Submission failed. Please try again." },
       { status: 500 },
     );
+  }
+
+  // Link the server-captured (post-call webhook) voice conversation to this lead, if any.
+  if (d.voice_conversation_id && inserted?.id) {
+    const { error: linkErr } = await (
+      supabase.from("developer_voice_conversations") as any
+    )
+      .update({ onboarding_id: inserted.id } as never)
+      .eq("conversation_id", d.voice_conversation_id);
+    if (linkErr) {
+      console.error("Developer onboarding voice-link failed:", linkErr.message);
+    }
   }
 
   // Audit log (best-effort).

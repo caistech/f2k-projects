@@ -11,14 +11,19 @@ import DeveloperOnboardingForm from "./DeveloperOnboardingForm";
  */
 export default function DeveloperOnboarding() {
   const [transcript, setTranscript] = useState<VoiceMessage[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
 
   return (
     <div className="space-y-8">
       <DeveloperVoiceAgent
         transcript={transcript}
         onTranscriptChange={setTranscript}
+        onConversationId={setConversationId}
       />
-      <DeveloperOnboardingForm voiceTranscript={transcript} />
+      <DeveloperOnboardingForm
+        voiceTranscript={transcript}
+        voiceConversationId={conversationId}
+      />
     </div>
   );
 }

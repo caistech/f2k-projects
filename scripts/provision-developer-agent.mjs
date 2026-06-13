@@ -23,6 +23,7 @@ import {
   setAgentOverrides,
   setAllowlist,
   standardAllowlist,
+  bindWorkspaceWebhook,
 } from "@caistech/elevenlabs-convai";
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -117,6 +118,21 @@ if (existingAgentId) {
 if (!created) await setAgentOverrides(apiKey, agentId);
 await setAllowlist(apiKey, agentId, allowedOrigins);
 
+// Bind a workspace-scoped post-call webhook so Morgan's transcript is delivered server-side
+// after EVERY call (abandonment-proof capture → developer_voice_conversations). The signing
+// secret is shown ONCE, on first creation — capture it for ELEVENLABS_WEBHOOK_SECRET.
+const { webhookId, webhookSecret } = await bindWorkspaceWebhook(apiKey, agentId, {
+  name: `${AGENT_NAME} post-call`,
+  url: `${baseUrl.replace(/\/$/, "")}/api/convai/webhooks/post-call`,
+});
+
 console.log(`  agent ${agentId} (${created ? "created" : "updated"}); overrides on; allowlist ${allowedOrigins.join(", ")}`);
-console.log("\n✅ Done. Put this in src/voice.config.ts (agentId) — it is public/safe to commit:");
-console.log(`  agentId: "${agentId}"`);
+console.log(`  post-call webhook bound (${webhookId}) → ${baseUrl.replace(/\/$/, "")}/api/convai/webhooks/post-call`);
+console.log("\n✅ Done.");
+console.log(`agentId (public, in src/voice.config.ts): ${agentId}`);
+if (webhookSecret) {
+  console.log("\n⚠ Set this on Vercel (Production + Preview, type=sensitive) AND .env.local — shown ONCE:");
+  console.log(`ELEVENLABS_WEBHOOK_SECRET=${webhookSecret}`);
+} else {
+  console.log("\n(Workspace webhook already existed — its secret was issued on a prior run; reuse the stored ELEVENLABS_WEBHOOK_SECRET.)");
+}

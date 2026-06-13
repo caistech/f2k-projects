@@ -27,11 +27,15 @@ export type VoiceMessage = { role: "user" | "assistant"; content: string };
 interface Props {
   transcript: VoiceMessage[];
   onTranscriptChange: (messages: VoiceMessage[]) => void;
+  /** The live ElevenLabs conversation id (from onConnect), lifted so the form can submit it
+   * and the server-captured (post-call webhook) transcript can be linked to the lead. */
+  onConversationId?: (conversationId: string) => void;
 }
 
 export default function DeveloperVoiceAgent({
   transcript,
   onTranscriptChange,
+  onConversationId,
 }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [thinking, setThinking] = useState(false);
@@ -113,6 +117,7 @@ export default function DeveloperVoiceAgent({
         coachName="Morgan"
         avatarUrl="/female_avatar.jpeg"
         title="Talk to Morgan — your F2K onboarding guide. She'll help you complete the form below."
+        onConnect={(conversationId) => onConversationId?.(conversationId)}
         onMessage={handleVoiceMessage}
         onTextFallbackSubmit={handleTextFallback}
         onError={(e) => setError(e)}
