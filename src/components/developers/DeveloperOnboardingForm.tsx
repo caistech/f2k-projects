@@ -55,6 +55,10 @@ export default function DeveloperOnboardingForm({
   const [estateName, setEstateName] = useState("");
   const [estateLocation, setEstateLocation] = useState("");
   const [estatePostcode, setEstatePostcode] = useState("");
+  const [lotPlanReference, setLotPlanReference] = useState("");
+  const [siteAreaValue, setSiteAreaValue] = useState("");
+  const [siteAreaUnit, setSiteAreaUnit] = useState("ha");
+  const [dwellingsEnvisaged, setDwellingsEnvisaged] = useState("");
   const [zoningStatus, setZoningStatus] = useState("");
   const [siteControl, setSiteControl] = useState("");
   const [vision, setVision] = useState("");
@@ -152,6 +156,10 @@ export default function DeveloperOnboardingForm({
           estate_name: estateName.trim(),
           estate_location: estateLocation.trim() || null,
           estate_postcode: estatePostcode.trim() || null,
+          lot_plan_reference: lotPlanReference.trim() || null,
+          site_area_value: siteAreaValue.trim() ? Number(siteAreaValue) : null,
+          site_area_unit: siteAreaValue.trim() ? siteAreaUnit : null,
+          dwellings_envisaged: dwellingsEnvisaged.trim() || null,
           zoning_status: zoningStatus || null,
           site_control: siteControl || null,
           vision: vision.trim() || null,
@@ -366,6 +374,67 @@ export default function DeveloperOnboardingForm({
                 className={inputClass}
                 placeholder="e.g. 7011"
                 maxLength={4}
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="lotPlanReference" className={labelClass}>
+              Lot &amp; plan number / title reference
+            </label>
+            <input
+              id="lotPlanReference"
+              type="text"
+              value={lotPlanReference}
+              onChange={(e) => setLotPlanReference(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. Lot 3 on DP 123456 (or your certificate of title reference)"
+            />
+            <p className="text-xs text-slate/50 font-archivo mt-1">
+              If you have it, this lets us automatically check the site&apos;s wind
+              zone, council, zoning overlays and easements. Multiple lots are fine.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="siteAreaValue" className={labelClass}>
+                Site size
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="siteAreaValue"
+                  type="number"
+                  min="0"
+                  step="any"
+                  inputMode="decimal"
+                  value={siteAreaValue}
+                  onChange={(e) => setSiteAreaValue(e.target.value)}
+                  className={`${inputClass} flex-1`}
+                  placeholder="e.g. 4"
+                />
+                <select
+                  aria-label="Site size unit"
+                  value={siteAreaUnit}
+                  onChange={(e) => setSiteAreaUnit(e.target.value)}
+                  className={inputClass}
+                  style={{ width: "auto" }}
+                >
+                  <option value="ha">hectares</option>
+                  <option value="acres">acres</option>
+                  <option value="m2">m²</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label htmlFor="dwellingsEnvisaged" className={labelClass}>
+                Approx. homes / lots envisaged
+              </label>
+              <input
+                id="dwellingsEnvisaged"
+                type="text"
+                value={dwellingsEnvisaged}
+                onChange={(e) => setDwellingsEnvisaged(e.target.value)}
+                className={inputClass}
+                placeholder="e.g. 25 (or a range — 20–30)"
               />
             </div>
           </div>

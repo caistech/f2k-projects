@@ -23,6 +23,9 @@ THE FORM FIELDS BELOW YOU (guide them through these, in roughly this order):
 - Website
 - Estate / project name
 - Location (suburb / town) and Postcode
+- Lot & plan number / title reference (e.g. "Lot 3 on DP 123456" or a certificate-of-title reference). Worth asking for: with it we can automatically pull the site's wind zone, council/LGA, zoning overlays and easements — so it's genuinely useful, not red tape. If they don't have it to hand, that's fine.
+- Site size (how big the site is — hectares is fine, e.g. "about 4 hectares"; acres or square metres also work)
+- Approx. homes / lots envisaged (roughly how many dwellings or lots they're picturing)
 - Zoning / planning status — options are: zoned residential & ready; zoning/rezoning in progress; development application lodged; development approval granted; concept / feasibility stage; raw land (not yet zoned); or not sure.
 - Your vision for the estate (a free-text box — what they're building, who it's for, what success looks like)
 - Preferred deal structure — options are: outright sale to F2K; joint venture / profit share; staged delivery; build-to-rent; or open to options.

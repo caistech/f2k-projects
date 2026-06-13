@@ -33,6 +33,10 @@ const detailsSchema = z.object({
   estate_name: z.string().min(1, "Estate / project name is required").max(200),
   estate_location: z.string().max(300).nullable().optional(),
   estate_postcode: z.string().max(12).nullable().optional(),
+  lot_plan_reference: z.string().max(500).nullable().optional(),
+  site_area_value: z.number().nonnegative().max(1_000_000).nullable().optional(),
+  site_area_unit: z.enum(["ha", "acres", "m2"]).nullable().optional(),
+  dwellings_envisaged: z.string().max(120).nullable().optional(),
   zoning_status: z.string().max(200).nullable().optional(),
   vision: z.string().max(8000).nullable().optional(),
   deal_preferences: z.string().max(4000).nullable().optional(),
@@ -186,6 +190,10 @@ export async function POST(request: Request) {
       estate_name: d.estate_name,
       estate_location: d.estate_location ?? null,
       estate_postcode: d.estate_postcode ?? null,
+      lot_plan_reference: d.lot_plan_reference ?? null,
+      site_area_value: d.site_area_value ?? null,
+      site_area_unit: d.site_area_unit ?? null,
+      dwellings_envisaged: d.dwellings_envisaged ?? null,
       zoning_status: d.zoning_status ?? null,
       vision: d.vision ?? null,
       deal_preferences: d.deal_preferences ?? null,
@@ -283,6 +291,12 @@ export async function POST(request: Request) {
       .filter(Boolean)
       .join(" · ");
 
+    const unitLabel = { ha: "ha", acres: "acres", m2: "m²" } as const;
+    const siteSize =
+      d.site_area_value != null
+        ? `${d.site_area_value} ${unitLabel[d.site_area_unit ?? "ha"]}`
+        : "";
+
     const row = (label: string, value: string) =>
       value
         ? `<tr><td style="padding:4px 12px;color:#666;vertical-align:top">${label}</td><td style="padding:4px 12px;color:#1A2744">${value}</td></tr>`
@@ -321,6 +335,9 @@ export async function POST(request: Request) {
             ${row("Website", d.website ? `<a href="${escapeHtml(d.website)}" style="color:#00B5AD">${e.website}</a>` : "")}
             ${row("Estate / project", `<strong>${e.estate_name}</strong>`)}
             ${row("Location", `${e.estate_location}${d.estate_postcode ? ` ${e.estate_postcode}` : ""}`)}
+            ${row("Lot &amp; plan", escapeHtml(d.lot_plan_reference))}
+            ${row("Site size", escapeHtml(siteSize))}
+            ${row("Homes / lots", escapeHtml(d.dwellings_envisaged))}
             ${row("Zoning / status", e.zoning_status)}
             ${row("Site control", e.site_control)}
             ${row("Land owner", landownerBlock)}
