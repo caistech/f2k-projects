@@ -21,6 +21,26 @@ const DEFAULT_NAV: NavItem[] = [
   ABOUT_F2K,
 ];
 
+// Developer credited in the header differs per project (Dennis, 2026-06-12):
+// Seafields + Wavecrest are developed by Dual Focus; Branscombe + Hemp Homes by
+// Factory2Key. The Projects hub (landing) credits no single developer. Anything
+// else (blog, pricing, privacy) stays unattributed too.
+function developerForPath(pathname: string | null): string | null {
+  if (
+    pathname?.startsWith("/seafields") ||
+    pathname?.startsWith("/wavecrest")
+  ) {
+    return "Dual Focus";
+  }
+  if (
+    pathname?.startsWith("/branscombe") ||
+    pathname?.startsWith("/hemp-homes")
+  ) {
+    return "Factory2Key";
+  }
+  return null;
+}
+
 // Estate-scoped nav: a buyer on one estate sees only that estate's own
 // blog+gallery and About F2K — never cross-links to the other estates, which
 // confused buyers (Uwe, 2026-05-26). Hemp Homes + the Projects hub keep the
@@ -45,6 +65,7 @@ export default function ProjectsHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const navItems = navItemsForPath(pathname);
+  const developer = developerForPath(pathname);
 
   return (
     <header className="border-b border-slate-200 bg-white sticky top-0 z-50 backdrop-blur-xl bg-white/90">
@@ -65,9 +86,11 @@ export default function ProjectsHeader() {
               <span className="font-semibold text-lg text-slate-900">
                 Factory2Key Projects
               </span>
-              <span className="text-xs ml-2 hidden sm:inline text-slate-500">
-                Developer: Dual Focus
-              </span>
+              {developer && (
+                <span className="text-xs ml-2 hidden sm:inline text-slate-500">
+                  Developer: {developer}
+                </span>
+              )}
             </div>
           </Link>
 
