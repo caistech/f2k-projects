@@ -63,6 +63,21 @@ const SEAFIELDS_DESIGNS: Design[] = [
     priceFrom: "$680,000",
   },
   {
+    name: "EMU",
+    size: "191m² home · 218m² with alfresco",
+    beds: "4 bed · 2 bath",
+    tag: "FAMILY HOME",
+    detail:
+      "Elevate-series 4-bedroom 2-bathroom family home with theatre, study and walk-in robe, plus upgraded elevations, claddings, windows and entry. Optional alfresco and carport. House & land pricing on application.",
+    // Plan image pending: crop the manufacturer branding from the Napier
+    // dimensioned drawings before publishing (no tooling yet — see handover note).
+    hero: null,
+    plan: null,
+    priceFrom: "Pricing on application",
+    priceLabel: "",
+    placeholder: true,
+  },
+  {
     name: "BigRoo",
     size: "≈310m²",
     beds: "4 bed · 2 bath + Theatre",
@@ -72,19 +87,6 @@ const SEAFIELDS_DESIGNS: Design[] = [
     hero: "/seafields/designs/murchison-floor-plan.png",
     plan: "/seafields/designs/bigroo-floor-plan.pdf",
     priceFrom: "$829,700",
-  },
-  {
-    name: "Wombat",
-    size: "191m²",
-    beds: "4 bed · 2 bath",
-    tag: "FAMILY HOME",
-    detail:
-      "WAM Napier-series 4-bedroom 2-bathroom modular home, 191m². Plans and house & land pricing are being finalised — contact Uwe for early details.",
-    hero: null,
-    plan: null,
-    priceFrom: "Pricing TBC",
-    priceLabel: "",
-    placeholder: true,
   },
 ];
 
@@ -487,8 +489,8 @@ export default function SeafieldsEstatePage() {
               },
               {
                 label: "Settlement",
-                value: "30 days",
-                note: "Settlement period after finance approval",
+                value: "30 days after Titles",
+                note: "Settlement period from issue of Titles",
               },
               {
                 label: "Covenant",

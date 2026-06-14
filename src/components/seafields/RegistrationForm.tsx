@@ -306,6 +306,14 @@ export default function RegistrationForm() {
         if (expandedLot === lotId) setExpandedLot(null);
         return prev.filter((id) => id !== lotId);
       }
+      // Hard cap at 3 lots, registered in order of preference (Uwe 2026-06-15).
+      if (prev.length >= 3) {
+        setError(
+          "You can register interest in up to 3 lots, in order of preference. Deselect one to choose another.",
+        );
+        return prev;
+      }
+      setError(null);
       setExpandedLot(lotId);
       return [...prev, lotId];
     });
@@ -451,11 +459,13 @@ export default function RegistrationForm() {
     "block text-deep-blue font-semibold font-archivo text-sm mb-1";
   const selectClass = inputClass;
 
-  const sortedLots = [...selectedLots].sort((a, b) => {
-    const numA = parseInt(a.replace("L", ""));
-    const numB = parseInt(b.replace("L", ""));
-    return numA - numB;
-  });
+  // Selection order IS preference order — the first lot clicked is the buyer's
+  // 1st preference. lots_selected is submitted in this order, so we display it
+  // the same way (not sorted by lot number) and label each 1st/2nd/3rd. (Uwe
+  // 2026-06-15: "up to 3 lots, in order of your preference".)
+  const preferenceLots = selectedLots;
+  const PREFERENCE_LABELS = ["1st", "2nd", "3rd"];
+  const ordinal = (i: number) => PREFERENCE_LABELS[i] ?? `${i + 1}th`;
 
   return (
     <div>
@@ -468,8 +478,9 @@ export default function RegistrationForm() {
           Select Your Preferred Lot(s)
         </h2>
         <p className="text-slate font-archivo leading-relaxed mb-3">
-          Click a lot on the subdivision plan to select it. You can select
-          multiple lots. Each lot is a serviced residential block — available as
+          Click a lot on the subdivision plan to select it. You can select up to
+          3 lots, in order of your preference — your first click is your 1st
+          preference. Each lot is a serviced residential block — available as
           vacant land or as a complete house &amp; land package with a
           Factory2Key modular build.
         </p>
@@ -526,7 +537,7 @@ export default function RegistrationForm() {
               </span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {sortedLots.map((lotId) => {
+              {preferenceLots.map((lotId, prefIndex) => {
                 const lot = LOTS.find((l) => l.id === lotId);
                 if (!lot) return null;
                 return (
@@ -542,6 +553,9 @@ export default function RegistrationForm() {
                     <div className="flex-1 min-w-0">
                       <div className="font-archivo font-bold text-sm">
                         Lot {lot.lotNumber}
+                        <span className="ml-2 text-[#00B5AD] font-semibold">
+                          {ordinal(prefIndex)} preference
+                        </span>
                       </div>
                       <div className="font-archivo text-xs text-white/60">
                         {lot.area}m² · {CATEGORY_INFO[lot.category].label}
@@ -614,7 +628,7 @@ export default function RegistrationForm() {
           </p>
 
           <div className="space-y-4">
-            {sortedLots.map((lotId) => {
+            {preferenceLots.map((lotId, prefIndex) => {
               const lot = LOTS.find((l) => l.id === lotId);
               if (!lot) return null;
               const isExpanded = expandedLot === lotId;
@@ -640,6 +654,9 @@ export default function RegistrationForm() {
                         <div className="font-archivo font-bold text-deep-blue text-sm">
                           Lot {lot.lotNumber} — {lot.area}m²{" "}
                           {CATEGORY_INFO[lot.category].label}
+                          <span className="ml-2 text-[#00B5AD] font-semibold">
+                            · {ordinal(prefIndex)} preference
+                          </span>
                         </div>
                         <div className="font-archivo text-xs text-slate/60">
                           {lot.zone} &middot; R20 Residential
@@ -1183,7 +1200,7 @@ export default function RegistrationForm() {
             <div className="border border-black/10 bg-white font-archivo text-sm">
               {selectedLots.length > 0 ? (
                 <div className="divide-y divide-black/5">
-                  {sortedLots.map((lotId) => {
+                  {preferenceLots.map((lotId, prefIndex) => {
                     const lot = LOTS.find((l) => l.id === lotId);
                     return (
                       <div
@@ -1192,6 +1209,9 @@ export default function RegistrationForm() {
                       >
                         <span className="text-deep-blue">
                           <strong>Lot {lot?.lotNumber}</strong>
+                          <span className="text-[#00B5AD] font-semibold ml-2">
+                            {ordinal(prefIndex)} pref
+                          </span>
                           {lot && (
                             <span className="text-slate/60 ml-2">
                               {lot.area}m² — {lot.zone}
