@@ -62,3 +62,4 @@ CLAUDE.local.md
 
 # Generated print/signboard exports (large binaries — regenerate via scripts/export-seafields-signboard.mjs)
 exports/
+.tmp-designs/
