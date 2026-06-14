@@ -108,25 +108,22 @@ const STAGE_ROWS: LotStage[][] = [
 
 const STATUS_COLORS = {
   available: { bg: "rgba(0, 181, 173, 0.85)", border: "#009E97" },
-  one:       { bg: "rgba(232, 165, 55, 0.88)", border: "#CC8A1E" },
-  two:       { bg: "rgba(200, 169, 81, 0.88)", border: "#B8941A" },
-  three:     { bg: "rgba(232, 93, 74, 0.88)",  border: "#C0392B" },
   reserved:  { bg: "rgba(100, 116, 139, 0.92)", border: "#475569" }, // slate
   comingSoon:{ bg: "rgba(180, 180, 180, 0.55)", border: "#999999" }, // future stage
   selected:  { bg: "rgba(26, 39, 68, 0.95)",   border: "#FFFFFF" },
 };
 
 function statusFor(
-  count: number,
+  _count: number,
   isSelected: boolean,
   row: PublicLotRow | undefined,
 ) {
   if (isSelected) return STATUS_COLORS.selected;
   if (row && isReservedStatus(row.status)) return STATUS_COLORS.reserved;
   if (row && !row.is_open_for_registration) return STATUS_COLORS.comingSoon;
-  if (count >= 3) return STATUS_COLORS.three;
-  if (count === 2) return STATUS_COLORS.two;
-  if (count === 1) return STATUS_COLORS.one;
+  // Availability is a SINGLE colour. Interest (registration count) is shown as a
+  // number badge on the lot, not by recolouring it — recolouring available lots
+  // amber/gold/red read as different states/stages (Uwe 2026-06-15).
   return STATUS_COLORS.available;
 }
 
@@ -233,10 +230,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
           Status:
         </span>
         {[
-          { k: "available", label: "Available · no registrations" },
-          { k: "one", label: "Available · 1 registered" },
-          { k: "two", label: "Available · 2 registered" },
-          { k: "three", label: "Available · 3+ registered" },
+          { k: "available", label: "Available" },
           { k: "reserved", label: "Reserved (off market)" },
           { k: "comingSoon", label: "Coming soon" },
           { k: "selected", label: "Your selection" },
@@ -254,13 +248,13 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
         })}
       </div>
 
-      {/* F2KSFLDS-27: explain why an available lot can change colour — the
-          warm colours are interest heat, not a different availability state. */}
+      {/* All available lots share one colour; the small number badge shows how
+          many buyers have registered interest (Uwe 2026-06-15). */}
       <p className="-mt-2 mb-4 text-[11px] text-slate/70 font-archivo max-w-prose">
-        Teal lots are open with no registrations yet. Warmer colours
-        (amber&nbsp;→&nbsp;red) show how many buyers have registered interest —
-        those lots are still available to register on until one is formally
-        reserved, when it turns slate and leaves the market.
+        All available lots are shown in teal. A small number badge on a lot shows
+        how many buyers have registered interest so far — those lots are still
+        available to register on until one is formally reserved (slate), when it
+        leaves the market.
       </p>
 
       {/* Stage legend */}

@@ -240,9 +240,13 @@ export default function PlanView({
           const isComingSoon =
             !!row && !row.is_open_for_registration && !isReserved;
 
-          // Default fill is the stage colour at low opacity; status colour overrides
-          let fill = stageInfo?.color || "#E8E2D4";
-          let stroke = stageInfo?.border || "#999";
+          // Default fill is the single "Available" teal. The stage colour only
+          // appears when a stage is explicitly highlighted (the "click a stage"
+          // feature) — an available lot no longer takes on its stage colour by
+          // default, and interest is shown as a count badge rather than by
+          // recolouring the lot (Uwe 2026-06-15).
+          let fill = "rgba(0, 181, 173, 0.82)";
+          let stroke = "#009E97";
           let strokeWidth = 0.4;
           let opacity = 1;
 
@@ -271,12 +275,6 @@ export default function PlanView({
             fill = "rgba(180, 180, 180, 0.45)";
             stroke = "#999999";
             strokeWidth = 0.4;
-          } else if (count >= 3) {
-            fill = "rgba(232, 93, 74, 0.78)";
-          } else if (count === 2) {
-            fill = "rgba(200, 169, 81, 0.78)";
-          } else if (count === 1) {
-            fill = "rgba(232, 165, 55, 0.75)";
           }
 
           if (isOutsideHighlightedStage && !isSelected) {
@@ -350,6 +348,32 @@ export default function PlanView({
               >
                 {lot.lotNumber}
               </text>
+              {/* Interest badge — number of registrations of interest, shown as a
+                  small badge rather than recolouring the lot (Uwe 2026-06-15). */}
+              {count > 0 && !isReserved && !isComingSoon && !isSelected && (
+                <g pointerEvents="none">
+                  <circle
+                    cx={c.x + 4.4}
+                    cy={c.y - 4.4}
+                    r={3.1}
+                    fill="#E8A537"
+                    stroke="#FFFFFF"
+                    strokeWidth={0.4}
+                  />
+                  <text
+                    x={c.x + 4.4}
+                    y={c.y - 4.4}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize="3.6"
+                    fontWeight="700"
+                    fill="#FFFFFF"
+                    fontFamily="Archivo, sans-serif"
+                  >
+                    {count}
+                  </text>
+                </g>
+              )}
               {/* Buildable envelope — dashed inner outline shown on selected lots */}
               {isSelected && POLYGONS.buildableEnvelopes[id] && (
                 <path
