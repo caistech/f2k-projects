@@ -34,7 +34,7 @@ export default function EmployerOnboarding() {
   const [conversationId, setConversationId] = useState<string | null>(null);
 
   return (
-    <div className="bg-off-white min-h-screen">
+    <div className="bg-off-white min-h-screen overflow-x-hidden">
       {/* Hero / explanatory header */}
       <section className="bg-[#142C44] text-white">
         <div className="max-w-3xl mx-auto px-5 sm:px-8 py-12 sm:py-16">
@@ -58,7 +58,7 @@ export default function EmployerOnboarding() {
           <h2 className="font-archivo text-xl font-black text-deep-blue mb-1">
             How do you want to secure staff accommodation?
           </h2>
-          <p className="font-archivo text-sm text-slate mb-5">
+          <p className="font-archivo text-base text-slate mb-5">
             Two paths. Owning sends you to our standard buyer registration; renting opens a
             take-or-pay form here.
           </p>
@@ -70,11 +70,11 @@ export default function EmployerOnboarding() {
               className="group block border border-black/10 bg-white p-5 hover:border-[#1B3A5B] transition-colors"
             >
               <span className="font-archivo font-black text-deep-blue text-lg">Own it</span>
-              <span className="block font-archivo text-sm text-slate mt-1 leading-relaxed">
+              <span className="block font-archivo text-base text-slate mt-1 leading-relaxed">
                 Buy a house-and-land package and use it for staff. Takes you to the standard
                 Seafields buyer registration.
               </span>
-              <span className="inline-block font-archivo text-sm font-semibold text-[#1B3A5B] mt-3 group-hover:underline">
+              <span className="inline-block font-archivo text-base font-semibold text-[#1B3A5B] mt-3 group-hover:underline">
                 Go to buyer registration →
               </span>
             </Link>
@@ -92,11 +92,11 @@ export default function EmployerOnboarding() {
               <span className="font-archivo font-black text-deep-blue text-lg">
                 Rent it (take-or-pay)
               </span>
-              <span className="block font-archivo text-sm text-slate mt-1 leading-relaxed">
+              <span className="block font-archivo text-base text-slate mt-1 leading-relaxed">
                 Reserve a guaranteed number of beds for a fixed term, without owning. Open the
                 take-or-pay form here.
               </span>
-              <span className="inline-block font-archivo text-sm font-semibold text-[#1B3A5B] mt-3">
+              <span className="inline-block font-archivo text-base font-semibold text-[#1B3A5B] mt-3">
                 {path === "rent" ? "Selected — form below ↓" : "Choose take-or-pay →"}
               </span>
             </button>

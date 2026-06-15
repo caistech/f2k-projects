@@ -118,17 +118,22 @@ export default function EmployerVoiceAgent({
         </p>
       </div>
 
-      <VoiceWidget
-        {...employerVoiceConfig}
-        coachName="Morgan"
-        avatarUrl="/female_avatar.jpeg"
-        title="Talk to Morgan — F2K's guide, who explains take-or-pay and helps you complete the registration below."
-        overrides={overrides}
-        onConnect={(conversationId) => onConversationId?.(conversationId)}
-        onMessage={handleVoiceMessage}
-        onTextFallbackSubmit={handleTextFallback}
-        onError={(e) => setError(e)}
-      />
+      {/* .emp-voice-widget keeps the embedded convai panel from overflowing the viewport
+          on phones (globals.css) — without it the panel pins at left:44px + full width and
+          adds ~44px of horizontal scroll at 375px (Mobile Marcus naive-tester, 2026-06-15). */}
+      <div className="emp-voice-widget">
+        <VoiceWidget
+          {...employerVoiceConfig}
+          coachName="Morgan"
+          avatarUrl="/female_avatar.jpeg"
+          title="Talk to Morgan — F2K's guide, who explains take-or-pay and helps you complete the registration below."
+          overrides={overrides}
+          onConnect={(conversationId) => onConversationId?.(conversationId)}
+          onMessage={handleVoiceMessage}
+          onTextFallbackSubmit={handleTextFallback}
+          onError={(e) => setError(e)}
+        />
+      </div>
 
       {transcript.length > 0 && (
         <div className="bg-white/5 rounded-lg p-4 mt-4 max-h-64 overflow-y-auto space-y-3">
