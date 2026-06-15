@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import SuburbAutocomplete from "@/components/SuburbAutocomplete";
 import type { VoiceMessage } from "./DeveloperVoiceAgent";
 
@@ -114,11 +114,21 @@ export default function DeveloperOnboardingForm({
   const removeFile = removeFromList(setFiles);
   const removeTitleFile = removeFromList(setTitleFiles);
 
+  // When this form instance mounted — used as a time-trap (humans can't fill this
+  // long, file-upload form in <2.5s; bots that auto-submit can).
+  const formLoadedAt = useRef<number>(Date.now());
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    if (honeypot) {
+    // Bot trap. The hidden field is named non-semantically (hp_field) so browser
+    // autofill / password managers can't drop a value into it and silently lose a
+    // real submission (the 'company_url' name used to do exactly that). We only
+    // treat it as a bot when that field is filled OR the form is submitted
+    // implausibly fast — never on a normal human submission.
+    const elapsedMs = Date.now() - formLoadedAt.current;
+    if (honeypot || elapsedMs < 2500) {
       setSuccess(true);
       return;
     }
@@ -226,12 +236,15 @@ export default function DeveloperOnboardingForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Honeypot */}
+      {/* Honeypot — non-semantic name (NOT company_url / website / email / etc.) so
+          browser autofill + password managers leave it alone. A filled value here, or
+          an implausibly fast submit, is treated as a bot (see handleSubmit). */}
       <input
         tabIndex={-1}
         aria-hidden
         autoComplete="off"
-        name="company_url"
+        name="hp_field"
+        id="hp_field"
         value={honeypot}
         onChange={(e) => setHoneypot(e.target.value)}
         style={{ position: "absolute", left: "-9999px" }}
