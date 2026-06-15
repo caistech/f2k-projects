@@ -68,3 +68,7 @@ exports/
 # repo is public). Only the de-branded, processed JPEGs under public/seafields/designs/joey/
 # are committed — regenerate them via scripts/process-joey-renders.mjs.
 docs/RENDERs/
+
+# Prospect/contact source lists (real business contact details; repo is public). The data
+# lives in the DB (seafields_employer_prospects), imported via scripts/import-employer-prospects.mjs.
+docs/Geraldton _employers/
