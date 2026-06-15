@@ -46,13 +46,13 @@ export function FunderStyles() {
     <style>{`
       .f2k-root{ --ink:${INK}; --navy:${NAVY}; --timber:${TIMBER}; --green:${GREEN};
         background:${PAPER}; color:${INK}; font-family:var(--font-inter),system-ui,sans-serif;
-        line-height:1.5; -webkit-font-smoothing:antialiased;
+        line-height:1.5; -webkit-font-smoothing:antialiased; overflow-x:hidden;
         background-image:linear-gradient(${LINE} 1px,transparent 1px),linear-gradient(90deg,${LINE} 1px,transparent 1px);
         background-size:48px 48px; background-position:-1px -1px; }
-      .f2k-root *{ box-sizing:border-box; }
+      .f2k-root *{ box-sizing:border-box; min-width:0; }
       .f2k-wrap{ max-width:1080px; margin:0 auto; padding:0 24px; }
       .f2k-mono{ font-family:var(--font-ibm-mono),monospace; font-variant-numeric:tabular-nums; }
-      .f2k-eyebrow{ font-family:var(--font-ibm-mono),monospace; font-size:11px; letter-spacing:.22em;
+      .f2k-eyebrow{ font-family:var(--font-ibm-mono),monospace; font-size:12px; letter-spacing:.22em;
         text-transform:uppercase; color:${TIMBER}; font-weight:600; }
       .f2k-h1{ font-family:var(--font-archivo),sans-serif; font-weight:800; letter-spacing:-.02em;
         font-size:clamp(40px,7vw,76px); line-height:.98; margin:14px 0 0; color:${INK}; }
@@ -76,10 +76,10 @@ export function FunderStyles() {
       .f2k-node{ padding:18px 14px; border-right:1px solid ${LINE}; position:relative; }
       .f2k-node:last-child{ border-right:0; }
       .f2k-node:first-child{ background:#FBF4E6; }
-      .f2k-noden{ font-family:var(--font-ibm-mono),monospace; font-size:11px; font-weight:600; color:${TIMBER}; }
+      .f2k-noden{ font-family:var(--font-ibm-mono),monospace; font-size:12px; font-weight:600; color:${TIMBER}; }
       .f2k-node h4{ font-family:var(--font-archivo),sans-serif; font-size:14px; margin:8px 0 6px; letter-spacing:-.01em; line-height:1.15; }
-      .f2k-node p{ font-size:11.5px; color:${MUTED}; margin:0; line-height:1.35; }
-      .f2k-chainband{ font-family:var(--font-ibm-mono),monospace; font-size:11.5px; letter-spacing:.04em;
+      .f2k-node p{ font-size:12px; color:${MUTED}; margin:0; line-height:1.35; }
+      .f2k-chainband{ font-family:var(--font-ibm-mono),monospace; font-size:12px; letter-spacing:.04em;
         color:#dfe8f1; background:${NAVY}; border-radius:4px; padding:12px 16px; margin-top:12px; text-align:center; }
       .f2k-formula{ font-family:var(--font-ibm-mono),monospace; font-size:clamp(13px,2vw,16px);
         background:${NAVY}; color:#dfe8f1; border-radius:4px; padding:18px 20px; margin-top:8px;
@@ -112,17 +112,17 @@ export function FunderStyles() {
       .f2k-blocks{ position:absolute; left:0; right:0; bottom:0; display:flex; flex-direction:column-reverse; }
       .f2k-block{ width:100%; border-top:1px solid rgba(255,255,255,.35); display:flex; align-items:center;
         padding:0 12px; overflow:hidden; }
-      .f2k-blocklabel{ color:#fff; font-size:11.5px; font-weight:600; display:flex; gap:8px; align-items:baseline;
+      .f2k-blocklabel{ color:#fff; font-size:12px; font-weight:600; display:flex; gap:8px; align-items:baseline;
         white-space:nowrap; text-shadow:0 1px 1px rgba(0,0,0,.18); }
-      .f2k-blocklabel em{ font-family:var(--font-ibm-mono),monospace; font-style:normal; opacity:.85; font-size:11px; }
+      .f2k-blocklabel em{ font-family:var(--font-ibm-mono),monospace; font-style:normal; opacity:.85; font-size:12px; }
       .f2k-margin{ width:100%; background:repeating-linear-gradient(45deg,#D8EEE2,#D8EEE2 7px,#cfe9da 7px,#cfe9da 14px);
         border-top:2px solid ${GREEN}; display:flex; align-items:center; padding:0 12px; }
       .f2k-marginlabel{ color:#0f4a32; font-size:12px; font-weight:700; display:flex; gap:8px; align-items:baseline; }
       .f2k-marginlabel em{ font-family:var(--font-ibm-mono),monospace; font-style:normal; }
       .f2k-revline{ position:absolute; left:-2px; right:0; border-top:1px dashed ${MUTED}; }
       .f2k-revline span{ position:absolute; right:0; top:-20px; font-family:var(--font-ibm-mono),monospace;
-        font-size:11px; color:${MUTED}; background:${PAPER}; padding:0 6px; }
-      .f2k-axis{ margin-top:8px; font-family:var(--font-ibm-mono),monospace; font-size:10.5px; letter-spacing:.06em;
+        font-size:12px; color:${MUTED}; background:${PAPER}; padding:0 6px; }
+      .f2k-axis{ margin-top:8px; font-family:var(--font-ibm-mono),monospace; font-size:12px; letter-spacing:.06em;
         text-transform:uppercase; color:${MUTED}; }
       .f2k-grow{ transform-origin:bottom; animation:f2kgrow .5s cubic-bezier(.2,.7,.2,1) both; }
       @keyframes f2kgrow{ from{ transform:scaleY(0); opacity:.3 } to{ transform:scaleY(1); opacity:1 } }
@@ -130,7 +130,7 @@ export function FunderStyles() {
       /* capital stack (senior / junior) */
       .f2k-capital{ display:flex; height:60px; border:1px solid ${LINE}; border-radius:4px; overflow:hidden; }
       .f2k-capseg{ display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff;
-        font-family:var(--font-ibm-mono),monospace; font-size:11px; border-right:1px solid rgba(255,255,255,.25); padding:0 4px; text-align:center; }
+        font-family:var(--font-ibm-mono),monospace; font-size:12px; border-right:1px solid rgba(255,255,255,.25); padding:0 4px; text-align:center; }
       .f2k-capseg:last-child{ border-right:0; }
       .f2k-capseg b{ font-size:12px; font-weight:700; }
       .f2k-caplegend{ display:flex; gap:18px; margin-top:10px; flex-wrap:wrap; font-size:12px; color:${MUTED}; font-family:var(--font-ibm-mono),monospace; }
@@ -146,12 +146,12 @@ export function FunderStyles() {
       .f2k-cardhead{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; gap:12px; }
       .f2k-cardhead h3{ font-family:var(--font-archivo),sans-serif; font-size:22px; margin:0; letter-spacing:-.01em; }
       .f2k-cardhead .sub{ font-size:13px; color:${MUTED}; margin-top:2px; }
-      .f2k-badge{ font-family:var(--font-ibm-mono),monospace; font-size:10.5px; font-weight:600; letter-spacing:.06em;
+      .f2k-badge{ font-family:var(--font-ibm-mono),monospace; font-size:12px; font-weight:600; letter-spacing:.06em;
         text-transform:uppercase; padding:5px 9px; border-radius:3px; white-space:nowrap; }
       .f2k-badge.ind{ background:#F4E8CC; color:#7a5a16; }
       .f2k-badge.live{ background:#D8EEE2; color:#0f4a32; }
       .f2k-mini{ display:flex; gap:16px; margin-top:18px; }
-      .f2k-mini .m{ flex:1; } .f2k-mini .k{ font-size:11px; color:${MUTED}; font-family:var(--font-ibm-mono),monospace; text-transform:uppercase; letter-spacing:.05em; }
+      .f2k-mini .m{ flex:1; } .f2k-mini .k{ font-size:12px; color:${MUTED}; font-family:var(--font-ibm-mono),monospace; text-transform:uppercase; letter-spacing:.05em; }
       .f2k-mini .v{ font-family:var(--font-ibm-mono),monospace; font-weight:600; font-size:17px; margin-top:3px; }
       .f2k-pending{ display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
         height:300px; border:1px dashed ${LINE}; border-radius:4px; color:${MUTED}; gap:10px; }
@@ -172,6 +172,21 @@ export function FunderStyles() {
         .f2k-projects{ grid-template-columns:1fr; }
         .f2k-chain{ grid-template-columns:1fr 1fr; }
         .f2k-node{ border-bottom:1px solid ${LINE}; }
+      }
+      /* Mobile: ≥16px base body, no sub-readable fine print, and the horizontal capital
+         ribbon (the overflow culprit at 390px) stacks vertically into full-width rows. */
+      @media (max-width:600px){
+        .f2k-sec{ padding:48px 0; } .f2k-hero{ padding:48px 0 40px; }
+        .f2k-lead{ font-size:16px; }
+        .f2k-node p{ font-size:14px; } .f2k-node h4{ font-size:15px; }
+        .f2k-step p{ font-size:15px; }
+        .f2k-blocklabel{ font-size:12px; }
+        .f2k-capital{ flex-direction:column; height:auto; }
+        .f2k-capseg{ flex:0 0 auto !important; width:100%; flex-direction:row;
+          justify-content:space-between; min-height:42px; padding:10px 14px;
+          border-right:0; border-bottom:1px solid rgba(255,255,255,.25); }
+        .f2k-capseg:last-child{ border-bottom:0; }
+        .f2k-caplegend{ font-size:13px; }
       }
       @media (prefers-reduced-motion:reduce){ .f2k-grow{ animation:none } }
     `}</style>

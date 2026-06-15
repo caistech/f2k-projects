@@ -308,6 +308,7 @@ export default function FunderRegistrationForm({
       <label className="flex gap-3 items-start border border-[#C77F3A]/40 bg-[#FBF4E6] p-4 cursor-pointer">
         <input
           type="checkbox"
+          required
           checked={bankConfirmed}
           onChange={(e) => setBankConfirmed(e.target.checked)}
           className="mt-1 accent-[#1B3A5B] h-4 w-4 shrink-0"
@@ -399,6 +400,7 @@ export default function FunderRegistrationForm({
       <label className="flex gap-3 items-start cursor-pointer">
         <input
           type="checkbox"
+          required
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
           className="mt-1 accent-[#1B3A5B] h-4 w-4 shrink-0"

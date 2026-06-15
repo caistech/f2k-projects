@@ -114,7 +114,7 @@ export default function FunderVoiceAgent({
   return (
     <div className="bg-[#142C44] text-white p-6 sm:p-8 rounded">
       <div className="mb-5">
-        <p className="font-ibm-mono text-[0.6rem] tracking-[0.4em] uppercase text-[#C77F3A] mb-2">
+        <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#C77F3A] mb-2">
           Talk to Sterling
         </p>
         <h3 className="font-archivo text-2xl font-black leading-tight">
