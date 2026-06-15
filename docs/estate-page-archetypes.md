@@ -316,7 +316,11 @@ enforcement tightens over time.
 ### 3. Build steps spun out of the intake (the automation targets)
 1. **Archetype page** (C shell → graduates to A/B as data fills) — *done for Dutton (C)*.
 2. **Agent onboarding** — create each agent's record + portal/tally (the Henry-in-Geraldton /
-   Patrick+Ante-in-Hobart pattern). *Feeds the register form's agent dropdown.* — *consumer wired for Dutton.*
+   Patrick+Ante-in-Hobart pattern), **auto-triggered from the intake's agent field set** (create +
+   send the proper portal invite automatically — NOT an admin task). *Feeds the register form's agent
+   dropdown, which is **estate-scoped** (`/api/public/agents?estate=<slug>`) so a Tumby Bay form never
+   lists a Hobart agent.* — *Dutton: dropdown scoped + the 3 Harris agents added; their auto portal-
+   invite is the pending step.*
 3. **Location / layout map** — Mapbox static location map from coords (early) · uploaded concept plan
    · or extracted lot polygons once a subdivision plan exists (the Seafields-extractor rails).
 4. **Estate-level funder page** — cost stack **benchmarked** from built estates + developer land cost;
