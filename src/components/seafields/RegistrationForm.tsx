@@ -443,7 +443,7 @@ export default function RegistrationForm() {
           A confirmation has been sent to <strong>{email}</strong>. We&apos;ll be
           in touch as the project progresses.
         </p>
-        <p className="text-slate/50 font-archivo text-[11px] leading-relaxed mt-4 max-w-md mx-auto">
+        <p className="text-slate/50 font-archivo text-xs leading-relaxed mt-4 max-w-md mx-auto">
           All lot details registered above (size, shape, boundary, area, lot
           number) are indicative and remain subject to confirmation against the
           WAPC-approved deposited plan and final title survey. Final figures
@@ -471,7 +471,7 @@ export default function RegistrationForm() {
     <div>
       {/* ===== SITE MAP SECTION ===== */}
       <div id="site-map" className="mb-12">
-        <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+        <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
           Interactive Subdivision Plan
         </p>
         <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
@@ -528,7 +528,7 @@ export default function RegistrationForm() {
         {selectedLots.length > 0 && (
           <div className="mt-6 bg-[#1A2744] text-white p-5">
             <div className="flex items-center justify-between mb-4">
-              <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-white/60">
+              <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-white/60">
                 Your Selected{" "}
                 {selectedLots.length === 1 ? "Lot" : `Lots (${selectedLots.length})`}
               </p>
@@ -575,7 +575,7 @@ export default function RegistrationForm() {
       {/* ===== INTEREST TYPE ===== */}
       {selectedLots.length > 0 && (
         <div className="mb-12">
-          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+          <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
             What Are You Looking For?
           </p>
           <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
@@ -613,7 +613,7 @@ export default function RegistrationForm() {
       {/* ===== LOT DETAIL PANELS WITH PRICE RANGE ===== */}
       {selectedLots.length > 0 && (
         <div className="mb-12">
-          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+          <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
             Your Selected Lots
           </p>
           <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
@@ -700,7 +700,7 @@ export default function RegistrationForm() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Lot details */}
                         <div>
-                          <p className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-slate/50 mb-3">
+                          <p className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-slate/50 mb-3">
                             Lot Details
                           </p>
                           <div className="grid grid-cols-3 gap-3">
@@ -708,7 +708,7 @@ export default function RegistrationForm() {
                               <div className="font-archivo font-bold text-deep-blue text-lg">
                                 {lot.area}m²
                               </div>
-                              <div className="font-ibm-mono text-[0.55rem] text-slate/50 uppercase">
+                              <div className="font-ibm-mono text-xs text-slate/50 uppercase">
                                 Land Area
                               </div>
                             </div>
@@ -717,7 +717,7 @@ export default function RegistrationForm() {
                                 {BUILDABLE_AREAS[lot.id] ?? "—"}
                                 {BUILDABLE_AREAS[lot.id] ? "m²" : ""}
                               </div>
-                              <div className="font-ibm-mono text-[0.55rem] text-slate/50 uppercase">
+                              <div className="font-ibm-mono text-xs text-slate/50 uppercase">
                                 Buildable
                               </div>
                             </div>
@@ -725,7 +725,7 @@ export default function RegistrationForm() {
                               <div className="font-archivo font-bold text-deep-blue text-lg">
                                 R20
                               </div>
-                              <div className="font-ibm-mono text-[0.55rem] text-slate/50 uppercase">
+                              <div className="font-ibm-mono text-xs text-slate/50 uppercase">
                                 Zoning
                               </div>
                             </div>
@@ -733,7 +733,7 @@ export default function RegistrationForm() {
                               <div className="font-archivo font-bold text-deep-blue text-sm">
                                 {lot.zone}
                               </div>
-                              <div className="font-ibm-mono text-[0.55rem] text-slate/50 uppercase">
+                              <div className="font-ibm-mono text-xs text-slate/50 uppercase">
                                 Location
                               </div>
                             </div>
@@ -741,7 +741,7 @@ export default function RegistrationForm() {
                               <div className="font-archivo font-bold text-deep-blue text-sm">
                                 Stage {lot.stage}
                               </div>
-                              <div className="font-ibm-mono text-[0.55rem] text-slate/50 uppercase">
+                              <div className="font-ibm-mono text-xs text-slate/50 uppercase">
                                 Release
                               </div>
                             </div>
@@ -749,12 +749,12 @@ export default function RegistrationForm() {
                               <div className="font-archivo font-bold text-deep-blue text-sm">
                                 {CATEGORY_INFO[lot.category].label}
                               </div>
-                              <div className="font-ibm-mono text-[0.55rem] text-slate/50 uppercase">
+                              <div className="font-ibm-mono text-xs text-slate/50 uppercase">
                                 Category
                               </div>
                             </div>
                           </div>
-                          <p className="text-[0.65rem] text-slate/50 font-archivo mt-3 leading-relaxed">
+                          <p className="text-xs text-slate/50 font-archivo mt-3 leading-relaxed">
                             <span className="text-[#00B5AD] font-semibold">Buildable</span>{" "}
                             shows the indicative single-storey footprint
                             after a uniform 1.5m setback. R20 actual setbacks:
@@ -762,7 +762,7 @@ export default function RegistrationForm() {
                             sides &amp; rear (boundary walls also permitted per
                             Local Planning Policy R-Codes).
                           </p>
-                          <p className="text-[0.65rem] text-slate/40 font-archivo mt-2 italic">
+                          <p className="text-xs text-slate/40 font-archivo mt-2 italic">
                             All lots are flat, serviced (reticulated water,
                             sewer, power), and will be titled upon settlement.
                             Lot areas are approximate and subject to final
@@ -773,12 +773,12 @@ export default function RegistrationForm() {
                         {/* Price selector */}
                          <div>
                            <div className="flex items-baseline justify-between gap-2 mb-2">
-                             <p className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-slate/50">
+                             <p className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-slate/50">
                                {isHL
                                  ? "House & Land Package"
                                  : "Serviced Land Only"}
                              </p>
-                             <span className="inline-block bg-[#00B5AD]/10 text-[#00B5AD] text-[0.5rem] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                             <span className="inline-block bg-[#00B5AD]/10 text-[#00B5AD] text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wider">
                                {isHL ? "Full Package" : "Land Only"}
                              </span>
                            </div>
@@ -820,7 +820,7 @@ export default function RegistrationForm() {
 
                       {/* Dwelling type picker — primary always, secondary on larger lots */}
                       <div>
-                        <p className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-slate/50 mb-2">
+                        <p className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-slate/50 mb-2">
                           Dwelling Configuration
                         </p>
                         <p className="text-xs text-slate/60 font-archivo mb-3">
@@ -911,7 +911,7 @@ export default function RegistrationForm() {
           id="register"
           className="bg-white border-2 border-dashed border-[#00B5AD]/30 p-8 sm:p-12 text-center"
         >
-          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+          <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
             Your Registration
           </p>
           <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
@@ -940,7 +940,7 @@ export default function RegistrationForm() {
         </div>
       ) : (
       <div id="register">
-        <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+        <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
           Your Details
         </p>
         <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
@@ -966,7 +966,7 @@ export default function RegistrationForm() {
 
           {/* Contact Details */}
           <div className="border border-black/5 bg-white p-5">
-            <p className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-[#00B5AD] mb-4">
+            <p className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-[#00B5AD] mb-4">
               Contact Details
             </p>
 
@@ -1066,7 +1066,7 @@ export default function RegistrationForm() {
 
           {/* About You */}
           <div className="border border-black/5 bg-white p-5">
-            <p className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-[#00B5AD] mb-1">
+            <p className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-[#00B5AD] mb-1">
               About You
             </p>
             <p className="text-xs text-slate/50 font-archivo mb-4">
@@ -1247,7 +1247,7 @@ export default function RegistrationForm() {
 
           {/* Referral / Agent */}
           <div className="border border-black/5 bg-white p-5">
-            <p className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-slate/50 mb-1">
+            <p className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-slate/50 mb-1">
               Optional
             </p>
             <p className="font-archivo font-semibold text-deep-blue text-sm mb-4">

@@ -119,7 +119,7 @@ export default function SeafieldsEstatePage() {
         <div className="relative max-w-[1100px] mx-auto px-4 py-20 md:py-28">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+              <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
                 A Factory2Key Development
               </p>
               <h1 className="font-playfair text-[clamp(2.5rem,5vw,4rem)] font-black leading-[1.1] mb-6">
@@ -152,7 +152,7 @@ export default function SeafieldsEstatePage() {
                 <HeroSitePlan />
               </div>
               <div className="mt-3 flex flex-wrap gap-1.5">
-                <span className="font-ibm-mono text-[0.55rem] tracking-[0.3em] uppercase text-white/50 self-center mr-1">
+                <span className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-white/50 self-center mr-1">
                   Stages:
                 </span>
                 {[
@@ -166,7 +166,7 @@ export default function SeafieldsEstatePage() {
                 ].map((s) => (
                   <span
                     key={s.label}
-                    className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[0.65rem] font-archivo font-semibold text-deep-blue border"
+                    className="inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-archivo font-semibold text-deep-blue border"
                     style={{
                       backgroundColor: s.color,
                       borderColor: s.border,
@@ -196,7 +196,7 @@ export default function SeafieldsEstatePage() {
                 <div className="font-playfair text-2xl md:text-3xl font-black text-deep-blue">
                   {stat.value}
                 </div>
-                <div className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-slate/60 mt-1">
+                <div className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-slate/60 mt-1">
                   {stat.label}
                 </div>
               </div>
@@ -208,7 +208,7 @@ export default function SeafieldsEstatePage() {
       {/* ===== ABOUT THE PROJECT ===== */}
       <section className="py-16 px-4 bg-off-white">
         <div className="max-w-[900px] mx-auto">
-          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+          <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
             About the Development
           </p>
           <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-6">
@@ -256,7 +256,7 @@ export default function SeafieldsEstatePage() {
                   key={item.label}
                   className="flex border-b border-black/5 pb-2"
                 >
-                  <span className="font-ibm-mono text-[0.65rem] tracking-wider uppercase text-slate/50 w-28 shrink-0 pt-0.5">
+                  <span className="font-ibm-mono text-xs tracking-wider uppercase text-slate/50 w-28 shrink-0 pt-0.5">
                     {item.label}
                   </span>
                   <span className="font-archivo text-sm text-deep-blue">
@@ -272,7 +272,7 @@ export default function SeafieldsEstatePage() {
       {/* ===== STAGING ===== */}
       <section className="py-16 px-4 bg-white">
         <div className="max-w-[900px] mx-auto">
-          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+          <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
             Development Staging
           </p>
           <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
@@ -311,7 +311,7 @@ export default function SeafieldsEstatePage() {
                     {t.stage}
                   </div>
                   <span
-                    className={`font-ibm-mono text-[0.45rem] tracking-[0.2em] px-1.5 py-0.5 rounded ${
+                    className={`font-ibm-mono text-xs tracking-[0.2em] px-1.5 py-0.5 rounded ${
                       t.state === "OPEN"
                         ? "bg-[#00B5AD] text-white"
                         : "bg-slate/15 text-slate/70"
@@ -327,10 +327,10 @@ export default function SeafieldsEstatePage() {
                 >
                   {t.lots}
                 </div>
-                <div className="font-ibm-mono text-[0.55rem] tracking-wider text-slate/60 mt-1">
+                <div className="font-ibm-mono text-xs tracking-wider text-slate/60 mt-1">
                   LOTS
                 </div>
-                <div className="font-archivo text-[0.7rem] text-slate/80 mt-2 leading-tight">
+                <div className="font-archivo text-xs text-slate/80 mt-2 leading-tight">
                   {t.area}
                 </div>
                 <div className="font-archivo text-xs text-slate mt-1">
@@ -341,7 +341,7 @@ export default function SeafieldsEstatePage() {
           </div>
 
           <div className="bg-off-white border border-black/5 p-4 text-center">
-            <div className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-slate/60 mb-1">
+            <div className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-slate/60 mb-1">
               Total Estate
             </div>
             <div className="font-archivo text-sm text-deep-blue">
@@ -355,7 +355,7 @@ export default function SeafieldsEstatePage() {
       {/* ===== LOT CATEGORIES ===== */}
       <section className="py-16 px-4 bg-warm-grey">
         <div className="max-w-[900px] mx-auto">
-          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+          <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
             Purchase Options
           </p>
           <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-8">
@@ -392,7 +392,7 @@ export default function SeafieldsEstatePage() {
       {/* ===== MARKET CONTEXT ===== */}
       <section className="py-16 px-4 bg-white">
         <div className="max-w-[900px] mx-auto">
-          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+          <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
             Geraldton Market
           </p>
           <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-6">
@@ -411,7 +411,7 @@ export default function SeafieldsEstatePage() {
                 <div className="font-archivo text-sm text-deep-blue font-semibold mt-1">
                   {stat.label}
                 </div>
-                <div className="font-ibm-mono text-[0.55rem] text-slate/50 uppercase mt-0.5">
+                <div className="font-ibm-mono text-xs text-slate/50 uppercase mt-0.5">
                   {stat.sub}
                 </div>
               </div>
@@ -423,7 +423,7 @@ export default function SeafieldsEstatePage() {
       {/* ===== HOME DESIGNS ===== */}
       <section className="py-16 px-4 bg-off-white">
         <div className="max-w-[1100px] mx-auto">
-          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+          <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
             Factory2Key Home Designs
           </p>
           <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
@@ -455,7 +455,7 @@ export default function SeafieldsEstatePage() {
       {/* ===== PURCHASE TERMS ===== */}
       <section className="py-16 px-4 bg-white">
         <div className="max-w-[900px] mx-auto">
-          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+          <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
             Sales Terms
           </p>
           <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
@@ -494,7 +494,7 @@ export default function SeafieldsEstatePage() {
                 key={term.label}
                 className="bg-off-white border border-black/5 p-5"
               >
-                <div className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-slate/60 mb-1">
+                <div className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-slate/60 mb-1">
                   {term.label}
                 </div>
                 <div className="font-playfair text-2xl font-black text-deep-blue mb-2">

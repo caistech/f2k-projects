@@ -250,7 +250,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
 
       {/* All available lots share one colour; the small number badge shows how
           many buyers have registered interest (Uwe 2026-06-15). */}
-      <p className="-mt-2 mb-4 text-[11px] text-slate/70 font-archivo max-w-prose">
+      <p className="-mt-2 mb-4 text-xs text-slate/70 font-archivo max-w-prose">
         All available lots are shown in teal. A small number badge on a lot shows
         how many buyers have registered interest so far — those lots are still
         available to register on until one is formally reserved (slate), when it
@@ -336,7 +336,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
       <div className="bg-white border border-black/10 p-3 mb-4">
         <div className="flex flex-wrap gap-x-5 gap-y-3 items-center text-xs font-archivo">
           <div>
-            <span className="block text-slate font-semibold uppercase tracking-wider text-[0.6rem] mb-1">
+            <span className="block text-slate font-semibold uppercase tracking-wider text-xs mb-1">
               Purchase type
             </span>
             <select
@@ -352,7 +352,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
             </select>
           </div>
           <div>
-            <span className="block text-slate font-semibold uppercase tracking-wider text-[0.6rem] mb-1">
+            <span className="block text-slate font-semibold uppercase tracking-wider text-xs mb-1">
               Land size
             </span>
             <select
@@ -367,7 +367,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
             </select>
           </div>
           <div>
-            <span className="block text-slate font-semibold uppercase tracking-wider text-[0.6rem] mb-1">
+            <span className="block text-slate font-semibold uppercase tracking-wider text-xs mb-1">
               Price
             </span>
             <select
@@ -380,7 +380,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
               <option value="p2">$300k – $400k</option>
               <option value="p3">$400k+</option>
             </select>
-            <span className="block text-slate/50 text-[0.6rem] italic mt-0.5">
+            <span className="block text-slate/50 text-xs italic mt-0.5">
               Only lots with disclosed pricing match.
             </span>
           </div>

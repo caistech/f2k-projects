@@ -1,6 +1,10 @@
 "use client";
 
 import {
+  TransformWrapper,
+  TransformComponent,
+} from "react-zoom-pan-pinch";
+import {
   LOTS,
   STAGE_INFO,
   type LotData,
@@ -89,6 +93,48 @@ export default function PlanView({
 
   return (
     <div className="relative w-full bg-[#FAF8F4] border border-black/10 overflow-hidden">
+      <TransformWrapper
+        minScale={1}
+        maxScale={8}
+        initialScale={1}
+        centerOnInit
+        doubleClick={{ mode: "zoomIn", step: 0.7 }}
+        wheel={{ disabled: true }}
+        pinch={{ step: 5 }}
+        panning={{ velocityDisabled: true }}
+      >
+        {({ zoomIn, zoomOut, resetTransform }) => (
+          <>
+            {/* Zoom controls — the 145-lot map renders each lot well under 44px,
+                so on a phone lots are un-tappable without zoom (Mobile Marcus
+                2026-06-15). Pinch-to-zoom also works on touch; double-tap zooms. */}
+            <div className="absolute top-2 right-2 z-10 flex flex-col gap-1.5">
+              <button
+                type="button"
+                onClick={() => zoomIn()}
+                aria-label="Zoom in"
+                className="h-11 w-11 flex items-center justify-center rounded bg-white/90 border border-black/10 shadow-sm text-deep-blue text-xl font-bold hover:bg-white"
+              >
+                +
+              </button>
+              <button
+                type="button"
+                onClick={() => zoomOut()}
+                aria-label="Zoom out"
+                className="h-11 w-11 flex items-center justify-center rounded bg-white/90 border border-black/10 shadow-sm text-deep-blue text-xl font-bold hover:bg-white"
+              >
+                −
+              </button>
+              <button
+                type="button"
+                onClick={() => resetTransform()}
+                aria-label="Reset zoom"
+                className="h-11 w-11 flex items-center justify-center rounded bg-white/90 border border-black/10 shadow-sm text-deep-blue text-base hover:bg-white"
+              >
+                ⤢
+              </button>
+            </div>
+            <TransformComponent wrapperClass="!w-full" contentClass="!w-full">
       <svg
         viewBox={POLYGONS.viewBox}
         xmlns="http://www.w3.org/2000/svg"
@@ -477,9 +523,13 @@ export default function PlanView({
           );
         })}
       </svg>
+            </TransformComponent>
+          </>
+        )}
+      </TransformWrapper>
 
       {/* Caption */}
-      <div className="absolute bottom-2 right-3 text-[10px] font-archivo text-slate/60 bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded">
+      <div className="absolute bottom-2 right-3 text-xs font-archivo text-slate/60 bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded">
         CLE 3027-08B · 22 April 2026 · Subject area {POLYGONS.subjectAreaMeters?.width || ""}×{POLYGONS.subjectAreaMeters?.height || ""}m
       </div>
     </div>
