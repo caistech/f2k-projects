@@ -55,6 +55,10 @@ export default function DeveloperOnboardingForm({
   const [estateName, setEstateName] = useState("");
   const [estateLocation, setEstateLocation] = useState("");
   const [estatePostcode, setEstatePostcode] = useState("");
+  // Captured when the user PICKS a location suggestion (precise geocode); cleared on free-typing.
+  const [estateState, setEstateState] = useState("");
+  const [estateLat, setEstateLat] = useState<number | null>(null);
+  const [estateLng, setEstateLng] = useState<number | null>(null);
   const [lotPlanReference, setLotPlanReference] = useState("");
   const [siteAreaValue, setSiteAreaValue] = useState("");
   const [siteAreaUnit, setSiteAreaUnit] = useState("ha");
@@ -166,6 +170,9 @@ export default function DeveloperOnboardingForm({
           estate_name: estateName.trim(),
           estate_location: estateLocation.trim() || null,
           estate_postcode: estatePostcode.trim() || null,
+          estate_state: estateState.trim() || null,
+          estate_lat: estateLat,
+          estate_lng: estateLng,
           lot_plan_reference: lotPlanReference.trim() || null,
           site_area_value: siteAreaValue.trim() ? Number(siteAreaValue) : null,
           site_area_unit: siteAreaValue.trim() ? siteAreaUnit : null,
@@ -369,10 +376,21 @@ export default function DeveloperOnboardingForm({
               <SuburbAutocomplete
                 id="estateLocation"
                 value={estateLocation}
-                onChange={setEstateLocation}
+                onChange={(v) => {
+                  setEstateLocation(v);
+                  // Free-typed text no longer matches a picked place — drop the precise geocode.
+                  setEstateState("");
+                  setEstateLat(null);
+                  setEstateLng(null);
+                }}
                 onSelectPostcode={setEstatePostcode}
+                onSelectAddress={(a) => {
+                  setEstateState(a.state ?? "");
+                  setEstateLat(a.latitude);
+                  setEstateLng(a.longitude);
+                }}
                 className={inputClass}
-                placeholder="Start typing the suburb / town…"
+                placeholder="Start typing the suburb / town, then pick a suggestion…"
               />
             </div>
             <div>

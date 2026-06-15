@@ -41,6 +41,22 @@ interface LeadLocation {
   estate_location?: string | null;
   estate_postcode?: string | null;
   lot_plan_reference?: string | null;
+  /** Captured from the Mapbox address autocomplete when the user picks a suggestion. */
+  estate_state?: string | null;
+  estate_lat?: number | null;
+  estate_lng?: number | null;
+}
+
+/** AU state from a 4-digit postcode's leading digit(s). Broad but enough to catch a
+ *  geocode that lands in the wrong state (e.g. SA 5605 resolving to QLD). */
+export function auStateFromPostcode(pc?: string | null): string | null {
+  const n = (pc || "").trim();
+  if (!/^\d{4}$/.test(n)) return null;
+  if (n.startsWith("08") || n.startsWith("09")) return "NT";
+  const byFirst: Record<string, string> = {
+    "2": "NSW", "3": "VIC", "4": "QLD", "5": "SA", "6": "WA", "7": "TAS",
+  };
+  return byFirst[n[0]] ?? null;
 }
 
 export async function runPropertyCheck(
@@ -65,8 +81,18 @@ export async function runPropertyCheck(
     return { status: "skipped", ran_at, reason: "no location to geocode" };
   }
 
-  // Geocodable string: lot/plan ref (helps parcel resolution) + locality.
-  const address = [lead.lot_plan_reference?.trim(), suburb, postcode, "Australia"]
+  // Precise coords from the address autocomplete (when the user picked a suggestion).
+  const lat = lead.estate_lat ?? undefined;
+  const lng = lead.estate_lng ?? undefined;
+  // Expected state: from the selected address, else inferred from the postcode. Used to
+  // anchor the geocode AND to reject a text-geocode that lands in the wrong state.
+  const expectedState = lead.estate_state?.trim() || auStateFromPostcode(postcode) || undefined;
+
+  // Geocodable string: locality + state + postcode. Deliberately NOT the lot/plan reference —
+  // a Torrens plan id ("Allotment 50 Deposited Plan 90582") is not geocodable and drags Mapbox
+  // to the wrong place (it returned a Gold Coast QLD point for an SA address). The plan ref stays
+  // on the row for manual parcel lookup only.
+  const address = [suburb, expectedState, postcode, "Australia"]
     .filter(Boolean)
     .join(", ");
 
@@ -74,7 +100,8 @@ export async function runPropertyCheck(
 
   try {
     const res = (await Promise.race([
-      client.derive({ address, suburb, postcode: postcode || undefined }),
+      // Pass lat/lng/state when known so property-services skips re-geocoding (exact match).
+      client.derive({ address, lat, lng, suburb, state: expectedState, postcode: postcode || undefined }),
       new Promise((_, reject) =>
         setTimeout(() => reject(new Error("timeout")), timeoutMs),
       ),
@@ -84,6 +111,25 @@ export async function runPropertyCheck(
       return { status: "error", ran_at, address, reason: res?.error || "derive returned no data" };
     }
     const d = res.data;
+
+    // Guardrail: if we did NOT have precise coords and the geocoded state contradicts the
+    // expected (postcode-derived) state, the lookup is unreliable — don't store a confidently
+    // wrong council/zoning; flag it for a manual address check instead.
+    const geocodedState =
+      (d as { address?: { state?: string | null } }).address?.state ?? null;
+    if (
+      lat == null &&
+      expectedState &&
+      geocodedState &&
+      geocodedState.toUpperCase() !== expectedState.toUpperCase()
+    ) {
+      return {
+        status: "error",
+        ran_at,
+        address,
+        reason: `Geocoded to ${geocodedState}, but ${postcode ? `postcode ${postcode}` : "the entered location"} indicates ${expectedState}. Not stored — enter the specific street address and re-run.`,
+      };
+    }
     return {
       status: "ok",
       ran_at,

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { forwardSearch, featureToGeocodedAddress } from "@caistech/mapbox";
-import type { MapboxFeature } from "@caistech/mapbox";
+import type { MapboxFeature, GeocodedAddress } from "@caistech/mapbox";
 
 /**
  * Suburb/town autocomplete backed by @caistech/mapbox (AU geocoding) — the
@@ -21,6 +21,9 @@ interface Props {
   value: string;
   onChange: (v: string) => void;
   onSelectPostcode?: (postcode: string) => void;
+  /** Fires on selecting a suggestion with the FULL geocoded address (state + lat/lng) — lets
+   *  the consumer capture coordinates so a downstream property lookup skips re-geocoding. */
+  onSelectAddress?: (address: GeocodedAddress) => void;
   className?: string;
   placeholder?: string;
 }
@@ -30,6 +33,7 @@ export default function SuburbAutocomplete({
   value,
   onChange,
   onSelectPostcode,
+  onSelectAddress,
   className,
   placeholder,
 }: Props) {
@@ -75,6 +79,7 @@ export default function SuburbAutocomplete({
     const addr = featureToGeocodedAddress(f);
     onChange(addr.suburb || addr.formatted_address || "");
     if (addr.postcode && onSelectPostcode) onSelectPostcode(addr.postcode);
+    onSelectAddress?.(addr);
     setOpen(false);
     setSuggestions([]);
   };
