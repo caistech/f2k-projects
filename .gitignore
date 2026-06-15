@@ -63,3 +63,8 @@ CLAUDE.local.md
 # Generated print/signboard exports (large binaries — regenerate via scripts/export-seafields-signboard.mjs)
 exports/
 .tmp-designs/
+
+# Manufacturer-supplied source renders (carry Unison/manufacturer branding + AI-prompt text;
+# repo is public). Only the de-branded, processed JPEGs under public/seafields/designs/joey/
+# are committed — regenerate them via scripts/process-joey-renders.mjs.
+docs/RENDERs/

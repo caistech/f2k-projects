@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import HeroSitePlan from "@/components/seafields/HeroSitePlan";
 import RegistrationForm from "@/components/seafields/RegistrationForm";
+import JoeyRenderGallery from "@/components/seafields/JoeyRenderGallery";
 import {
   DesignGallery,
   type Design,
@@ -17,7 +18,7 @@ const SEAFIELDS_DESIGNS: Design[] = [
     tag: "ANCILLARY / DOWNSIZER",
     detail:
       "Compact 2-bedroom 2-bathroom ancillary dwelling — master with ensuite, second bedroom, open living/kitchen, optional carport + verandah. Ideal as a downsizer, holiday let, or second dwelling on a larger lot.",
-    hero: "/seafields/designs/joey.png",
+    hero: "/seafields/designs/joey/coastal.jpg",
     plan: "/seafields/designs/joey.png",
     priceFrom: "$297,900",
     priceLabel: "House only — from",
@@ -441,6 +442,8 @@ export default function SeafieldsEstatePage() {
           <div className="mb-8 sf-designs">
             <DesignGallery designs={SEAFIELDS_DESIGNS} />
           </div>
+
+          <JoeyRenderGallery />
 
           <p className="font-archivo text-xs text-slate/60 leading-relaxed">
             Indicative pricing only. Final price depends on lot size,
