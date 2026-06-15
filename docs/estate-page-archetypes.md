@@ -281,6 +281,51 @@ field) and market comps. The waitlist is the live half — *"would they buy AT t
 exactly why the register form captures budget up front. As the deterministic fields fill in (yield,
 land cost, price points), the estimate tightens and the ≥20% test becomes real.
 
+## Estate intake → build pipeline (the thing being automated)
+
+North Star: one estate submission **spins out the full build** — page · agents · funder page · maps
+— so the portfolio scales to **many estates without adding labour**. We build the first few by hand
+to lock the steps + the intake schema, then automate (SayFix → PR).
+
+### 1. Intake (the developer-onboarding submission)
+Capture as much **deterministic** data as possible (the developer states it → the LLM stops guessing
+→ the funder summary stays defensible). Fields to add beyond today's:
+- **Archetype** (subdivision · set H&L · mixed-use) — developer self-classifies.
+- **Target market** (FHB · investor · downsizer · essential worker · retiree…) — multi-select.
+- **Precise location** — via the address autocomplete (suburb/state/coords), not a free-typed state
+  ("Regional South Australia" is too broad — capture the actual locality).
+- **Land cost + market values at the submission date** — comps/AVM as at submission (anchors the
+  revenue stack to real market values, not assumptions).
+- **Yield + land-use mix** — lot count, lot-size mix, non-residential parcels.
+- **Maturity** — zoning status, approvals, services.
+- **Submitter vs landowner** — submitter name + role, **and the landowner details** (always — and
+  especially when an agent submits, since the agent may not have authority to bind the owner).
+- **The estate's agents** — names, agency, mobiles, emails (the per-estate agent set to onboard).
+- Narrative (where the LLM legitimately adds value): the **vision**, **why it suits that market**.
+
+### 2. Commercial gate + authority (the business model, made explicit)
+Submitting is free because F2K's value capture is **controlling the land + delivering the modular
+homes as estate manager** — not a submission fee. So submitting an estate must **acknowledge F2K as
+estate manager** (projects · allocations · management · delivery), recorded with the submission (a
+`terms_accepted_at` + a developer `/terms` page). Because an **agent** may submit, also capture an
+**authority acknowledgement** (the submitter has the right to agree on the owner's behalf), or flag
+for offline confirmation. **Phased rigor:** keep it light for the first batch (don't frighten early
+developers; handle authority/T&C offline), then formalize — the fields exist from day one, the
+enforcement tightens over time.
+
+### 3. Build steps spun out of the intake (the automation targets)
+1. **Archetype page** (C shell → graduates to A/B as data fills) — *done for Dutton (C)*.
+2. **Agent onboarding** — create each agent's record + portal/tally (the Henry-in-Geraldton /
+   Patrick+Ante-in-Hobart pattern). *Feeds the register form's agent dropdown.* — *consumer wired for Dutton.*
+3. **Location / layout map** — Mapbox static location map from coords (early) · uploaded concept plan
+   · or extracted lot polygons once a subdivision plan exists (the Seafields-extractor rails).
+4. **Estate-level funder page** — cost stack **benchmarked** from built estates + developer land cost;
+   revenue stack from the **waitlist budget bands** + market comps; must show **≥20% margin**.
+5. **Waitlist** — the live demand half ("would they buy AT the price"). — *Dutton register captures budget bands.*
+
+Each step is a manual build today and a future auto-step; the intake schema (§1) + the classifier are
+what make the automation deterministic.
+
 ## Notes for the future auto-builder (SayFix → PR)
 
 1. **Parse** `developer_onboarding` → a normalized `EstateBase` + run the **classifier** → archetype.
