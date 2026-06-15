@@ -39,6 +39,33 @@ Dutton) → `structure_plan` (a Structure Plan exists — Wavecrest overall) →
 
 ---
 
+## Lifecycle: minimal → full (progressive enhancement)
+
+The page is **one page that grows**, not a series of rebuilds. Two moves:
+
+1. **Classify the destination early** from the submission (offer + land use):
+   lots/land (± H&L) → **A** · fixed homes only → **B** · any non-residential land use → **C**
+   (with stages that later graduate to A).
+2. **Render what the data supports, framed toward that destination.** Early the product layer is
+   usually empty, so the live page is a **C-shaped shell** (hero · stats · vision/land-use · register)
+   *even when the destination is A or B* — A's lot map and B's unit picker have nothing to show until
+   their data exists. As each dataset arrives its section lights up and the page **graduates**:
+
+   | Data that arrives | Section it lights up | Moves toward |
+   |---|---|---|
+   | suburb · concept/structure-plan image · land-use mix | hero image, land-use grid | richer **C** |
+   | zoning + subdivision/DA plan + lot schedule | interactive lot map + table (via polygon extractor) | **A** |
+   | pricing (band or per-lot) | prices on map/table + purchase terms | **A** (selling) |
+   | modular H&L designs | designs gallery + H&L pricing | **A** with H&L offer |
+   | fixed home types + per-unit price + renders | unit picker + elevation gallery | **B** |
+
+So: **minimal = the C shell framed to its destination; full = the destination archetype, reached by
+progressively filling the product layer.** Same slug, same page, a widening dataset — exactly what the
+auto-builder re-runs on each new piece of developer data (a PR diff per upgrade).
+
+> "**Land-only vs house-and-land vs H&L-only**" is an **offer config within A** (a flag on the
+> lots/designs), **not** a separate archetype — same page shape, different price/offer columns.
+
 ## Shared base layer (every archetype inherits this)
 
 The chrome is identical across archetypes — only the **product layer** differs.
