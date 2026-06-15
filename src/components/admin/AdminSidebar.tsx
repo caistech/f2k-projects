@@ -19,6 +19,7 @@ const NAV: NavItem[] = [
   { href: "/admin/seafields-stages", label: "Stages", group: "Seafields" },
   { href: "/admin/seafields-lots", label: "Lots", group: "Seafields" },
   { href: "/admin/seafields-import", label: "Import", group: "Seafields" },
+  { href: "/admin/seafields-employer-campaign", label: "Employer Campaign", group: "Seafields" },
   // Branscombe
   { href: "/admin/estates/branscombe/posts", label: "Blog", group: "Branscombe" },
   { href: "/admin/estates/branscombe/media", label: "Media", group: "Branscombe" },
