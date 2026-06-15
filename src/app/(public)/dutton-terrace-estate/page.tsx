@@ -1,5 +1,9 @@
 import { Metadata } from "next";
+import { getStaticMapUrl } from "@caistech/mapbox";
 import RegistrationForm from "@/components/dutton/RegistrationForm";
+
+// Dutton Terrace, Tumby Bay SA 5605 — geocoded (Eyre Peninsula coast, ~640 km W of Adelaide).
+const DUTTON = { lat: -34.380017, lng: 136.095408 };
 
 // Dutton Terrace — first Archetype-C (master-planned / mixed-use) worked build.
 // Early/concept stage: hero + stats + land-use mix + register-interest. No interactive lot map
@@ -7,7 +11,7 @@ import RegistrationForm from "@/components/dutton/RegistrationForm";
 export const metadata: Metadata = {
   title: "Dutton Terrace — Register Your Interest | Factory2Key",
   description:
-    "Dutton Terrace — a proposed master-planned community in regional South Australia: ~40 family homes plus childcare and aged-care, on 6.3 ha. Concept stage — register your interest.",
+    "Dutton Terrace — a proposed master-planned community at Tumby Bay, South Australia (Eyre Peninsula): ~40 family homes plus childcare and aged-care, on 6.3 ha. Concept stage — register your interest.",
   robots: { index: false, follow: false },
   openGraph: {
     title: "Dutton Terrace — a proposed master-planned community (SA)",
@@ -33,7 +37,7 @@ const LAND_USE = [
 ];
 
 const DETAILS: [string, string][] = [
-  ["Location", "Regional South Australia · 5605"],
+  ["Location", "Dutton Terrace, Tumby Bay, SA 5605"],
   ["Site Area", "6.306 ha"],
   ["Homes", "~40 single-family residential"],
   ["Land Uses", "Residential · Childcare · Aged-care"],
@@ -43,6 +47,8 @@ const DETAILS: [string, string][] = [
 ];
 
 export default function DuttonTerraceEstatePage() {
+  const regionMap = getStaticMapUrl(DUTTON.lat, DUTTON.lng, { width: 640, height: 380, zoom: 5, style: "streets-v12" });
+  const areaMap = getStaticMapUrl(DUTTON.lat, DUTTON.lng, { width: 640, height: 380, zoom: 13, style: "satellite-streets-v12" });
   return (
     <div className="dt-page">
       {/* ===== HERO ===== */}
@@ -60,7 +66,7 @@ export default function DuttonTerraceEstatePage() {
             an aged-care facility.
           </p>
           <p className="text-lg text-white/50 font-archivo mb-8">
-            Regional South Australia · 6.3 ha
+            Tumby Bay · South Australia (Eyre Peninsula) · 6.3 ha
           </p>
           <p className="text-white/60 font-archivo leading-relaxed mb-8 max-w-lg">
             Dutton Terrace is at an early concept stage. Register your interest to help shape the
@@ -100,8 +106,8 @@ export default function DuttonTerraceEstatePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="text-slate font-archivo leading-relaxed space-y-4">
               <p>
-                Dutton Terrace is a proposed master-planned community on a 6.3-hectare site in regional
-                South Australia. The vision pairs around <strong>40 single-family homes</strong> with
+                Dutton Terrace is a proposed master-planned community on a 6.3-hectare site at
+                Tumby Bay, on South Australia&apos;s Eyre Peninsula coast. The vision pairs around <strong>40 single-family homes</strong> with
                 the services a growing community needs — a <strong>childcare centre</strong> and an
                 <strong> aged-care facility</strong> — so families and older residents can live in the
                 same neighbourhood.
@@ -126,6 +132,44 @@ export default function DuttonTerraceEstatePage() {
           </div>
         </div>
       </section>
+
+      {/* ===== LOCATION MAP ===== */}
+      {(regionMap || areaMap) && (
+        <section className="py-16 px-4 bg-warm-grey">
+          <div className="max-w-[1100px] mx-auto">
+            <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">Location</p>
+            <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-2">Tumby Bay, Eyre Peninsula</h2>
+            <p className="text-slate font-archivo leading-relaxed mb-6 max-w-[760px]">
+              Dutton Terrace sits at Tumby Bay — a coastal town on South Australia&apos;s Eyre Peninsula,
+              on the shores of Spencer Gulf. The marker shows the estate&apos;s position; lot boundaries
+              follow once the subdivision plan is approved.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {regionMap && (
+                <figure className="bg-white p-2 border border-black/5">
+                  <div className="relative">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={regionMap} alt="Where Dutton Terrace sits in South Australia" className="w-full h-auto" />
+                    <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#00B5AD] ring-2 ring-white" aria-hidden />
+                  </div>
+                  <figcaption className="font-ibm-mono text-[0.6rem] tracking-[0.2em] uppercase text-slate/60 mt-2 text-center">Where in South Australia</figcaption>
+                </figure>
+              )}
+              {areaMap && (
+                <figure className="bg-white p-2 border border-black/5">
+                  <div className="relative">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={areaMap} alt="Dutton Terrace, Tumby Bay — local area" className="w-full h-auto" />
+                    <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#00B5AD] ring-2 ring-white" aria-hidden />
+                  </div>
+                  <figcaption className="font-ibm-mono text-[0.6rem] tracking-[0.2em] uppercase text-slate/60 mt-2 text-center">The estate&apos;s area · Tumby Bay</figcaption>
+                </figure>
+              )}
+            </div>
+            <p className="font-archivo text-xs text-slate/50 mt-3">Maps © Mapbox © OpenStreetMap. Location indicative at concept stage; the exact subdivision layout follows planning approval.</p>
+          </div>
+        </section>
+      )}
 
       {/* ===== LAND-USE MIX (the mixed-use / Archetype-C core) ===== */}
       <section className="py-16 px-4 bg-white">
