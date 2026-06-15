@@ -47,3 +47,20 @@ export const funderVoiceConfig: VoiceConfig = {
   mode: "discovery",
   textFallback: true,
 };
+
+// Morgan (employer / take-or-pay variant) — the voice guide on the /seafields/employers
+// take-or-pay path. Per the brief this REUSES the already-provisioned Morgan agent with a
+// per-page prompt+greeting passed via the widget `overrides` (same mechanism Sloane uses to
+// share Morgan's agent), so no separate agent is provisioned. EmployerVoiceAgent ALWAYS passes
+// the employer prompt+greeting (src/lib/employer-voice-prompt.mjs) as overrides, so the shared
+// agent speaks as the employer-facing Morgan. The text fallback (/api/seafields/employer-voice)
+// works regardless, so the page stays functional even before any env override is set.
+export const employerVoiceConfig: VoiceConfig = {
+  agentId:
+    process.env.NEXT_PUBLIC_ELEVENLABS_EMPLOYER_AGENT_ID ||
+    process.env.NEXT_PUBLIC_ELEVENLABS_DEVELOPER_AGENT_ID ||
+    "agent_5901ktzqy26zf9e9eyvxqfr28x47",
+  placement: "inline",
+  mode: "discovery",
+  textFallback: true,
+};
