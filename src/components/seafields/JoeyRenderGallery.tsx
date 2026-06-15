@@ -105,7 +105,7 @@ export default function JoeyRenderGallery() {
               <p className="font-archivo text-sm font-semibold text-deep-blue mt-2 group-hover:text-[#0E7C77] transition-colors">
                 {scheme.label}
                 {scheme.tag && (
-                  <span className="ml-2 inline-block align-middle bg-[#00B5AD]/10 text-[#0E7C77] text-[0.6rem] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded">
+                  <span className="ml-2 inline-block align-middle bg-[#00B5AD]/10 text-[#0E7C77] text-[0.75rem] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded">
                     {scheme.tag}
                   </span>
                 )}
@@ -121,10 +121,10 @@ export default function JoeyRenderGallery() {
                       style={{ backgroundColor: finish.hex }}
                       aria-hidden="true"
                     />
-                    <dt className="font-archivo text-[0.65rem] text-slate/60 shrink-0">
+                    <dt className="font-archivo text-[0.75rem] text-slate/60 shrink-0">
                       {finish.part}:
                     </dt>
-                    <dd className="font-archivo text-[0.65rem] text-slate/80 font-medium">
+                    <dd className="font-archivo text-[0.75rem] text-slate/80 font-medium">
                       {finish.name}
                       <span className="text-slate/40"> — {finish.colour}</span>
                       {finish.note && <span className="text-slate/40"> ({finish.note})</span>}
