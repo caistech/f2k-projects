@@ -240,6 +240,47 @@ confirmed, then later **(4)** zoning + subdivision plan, **(5)** a lot schedule,
 
 ---
 
+## Deterministic capture → credible funder output (form evolution + the cost/revenue gap)
+
+The funder summary's credibility is **inversely proportional to how much the LLM has to assume**. So
+the onboarding form should **convert narrative asks into structured fields** wherever the answer is a
+finite choice — the developer states the fact, the LLM stops guessing it, and the cost/revenue stack
+stops resting on assumptions.
+
+**Deterministic — capture as dropdowns/structured (the developer self-classifies):**
+- **Archetype** — *subdivision · set house-and-land · mixed-use master-plan* (removes the classifier's
+  single hardest guess — the developer just tells us).
+- **Target market** — first-home buyers · investors · downsizers · essential/government workers ·
+  retirees · owner-occupiers (multi-select).
+- **Yield** — lot count, lot-size mix, non-residential parcels (childcare/aged-care/commercial/school/POS).
+- **Land uses** — checkboxes (drives the Archetype-C land-use mix directly).
+- **Maturity** — zoning status, approvals held, services status (drives the concept→A graduation).
+- **Deal / land** — acquisition basis (own / option / JV + %), indicative land cost.
+- **Pricing intent** — expected price points / target $ per lot or per H&L (even rough — seeds revenue).
+
+**Non-deterministic — leave narrative (this is where the LLM legitimately adds value):**
+the **vision**, **why it's attractive to that target market**, the lifestyle/positioning story.
+
+### The funder gap — what we need to price + build a credible cost stack (≥20% margin)
+
+Funder test (the `/funders` engine): **revenue stack (Σ price × saleable units) − cost stack (TDC)
+= margin, must clear ~20%+.** Where each input comes from, and what Dutton has today:
+
+| Input | Source | Have for Dutton? |
+|---|---|---|
+| Saleable **yield** (lots + sizes + non-resi parcels) | concept/structure plan | ~40 rough only — need a plan |
+| **Land cost** / deal terms | developer (deterministic field) | no |
+| **Civil / subdivision cost** ($/lot: earthworks, roads, services, POS, headworks) | **benchmark Seafields/Wavecrest** | estimable |
+| Approvals · holding · finance · contingency | % of the above | estimable once land+civil set |
+| **Home build cost** (the H&L revenue line) | existing F2K modular cost models (Seafields/EMU) | **yes** |
+| **Revenue / price points** | waitlist **`budget_band`** ceiling + market comps (median/growth/vacancy) | collecting now via the register form |
+
+So an Archetype-C **funder page is estimates-only**: cost stack **benchmarked** from our built estates
++ a **developer-supplied land cost**; revenue stack **validated by the waitlist** (the `budget_band`
+field) and market comps. The waitlist is the live half — *"would they buy AT the price"* — which is
+exactly why the register form captures budget up front. As the deterministic fields fill in (yield,
+land cost, price points), the estimate tightens and the ≥20% test becomes real.
+
 ## Notes for the future auto-builder (SayFix → PR)
 
 1. **Parse** `developer_onboarding` → a normalized `EstateBase` + run the **classifier** → archetype.
