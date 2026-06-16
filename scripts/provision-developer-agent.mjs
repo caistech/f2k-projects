@@ -32,6 +32,7 @@ import {
   DEVELOPER_VOICE_PROMPT,
   DEVELOPER_FIRST_MESSAGE,
 } from "../src/lib/developer-voice-prompt.mjs";
+import { enableAutoEndCall } from "./lib/enable-auto-end-call.mjs";
 
 // The ElevenLabs key lives in the portfolio's automated-setup env files, not in this repo.
 // Source it from the env, falling back to the shared locations sayfix provisioning uses.
@@ -121,6 +122,15 @@ if (existingAgentId) {
 if (!created) await setAgentOverrides(apiKey, agentId);
 await setAllowlist(apiKey, agentId, allowedOrigins);
 
+// Auto end-call: give Morgan the end_call system tool + a 20-min hard backstop so she hangs up
+// when the chat is done instead of lurking with the mic open. Runs AFTER create/update so the
+// fresh prompt is in place (the helper re-sends it alongside the tool). Morgan is shared by the
+// funder-fallback + employer pages too, so this fixes lurking on all three. Their prompts carry
+// their own "ending the call" instruction.
+const endCall = await enableAutoEndCall(apiKey, agentId, {
+  promptText: DEVELOPER_VOICE_PROMPT,
+});
+
 // Bind a workspace-scoped post-call webhook so Morgan's transcript is delivered server-side
 // after EVERY call (abandonment-proof capture → developer_voice_conversations). The signing
 // secret is shown ONCE, on first creation — capture it for ELEVENLABS_WEBHOOK_SECRET.
@@ -130,6 +140,7 @@ const { webhookId, webhookSecret } = await bindWorkspaceWebhook(apiKey, agentId,
 });
 
 console.log(`  agent ${agentId} (${created ? "created" : "updated"}); overrides on; allowlist ${allowedOrigins.join(", ")}`);
+console.log(`  auto end-call: end_call tool ON, max_duration ${endCall.maxDurationSeconds}s`);
 console.log(`  post-call webhook bound (${webhookId}) → ${baseUrl.replace(/\/$/, "")}/api/convai/webhooks/post-call`);
 console.log("\n✅ Done.");
 console.log(`agentId (public, in src/voice.config.ts): ${agentId}`);

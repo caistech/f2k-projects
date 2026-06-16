@@ -33,6 +33,7 @@ import {
   SLOANE_BASE_PROMPT,
   SLOANE_FIRST_MESSAGE,
 } from "../src/lib/funder-voice-prompt.mjs";
+import { enableAutoEndCall } from "./lib/enable-auto-end-call.mjs";
 
 // The ElevenLabs key lives in the portfolio's automated-setup env files, not in this repo.
 function envFrom(path, key) {
@@ -121,12 +122,21 @@ if (existingAgentId && existingAgentId !== "agent_funder_unprovisioned") {
 await setAgentOverrides(apiKey, agentId);
 await setAllowlist(apiKey, agentId, allowedOrigins);
 
+// Auto end-call: give Sloane the end_call system tool + a 20-min hard backstop so he hangs up when
+// the chat is done instead of lurking with the mic open. Re-sends the baked base prompt alongside
+// the tool; per-project pages override the prompt text at runtime but the system tool stays on the
+// agent. The base prompt's "ending the call" instruction tells him when to use it.
+const endCall = await enableAutoEndCall(apiKey, agentId, {
+  promptText: SLOANE_BASE_PROMPT,
+});
+
 // NOTE: no post-call webhook here. Unlike Morgan (developer onboarding), the funder transcript is
 // captured client-side by the VoiceWidget and submitted with the registration form — there is no
 // funder_voice_conversations table to deliver to. Add a webhook (bindWorkspaceWebhook) only if we
 // later want abandonment-proof server-side capture.
 
 console.log(`  agent ${agentId} (${created ? "created" : "updated"}); overrides on; allowlist ${allowedOrigins.join(", ")}`);
+console.log(`  auto end-call: end_call tool ON, max_duration ${endCall.maxDurationSeconds}s`);
 console.log("\n✅ Done.");
 console.log(`Set this (Vercel + .env.local, type=plain — it's a public id):`);
 console.log(`NEXT_PUBLIC_ELEVENLABS_FUNDER_AGENT_ID=${agentId}`);
