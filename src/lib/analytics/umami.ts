@@ -9,12 +9,32 @@
 // (windowRange / normaliseReferrer) stay unit-testable without pulling @umami/api-client (and its
 // transitive `next`) into the test/runtime graph.
 //
-// Cloud → self-host swap: change UMAMI_API_ENDPOINT + the auth env; this file is the only seam.
+// AUTH — @umami/api-client.getClient() takes { apiEndpoint, apiKey, userId, secret } and supports
+// TWO mutually-exclusive modes (this file is the only seam):
+//   • Umami Cloud  → apiKey  (UMAMI_API_KEY)                         + endpoint https://api.umami.is/v1
+//   • Self-hosted  → userId + secret (UMAMI_API_CLIENT_USER_ID /     + endpoint https://<your-umami>/api
+//                    UMAMI_API_CLIENT_SECRET, secret === the
+//                    Umami instance's APP_SECRET)
+// We default to Cloud and switch to self-host automatically when the userId/secret pair is present.
 
-const API_KEY = process.env.UMAMI_API_KEY;
+// Endpoint: prefer the package-native UMAMI_API_CLIENT_ENDPOINT, then the legacy aliases, then Cloud.
 const API_ENDPOINT =
-  process.env.UMAMI_API_ENDPOINT || process.env.UMAMI_API_URL || "https://api.umami.is/v1";
+  process.env.UMAMI_API_CLIENT_ENDPOINT ||
+  process.env.UMAMI_API_ENDPOINT ||
+  process.env.UMAMI_API_URL ||
+  "https://api.umami.is/v1";
+
+// Cloud auth.
+const API_KEY = process.env.UMAMI_API_KEY;
+
+// Self-host auth (the f2k-Supabase-backed Umami deploy). secret === the instance's APP_SECRET.
+const API_CLIENT_USER_ID = process.env.UMAMI_API_CLIENT_USER_ID;
+const API_CLIENT_SECRET = process.env.UMAMI_API_CLIENT_SECRET;
+
 const WEBSITE_ID = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
+
+/** Self-host credentials present → use userId/secret instead of a Cloud apiKey. */
+const SELF_HOST = Boolean(API_CLIENT_USER_ID && API_CLIENT_SECRET);
 
 export type AnalyticsWindow = "today" | "month" | "30d" | "all";
 
@@ -37,9 +57,12 @@ export interface UmamiTraffic {
   devices: Breakdown[];
 }
 
-/** True when the Umami integration is configured (env present). Lets callers degrade cleanly. */
+/**
+ * True when the Umami integration is configured (env present). Lets callers degrade cleanly.
+ * Configured = a website id PLUS either Cloud auth (apiKey) or self-host auth (userId + secret).
+ */
 export function isUmamiConfigured(): boolean {
-  return Boolean(API_KEY && WEBSITE_ID);
+  return Boolean(WEBSITE_ID && (API_KEY || SELF_HOST));
 }
 
 /**
@@ -127,10 +150,13 @@ interface UmamiClientLike {
 let _client: Promise<UmamiClientLike> | null = null;
 function umamiClient(): Promise<UmamiClientLike> {
   if (!_client) {
-    _client = import("@umami/api-client").then(
-      ({ getClient }) =>
-        getClient({ apiEndpoint: API_ENDPOINT, apiKey: API_KEY }) as unknown as UmamiClientLike,
-    );
+    _client = import("@umami/api-client").then(({ getClient }) => {
+      // Self-host: authenticate with userId + secret. Cloud: authenticate with apiKey.
+      const options = SELF_HOST
+        ? { apiEndpoint: API_ENDPOINT, userId: API_CLIENT_USER_ID, secret: API_CLIENT_SECRET }
+        : { apiEndpoint: API_ENDPOINT, apiKey: API_KEY };
+      return getClient(options) as unknown as UmamiClientLike;
+    });
   }
   return _client;
 }
