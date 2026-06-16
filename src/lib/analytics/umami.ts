@@ -1,19 +1,19 @@
-// Low-level Umami Cloud API client + pure mappers (FTK analytics Phase 1).
+// Umami analytics client adapter (FTK analytics Phase 1).
 //
-// One Umami "website" (bucket) for the whole f2k site; per-estate numbers come from filtering
-// by URL path (the estate's `href`). This module degrades-don't-fakes: if the env isn't set or
-// the API call fails, it returns null and the dashboard renders a clean "unavailable" state.
+// Consumes the official @umami/api-client (not a hand-rolled fetch). One Umami "website" (bucket)
+// for the whole f2k site; per-estate numbers come from filtering by URL path (the estate's `href`).
+// Degrades-don't-fakes: env missing or any API error → returns null, and the dashboard renders a
+// clean "unavailable" state.
 //
-// ⚠️ T1 SPIKE: confirm against the live Umami Cloud account before trusting in prod —
-//   (a) base URL + auth header shape (Cloud uses `x-umami-api-key`; self-host uses Bearer),
-//   (b) that the free Hobby tier exposes the read API at all,
-//   (c) the exact field names in /stats (`pageviews`/`visitors`/`visits`) and /metrics,
-//   (d) free-tier rate limits + history retention.
-// The function/field names below match Umami v2's documented API; the seam is here so a
-// Cloud→self-host swap only touches this file.
+// The client is loaded via a DYNAMIC import inside the fetch function so this module's pure helpers
+// (windowRange / normaliseReferrer) stay unit-testable without pulling @umami/api-client (and its
+// transitive `next`) into the test/runtime graph.
+//
+// Cloud → self-host swap: change UMAMI_API_ENDPOINT + the auth env; this file is the only seam.
 
-const API_BASE = process.env.UMAMI_API_URL || "https://api.umami.is/v1";
 const API_KEY = process.env.UMAMI_API_KEY;
+const API_ENDPOINT =
+  process.env.UMAMI_API_ENDPOINT || process.env.UMAMI_API_URL || "https://api.umami.is/v1";
 const WEBSITE_ID = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
 
 export type AnalyticsWindow = "today" | "month" | "30d" | "all";
@@ -100,64 +100,92 @@ function emptySources(): Record<SourceCategory, number> {
   return { direct: 0, email: 0, search: 0, social: 0, referral: 0 };
 }
 
-async function umamiGet(path: string, params: Record<string, string | number>) {
-  if (!isUmamiConfigured()) return null;
-  const qs = new URLSearchParams(
-    Object.entries(params).map(([k, v]) => [k, String(v)]),
-  ).toString();
-  try {
-    const res = await fetch(`${API_BASE}/websites/${WEBSITE_ID}${path}?${qs}`, {
-      headers: { "x-umami-api-key": API_KEY as string, accept: "application/json" },
-      // Next caching is layered in the adapter; keep the raw fetch uncached here.
-      cache: "no-store",
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null; // degrade-don't-fake
+// --- @umami/api-client (dynamically imported) ---------------------------------------------------
+interface UmamiResponse<T> {
+  ok: boolean;
+  data?: T;
+  error?: unknown;
+}
+type MetricRow = { x: string | null; y: number };
+interface UmamiClientLike {
+  getWebsiteStats(
+    websiteId: string,
+    params: Record<string, unknown>,
+  ): Promise<
+    UmamiResponse<{
+      pageviews?: { value: number };
+      visitors?: { value: number };
+      visits?: { value: number };
+    }>
+  >;
+  getWebsiteMetrics(
+    websiteId: string,
+    params: Record<string, unknown>,
+  ): Promise<UmamiResponse<MetricRow[] | { data: MetricRow[] }>>;
+}
+
+let _client: Promise<UmamiClientLike> | null = null;
+function umamiClient(): Promise<UmamiClientLike> {
+  if (!_client) {
+    _client = import("@umami/api-client").then(
+      ({ getClient }) =>
+        getClient({ apiEndpoint: API_ENDPOINT, apiKey: API_KEY }) as unknown as UmamiClientLike,
+    );
   }
+  return _client;
+}
+
+/** Normalise a metrics response (the client may wrap rows in SearchResult.data or return them flat). */
+function metricRows(res: UmamiResponse<MetricRow[] | { data: MetricRow[] }> | null): MetricRow[] {
+  if (!res?.ok || !res.data) return [];
+  const d = res.data;
+  if (Array.isArray(d)) return d;
+  return Array.isArray(d.data) ? d.data : [];
 }
 
 /**
  * Fetch traffic for one estate path over a window. Returns null on any failure (env missing,
- * network, non-200) so the dashboard can render "traffic unavailable" rather than crash.
+ * network, non-ok) so the dashboard renders "traffic unavailable" rather than crashing.
  */
 export async function fetchUmamiTraffic(
   estatePath: string,
   window: AnalyticsWindow,
 ): Promise<UmamiTraffic | null> {
+  if (!isUmamiConfigured()) return null;
   const { startAt, endAt } = windowRange(window);
   const base = { startAt, endAt, url: estatePath };
 
-  const [stats, referrerMetrics, deviceMetrics] = await Promise.all([
-    umamiGet("/stats", base),
-    umamiGet("/metrics", { ...base, type: "referrer" }),
-    umamiGet("/metrics", { ...base, type: "device" }),
-  ]);
+  try {
+    const client = await umamiClient();
+    const [statsRes, refRes, devRes] = await Promise.all([
+      client.getWebsiteStats(WEBSITE_ID as string, base),
+      client.getWebsiteMetrics(WEBSITE_ID as string, { ...base, type: "referrer" }),
+      client.getWebsiteMetrics(WEBSITE_ID as string, { ...base, type: "device" }),
+    ]);
 
-  if (!stats) return null;
+    if (!statsRes?.ok || !statsRes.data) return null;
+    const stats = statsRes.data;
 
-  const sources = emptySources();
-  if (Array.isArray(referrerMetrics)) {
-    for (const row of referrerMetrics as Array<{ x: string | null; y: number }>) {
+    const sources = emptySources();
+    for (const row of metricRows(refRes)) {
       sources[normaliseReferrer(row.x)] += Number(row.y) || 0;
     }
+
+    const devices: Breakdown[] = metricRows(devRes).map((row) => ({
+      label: row.x || "unknown",
+      count: Number(row.y) || 0,
+    }));
+
+    return {
+      stats: {
+        pageviews: Number(stats.pageviews?.value) || 0,
+        uniques: Number(stats.visitors?.value) || 0,
+        sessions: Number(stats.visits?.value) || 0,
+      },
+      sources,
+      devices,
+    };
+  } catch {
+    return null; // degrade-don't-fake
   }
-
-  const devices: Breakdown[] = Array.isArray(deviceMetrics)
-    ? (deviceMetrics as Array<{ x: string | null; y: number }>).map((row) => ({
-        label: row.x || "unknown",
-        count: Number(row.y) || 0,
-      }))
-    : [];
-
-  return {
-    stats: {
-      pageviews: Number(stats?.pageviews?.value) || 0,
-      uniques: Number(stats?.visitors?.value) || 0,
-      sessions: Number(stats?.visits?.value) || 0,
-    },
-    sources,
-    devices,
-  };
 }
