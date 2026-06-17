@@ -31,22 +31,29 @@ export interface ParcelOutline {
   ring: [number, number][];
 }
 
-// Geometry: built about the parcel centroid (136.095408, −34.379268) — the raw "Dutton Terrace"
-// geocode landed ON the street (−34.380017 = the south frontage), so the centroid sits ~83 m north.
-// Half-extents 190.4 m (long) × 82.8 m (short); local scale 1° lng ≈ 91,895 m, 1° lat ≈ 110,574 m.
-// The long axis is rotated 3.5° (dips south going east) and the NE corner is clipped — the 6 ring
-// points are SW → SE → E(clip) → NE-top → NW → close. Rounded to 6 dp (~0.1 m). The polygon was
-// re-rendered over the satellite tile and matches Rachel's traced outline (south edge on Dutton Tce,
-// north below Church St, Thuruna Rd W, Trezise St E, small notch at the NE near Trezise).
+// Geometry: built in a frame about (136.095408, −34.379268). The raw "Dutton Terrace" geocode landed
+// ON the street (−34.380017 = the south frontage), so the frame sits ~83 m north of it. Local scale
+// 1° lng ≈ 91,895 m, 1° lat ≈ 110,574 m. Long axis rotated 3.5° (dips south going east, matching the
+// street grid); short half 82.8 m. The EAST edge is extended to the road (≈285 m east of centre, vs
+// 190 m west) so the outline runs the FULL width of the cleared block to Trezise St — matching
+// Rachel's supplied outline (her east boundary reaches the road). 6 points: SW → SE → E(small clip)
+// → NE-top → NW → close. Re-rendered over the satellite tile to confirm (S on Dutton Tce, N below
+// Church St, W ~Thuruna Rd, E at the Trezise St road).
+//
+// ⚠ AREA TENSION (flagged for Dennis/Uwe, 2026-06-17): drawing to Rachel's visible extent makes the
+// outline ≈7.9 ha — LARGER than the stated title area (Allotment 50, DP 90582 ≈ 6.306 ha, shown in
+// the page's stats/details). Her aerial outline likely includes more than the titled lot (adjacent
+// land / road reserve) or the 6.306 ha figure needs revisiting. The outline stays INDICATIVE; the
+// stated area is unchanged pending reconciliation — do NOT silently "fix" one to match the other.
 export const DUTTON_PARCEL: ParcelOutline = {
   indicative: true,
-  areaHa: 6.31,
+  areaHa: 6.31, // title-area figure (Allotment 50, DP 90582). NB: the drawn outline ≈7.9 ha — see note.
   center: { lat: -34.379268, lng: 136.095408 },
   ring: [
     [136.093285, -34.379910], // SW (on Dutton Tce, west)
-    [136.097421, -34.380121], // SE (on Dutton Tce, east)
-    [136.097493, -34.379149], // E  (east edge — clipped NE corner)
-    [136.097366, -34.378617], // NE-top (top edge, ~92% east before the notch)
+    [136.098449, -34.380173], // SE (on Dutton Tce, east — at the road)
+    [136.098528, -34.379089], // E  (east edge by Trezise St — small clip)
+    [136.098342, -34.378667], // NE-top (top edge, ~93% east before the notch)
     [136.093395, -34.378415], // NW (below Church St)
     [136.093285, -34.379910], // close
   ],
