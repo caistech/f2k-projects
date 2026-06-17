@@ -149,7 +149,7 @@ export default function SiteCheckPage() {
                 <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">OK</span>
               </div>
               {row("Address used", result.address)}
-              {row("LGA / council", result.lga_name ? `${result.lga_name}${result.lga_coverage && result.lga_coverage !== "full" ? ` (${result.lga_coverage} coverage)` : ""}` : null)}
+              {row("LGA / council", result.lga_name ? `${result.lga_name}${result.lga_coverage && result.lga_coverage !== "full" && result.lga_coverage !== "none" ? ` (${result.lga_coverage} coverage)` : ""}` : null)}
               {row("Zoning", result.zoning_code ? `${result.zoning_code}${result.zoning_name ? ` — ${result.zoning_name}` : ""}` : null)}
               {row("Subdivision permitted", result.subdivision_permitted == null ? null : result.subdivision_permitted ? "Yes" : "No")}
               {row("Indicative max lots (Torrens)", result.max_lots)}
