@@ -375,6 +375,20 @@ export default function RegistrationForm() {
       return;
     }
 
+    // Hard gate: the referrer choice cannot be skipped (an explicit "None" counts).
+    if (!referrerType) {
+      setError(
+        "Please choose a referrer option — select “None / Not applicable” if you found this yourself."
+      );
+      return;
+    }
+    if (referrerType === "Real Estate Agent" && !referrerAgentId) {
+      setError(
+        "Please select your agent, or choose “I’m not working with an agent”."
+      );
+      return;
+    }
+
     setSubmitting(true);
     try {
       const res = await fetch("/api/seafields/register", {
@@ -397,11 +411,12 @@ export default function RegistrationForm() {
           purchase_timeline: purchaseTimeline || null,
           finance_status: financeStatus || null,
           how_heard: howHeard || null,
-          referrer_type: referrerType || null,
+          referrer_type: referrerType,
           referrer_name: referrerName.trim() || null,
           referrer_company: referrerCompany.trim() || null,
           referrer_contact: referrerContact.trim() || null,
-          referrer_agent_id: referrerAgentId || null,
+          referrer_agent_id:
+            referrerAgentId && referrerAgentId !== "no-agent" ? referrerAgentId : null,
           notes: notes.trim() || null,
           consent,
           source: refTag ?? undefined,
@@ -1280,8 +1295,12 @@ export default function RegistrationForm() {
                   value={referrerType}
                   onChange={(e) => setReferrerType(e.target.value)}
                   className={selectClass}
+                  required
                 >
-                  <option value="">— None / Not applicable —</option>
+                  <option value="" disabled>
+                    — Please choose —
+                  </option>
+                  <option value="none">None / Not applicable — I found this myself</option>
                   {REFERRER_TYPES.map((t) => (
                     <option key={t} value={t}>
                       {t}
@@ -1310,10 +1329,12 @@ export default function RegistrationForm() {
                         }}
                         className={selectClass}
                         disabled={agentsLoading}
+                        required
                       >
-                        <option value="no-agent">
-                          {agentsLoading ? "Loading agents..." : "— No Agent —"}
+                        <option value="" disabled>
+                          {agentsLoading ? "Loading agents..." : "— Please choose —"}
                         </option>
+                        <option value="no-agent">I&apos;m not working with an agent</option>
                         {agents.map(a => (
                           <option key={a.id} value={a.id}>
                             {a.name} {a.agency ? `(${a.agency})` : ""}

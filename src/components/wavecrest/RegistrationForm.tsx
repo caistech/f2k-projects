@@ -124,6 +124,14 @@ export default function RegistrationForm() {
       return;
     }
 
+    // Hard gate: the referrer choice cannot be skipped (an explicit "None" counts).
+    if (!referrerType) {
+      setError(
+        "Please choose a referrer option — select “None / Not applicable” if you found this yourself."
+      );
+      return;
+    }
+
     setSubmitting(true);
     try {
       const res = await fetch("/api/wavecrest/register", {
@@ -143,7 +151,7 @@ export default function RegistrationForm() {
           purchase_timeline: purchaseTimeline || null,
           finance_status: financeStatus || null,
           how_heard: howHeard || null,
-          referrer_type: referrerType || null,
+          referrer_type: referrerType,
           referrer_name: referrerName.trim() || null,
           referrer_company: referrerCompany.trim() || null,
           referrer_contact: referrerContact.trim() || null,
@@ -578,8 +586,12 @@ export default function RegistrationForm() {
                 value={referrerType}
                 onChange={(e) => setReferrerType(e.target.value)}
                 className={selectClass}
+                required
               >
-                <option value="">— None / Not applicable —</option>
+                <option value="" disabled>
+                  — Please choose —
+                </option>
+                <option value="none">None / Not applicable — I found this myself</option>
                 {REFERRER_TYPES.map((t) => (
                   <option key={t} value={t}>
                     {t}
