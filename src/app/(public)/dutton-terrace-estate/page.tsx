@@ -4,12 +4,16 @@ import RegistrationForm from "@/components/dutton/RegistrationForm";
 import { DUTTON_PARCEL } from "@/data/dutton-parcel";
 import { ringToSvgPoints, type StaticFrame } from "@/lib/static-map-overlay";
 
-// Dutton Terrace, Tumby Bay SA 5605 — geocoded (Eyre Peninsula coast, ~640 km W of Adelaide).
-const DUTTON = { lat: -34.380017, lng: 136.095408 };
+// Dutton Terrace, Tumby Bay SA 5605 (Eyre Peninsula coast, ~600 km W of Adelaide). The raw geocode
+// (−34.380017) sat on the street itself — the allotment's south frontage — so this is the parcel
+// CENTROID, ~83 m north, so the satellite frame + outline centre on the cleared block. See
+// src/data/dutton-parcel.ts for the centroid correction + verification.
+const DUTTON = { lat: -34.379268, lng: 136.095408 };
 
-// The satellite frame the parcel outline is drawn over. zoom 16 frames a ~6.3 ha block (≈255 px)
-// inside a 640×380 image with surrounding context. The overlay SVG shares this width/height as its
-// viewBox, so the vector outline lines up with the raster. Keep zoom in sync with `parcelMap` below.
+// The satellite frame the parcel outline is drawn over. zoom 16 frames the wide ~6.3 ha block
+// (~381 m E-W ≈ 386 px) inside a 640×380 image with surrounding context (road, oval). The overlay
+// SVG shares this width/height as its viewBox, so the vector outline lines up with the raster.
+// Keep zoom in sync with `parcelMap` below.
 const PARCEL_FRAME: StaticFrame = {
   centerLng: DUTTON.lng,
   centerLat: DUTTON.lat,
@@ -47,6 +51,28 @@ const LAND_USE = [
   { use: "Residential", detail: "~40 single-family lots", status: "Proposed" },
   { use: "Childcare Centre", detail: "Designated area within the plan", status: "Proposed" },
   { use: "Aged-Care Facility", detail: "Designated area within the plan", status: "Proposed" },
+];
+
+// "Living in Tumby Bay" — the town-info cards Rachel (Harris RE) asked for: getting there,
+// schools, health, lifestyle. Facts are public (Port Lincoln tourism / Tumby Bay District Council)
+// and kept conservative. Reusable shape for the Archetype-C "Living in [town]" template section.
+const TOWN_LIFE: { label: string; body: string }[] = [
+  {
+    label: "Getting there",
+    body: "On the Eyre Peninsula coast — about 50 km north of Port Lincoln, whose airport runs daily flights to Adelaide. Roughly 600 km from Adelaide by road via Port Augusta.",
+  },
+  {
+    label: "Schools & childcare",
+    body: "Tumby Bay Area School teaches Reception through Year 12 on a single campus, with a public library on the grounds. The masterplan adds a dedicated childcare centre on site.",
+  },
+  {
+    label: "Health & services",
+    body: "Tumby Bay Hospital, a pharmacy and local medical services are in town, with Port Lincoln Health Services covering the wider region.",
+  },
+  {
+    label: "Recreation & lifestyle",
+    body: "A historic jetty — a renowned leafy sea-dragon dive site — plus Foreshore Park, swimming beaches, boating and fishing, a mural-lined main street and arts trail, sporting clubs, cafés and shops.",
+  },
 ];
 
 const DETAILS: [string, string][] = [
@@ -207,6 +233,74 @@ export default function DuttonTerraceEstatePage() {
           </div>
         </section>
       )}
+
+      {/* ===== LIVING IN TUMBY BAY (town info + lifestyle imagery — Harris RE feedback) ===== */}
+      <section className="bg-off-white">
+        {/* Foreshore panorama strip — sets the coastal-town scene before the detail. */}
+        <div className="relative w-full h-[180px] md:h-[260px] overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/dutton-terrace/panorama.jpg"
+            alt="Tumby Bay foreshore — beach, Norfolk pines and town seen from the jetty"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1A2744]/55 to-transparent" />
+          <p className="absolute bottom-3 left-1/2 -translate-x-1/2 font-ibm-mono text-[0.6rem] tracking-[0.25em] uppercase text-white/90">
+            Tumby Bay foreshore
+          </p>
+        </div>
+
+        <div className="py-16 px-4">
+          <div className="max-w-[1100px] mx-auto">
+            <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">Living in Tumby Bay</p>
+            <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-2">
+              A relaxed coastal town, not a commute away
+            </h2>
+            <p className="text-slate font-archivo leading-relaxed mb-8 max-w-[760px]">
+              Tumby Bay is a working seaside town on the sheltered waters of Spencer Gulf — close
+              enough to Port Lincoln for work and services, far enough to keep a genuine
+              small-town pace. Here&apos;s what living here looks like day to day.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+              {TOWN_LIFE.map((t) => (
+                <div key={t.label} className="bg-white p-6 border border-black/5">
+                  <h3 className="font-ibm-mono text-[0.65rem] tracking-[0.25em] uppercase text-[#00B5AD] mb-2">{t.label}</h3>
+                  <p className="font-archivo text-sm text-slate leading-relaxed">{t.body}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <figure className="bg-white p-2 border border-black/5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/dutton-terrace/foreshore-pier.jpg"
+                  alt="The Tumby Bay foreshore and turquoise water, viewed from the jetty"
+                  className="w-full h-[240px] object-cover"
+                />
+                <figcaption className="font-ibm-mono text-[0.6rem] tracking-[0.2em] uppercase text-slate/60 mt-2 text-center">Foreshore &amp; jetty</figcaption>
+              </figure>
+              <figure className="bg-white p-2 border border-black/5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/dutton-terrace/town-shops.jpg"
+                  alt="Shops on the main street of Tumby Bay"
+                  className="w-full h-[240px] object-cover"
+                />
+                <figcaption className="font-ibm-mono text-[0.6rem] tracking-[0.2em] uppercase text-slate/60 mt-2 text-center">Main street</figcaption>
+              </figure>
+            </div>
+            <p className="font-archivo text-xs text-slate/50 mt-3">
+              Tumby Bay photographs: foreshore &amp; panorama © Inas66 (
+              <a href="https://creativecommons.org/licenses/by-sa/3.0/" className="underline hover:text-slate" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>);
+              main street © Bahnfrend (
+              <a href="https://creativecommons.org/licenses/by-sa/4.0/" className="underline hover:text-slate" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>),
+              via Wikimedia Commons.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* ===== LAND-USE MIX (the mixed-use / Archetype-C core) ===== */}
       <section className="py-16 px-4 bg-white">
