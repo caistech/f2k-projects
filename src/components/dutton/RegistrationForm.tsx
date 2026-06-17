@@ -126,6 +126,15 @@ export default function RegistrationForm() {
       setError("Please confirm you understand this is a Registration of Interest only.");
       return;
     }
+    // Hard gate: the referrer choice cannot be skipped (an explicit "None" counts).
+    if (!referrerType) {
+      setError("Please choose a referrer option — select “None / not applicable” if you found this yourself.");
+      return;
+    }
+    if (referrerType === "Real Estate Agent" && !referrerAgentId) {
+      setError("Please select your agent, or choose “I’m not working with an agent”.");
+      return;
+    }
     setSubmitting(true);
     try {
       const res = await fetch("/api/dutton/register", {
@@ -145,10 +154,11 @@ export default function RegistrationForm() {
           purchase_timeline: purchaseTimeline || null,
           finance_status: financeStatus || null,
           how_heard: howHeard || null,
-          referrer_type: referrerType || null,
+          referrer_type: referrerType,
           referrer_name: referrerName.trim() || null,
           referrer_company: referrerCompany.trim() || null,
-          referrer_agent_id: referrerAgentId || null,
+          referrer_agent_id:
+            referrerAgentId && referrerAgentId !== "no-agent" ? referrerAgentId : null,
           notes: notes.trim() || null,
           consent,
         }),
@@ -258,21 +268,22 @@ export default function RegistrationForm() {
         </div>
 
         <div className="border border-black/5 bg-white p-5 space-y-4">
-          <p className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-slate/50">Optional</p>
+          <p className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-slate/50">Required</p>
           <p className="font-archivo font-semibold text-deep-blue text-sm">Were you referred by an agent or other party?</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div><label htmlFor="referrerType" className={labelClass}>Referrer type</label>
-              <select id="referrerType" value={referrerType} onChange={(e) => { setReferrerType(e.target.value); setReferrerAgentId(""); }} className={inputClass}>
-                <option value="">— None / not applicable —</option>{REFERRER_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
+              <select id="referrerType" value={referrerType} onChange={(e) => { setReferrerType(e.target.value); setReferrerAgentId(""); }} className={inputClass} required>
+                <option value="" disabled>— Please choose —</option><option value="none">None / not applicable — I found this myself</option>{REFERRER_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
             {referrerType === "Real Estate Agent" && (
               <div><label htmlFor="referrerAgentId" className={labelClass}>Referring agent</label>
-                <select id="referrerAgentId" value={referrerAgentId} className={inputClass}
+                <select id="referrerAgentId" value={referrerAgentId} className={inputClass} required
                   onChange={(e) => {
                     const a = agents.find((x) => x.id === e.target.value);
                     setReferrerAgentId(e.target.value);
                     if (a) { setReferrerName(a.name); setReferrerCompany(a.agency || ""); }
                   }}>
-                  <option value="">{agents.length ? "— Select your agent —" : "Loading agents…"}</option>
+                  <option value="" disabled>{agents.length ? "— Please choose —" : "Loading agents…"}</option>
+                  <option value="no-agent">I&apos;m not working with an agent</option>
                   {agents.map((a) => <option key={a.id} value={a.id}>{a.name}{a.agency ? ` — ${a.agency}` : ""}</option>)}
                 </select></div>
             )}
