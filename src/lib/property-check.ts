@@ -1,5 +1,4 @@
 import { createPropertyServices } from "@caistech/property-services-sdk";
-import { deriveSiteIntel } from "./site-intel";
 
 /**
  * Kickstart property analysis for a developer-onboarding lead.
@@ -154,18 +153,9 @@ export async function runPropertyCheck(
       data: d,
     };
 
-    // National LGA fallback: property-services' planning-scheme table only covers ~20 LGAs
-    // (QLD/TAS/WA), so SA/NSW/VIC addresses come back with no LGA name. When we have coords,
-    // resolve the council from the canonical all-AU boundary GeoJSON (site-data bucket) so the
-    // LGA name always lands. (Planning DETAIL — zoning/overlays — is still per-LGA; only the
-    // name is backfilled here.) Best-effort; never blocks the result.
-    if (!pc.lga_name && lat != null && lng != null) {
-      const si = await deriveSiteIntel(lat, lng);
-      if (si?.council_name) {
-        pc.lga_name = si.council_name;
-        pc.lga_coverage = pc.lga_coverage ?? "boundary-only";
-      }
-    }
+    // LGA / wind / climate now come nationally from property-services `derive` itself (it resolves
+    // them by point-in-polygon over the canonical site-data GeoJSON). No client-side fallback or
+    // direct bucket access needed — the data stays private behind the metered API.
     return pc;
   } catch (err) {
     return {
