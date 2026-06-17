@@ -265,8 +265,8 @@ export default function DuttonTerraceEstatePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
               {TOWN_LIFE.map((t) => (
                 <div key={t.label} className="bg-white p-6 border border-black/5">
-                  <h3 className="font-ibm-mono text-[0.65rem] tracking-[0.25em] uppercase text-[#00B5AD] mb-2">{t.label}</h3>
-                  <p className="font-archivo text-sm text-slate leading-relaxed">{t.body}</p>
+                  <h3 className="font-ibm-mono text-[0.7rem] tracking-[0.25em] uppercase text-[#00B5AD] mb-2">{t.label}</h3>
+                  <p className="font-archivo text-base text-slate leading-relaxed">{t.body}</p>
                 </div>
               ))}
             </div>

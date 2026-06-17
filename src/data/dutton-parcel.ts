@@ -6,10 +6,14 @@
 // real DP geometry is in hand, this is an AREA-ACCURATE (~6.31 ha) schematic centred on the
 // geocoded site, drawn DASHED + labelled "indicative" so it never reads as a surveyed line.
 //
-// SHAPE (updated 2026-06-17 per Harris RE / Rachel Hawkins' georeferenced aerial): the real
-// allotment is a WIDE rectangle — long axis ≈ E-W, ~2.3:1, road along the south edge, the Tumby
-// Bay oval to the north-east — NOT the square the first pass drew. The ring below matches that
-// footprint (380.8 m E-W × 165.6 m N-S = 6.306 ha) so the outline reads as the actual block.
+// SHAPE (traced 2026-06-17 from Harris RE / Rachel Hawkins' supplied aerial): the real allotment is
+// a wide block ~381 m × ~166 m (≈6.3 ha) that is NOT axis-aligned — it is rotated ~3.5° (the long
+// axis dips south going east, matching the Dutton Tce / Church St street grid) and its NE corner is
+// CLIPPED (the top edge runs ~92% east, then a small notch down to the east edge near Trezise St).
+// Her dashed outline was colour-extracted (docs/Dutton_terrace tooling), reduced to corners, mapped
+// onto the verified ground envelope, and the result re-rendered over the satellite tile to confirm
+// it tracks Dutton Tce (S), Church St (N), Thuruna Rd (W) and Trezise St (E) — i.e. her exact block.
+// Still INDICATIVE (her source is an aerial trace, not the surveyed DP) → stays dashed + labelled.
 //
 // TO REPLACE WITH THE REAL BOUNDARY (a one-file change): flip `indicative` to false and replace
 // `ring` with the DP 90582 polygon (closed ring of [lng, lat] pairs). The map framing + rendering
@@ -27,26 +31,23 @@ export interface ParcelOutline {
   ring: [number, number][];
 }
 
-// Box maths: a wide 6.306 ha rectangle at ~2.3:1 is 380.8 m (E-W) × 165.6 m (N-S) — half-extents
-// 190.4 m and 82.8 m. Converted to degrees at the site latitude (−34.38°, where 1° lng ≈ 91,895 m
-// and 1° lat ≈ 110,574 m): ±0.002072° lng, ±0.000749° lat about the centre. Rounded to 6 dp
-// (~0.1 m), far finer than the "indicative" claim needs. Long axis E-W to match the real block.
-//
-// CENTROID (corrected 2026-06-17, verified against the live satellite tile): the raw geocode of
-// "Dutton Terrace" landed ON the street (−34.380017), which is the allotment's SOUTHERN frontage —
-// so the centroid is ~83 m NORTH of it at lat −34.379268. With this centre the rectangle's south
-// edge runs along Dutton Tce, the north edge along Church St, Thuruna Rd to the W and Trezise St to
-// the E — i.e. the cleared paddock Rachel (Harris RE) circled. (Verified via docs/Dutton_terrace
-// overlay renders; geocode-on-road was the bug behind the first square sitting half on farmland.)
+// Geometry: built about the parcel centroid (136.095408, −34.379268) — the raw "Dutton Terrace"
+// geocode landed ON the street (−34.380017 = the south frontage), so the centroid sits ~83 m north.
+// Half-extents 190.4 m (long) × 82.8 m (short); local scale 1° lng ≈ 91,895 m, 1° lat ≈ 110,574 m.
+// The long axis is rotated 3.5° (dips south going east) and the NE corner is clipped — the 6 ring
+// points are SW → SE → E(clip) → NE-top → NW → close. Rounded to 6 dp (~0.1 m). The polygon was
+// re-rendered over the satellite tile and matches Rachel's traced outline (south edge on Dutton Tce,
+// north below Church St, Thuruna Rd W, Trezise St E, small notch at the NE near Trezise).
 export const DUTTON_PARCEL: ParcelOutline = {
   indicative: true,
   areaHa: 6.31,
   center: { lat: -34.379268, lng: 136.095408 },
   ring: [
-    [136.093336, -34.380017], // SW (on Dutton Tce)
-    [136.097480, -34.380017], // SE (on Dutton Tce)
-    [136.097480, -34.378519], // NE (toward Church St)
-    [136.093336, -34.378519], // NW (toward Church St)
-    [136.093336, -34.380017], // close
+    [136.093285, -34.379910], // SW (on Dutton Tce, west)
+    [136.097421, -34.380121], // SE (on Dutton Tce, east)
+    [136.097493, -34.379149], // E  (east edge — clipped NE corner)
+    [136.097366, -34.378617], // NE-top (top edge, ~92% east before the notch)
+    [136.093395, -34.378415], // NW (below Church St)
+    [136.093285, -34.379910], // close
   ],
 };

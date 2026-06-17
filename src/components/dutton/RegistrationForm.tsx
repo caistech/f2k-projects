@@ -188,7 +188,7 @@ export default function RegistrationForm() {
           masterplan, lot releases and pricing are confirmed.
         </p>
         <p className="text-slate/70 font-archivo text-sm">A confirmation will follow to <strong>{email}</strong>.</p>
-        <p className="text-slate/50 font-archivo text-[11px] leading-relaxed mt-4 max-w-md mx-auto">
+        <p className="text-slate/50 font-archivo text-xs leading-relaxed mt-4 max-w-md mx-auto">
           Dutton Terrace is at concept stage — all details are indicative and subject to planning
           approvals. Registering interest is not an offer or commitment.
         </p>
