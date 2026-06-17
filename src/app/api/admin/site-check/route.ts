@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/admin-auth";
 import { runPropertyCheck } from "@/lib/property-check";
+import { deriveSiteIntel } from "@/lib/site-intel";
 
 // Admin-gated, reusable estate "site check": runs @caistech/property-services derive for an
 // estate address and returns the first-pass site analysis (LGA, zoning, wind/BAL/climate, overlays,
@@ -45,17 +46,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "A suburb/locality is required" }, { status: 400 });
   }
 
-  const result = await runPropertyCheck(
-    {
-      estate_location: suburb,
-      estate_postcode: body.postcode?.trim() || null,
-      estate_state: body.state?.trim() || null,
-      estate_lat: num(body.lat),
-      estate_lng: num(body.lng),
-      lot_plan_reference: body.lotPlanReference?.trim() || null,
-    },
-    25_000,
-  );
+  const lat = num(body.lat);
+  const lng = num(body.lng);
 
-  return NextResponse.json({ result });
+  // Run both in parallel: property-services (zoning/overlays/BAL where it has LGA coverage) and the
+  // national site-intelligence GeoJSON (LGA name / wind / climate for ANY AU point, from the
+  // canonical property-services `site-data` bucket — this is what gives SA addresses their LGA).
+  const [result, siteIntel] = await Promise.all([
+    runPropertyCheck(
+      {
+        estate_location: suburb,
+        estate_postcode: body.postcode?.trim() || null,
+        estate_state: body.state?.trim() || null,
+        estate_lat: lat,
+        estate_lng: lng,
+        lot_plan_reference: body.lotPlanReference?.trim() || null,
+      },
+      25_000,
+    ),
+    lat != null && lng != null ? deriveSiteIntel(lat, lng) : Promise.resolve(null),
+  ]);
+
+  return NextResponse.json({ result, siteIntel });
 }

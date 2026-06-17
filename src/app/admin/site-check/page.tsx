@@ -25,6 +25,13 @@ interface PropertyCheck {
   overlays?: Array<{ type: string; name: string; requiresReport: boolean }>;
 }
 
+interface SiteIntel {
+  climate_zone: number | null;
+  wind_region: string | null;
+  council_name: string | null;
+  council_code: string | null;
+}
+
 const DUTTON_DEFAULTS = {
   suburb: "Tumby Bay",
   postcode: "5605",
@@ -38,6 +45,7 @@ export default function SiteCheckPage() {
   const [form, setForm] = useState(DUTTON_DEFAULTS);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PropertyCheck | null>(null);
+  const [siteIntel, setSiteIntel] = useState<SiteIntel | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -47,6 +55,7 @@ export default function SiteCheckPage() {
     setLoading(true);
     setError(null);
     setResult(null);
+    setSiteIntel(null);
     try {
       const res = await fetch("/api/admin/site-check", {
         method: "POST",
@@ -65,6 +74,7 @@ export default function SiteCheckPage() {
         setError(json.error || `Request failed (${res.status})`);
       } else {
         setResult(json.result as PropertyCheck);
+        setSiteIntel((json.siteIntel as SiteIntel) ?? null);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Request failed");
@@ -137,6 +147,25 @@ export default function SiteCheckPage() {
       {error && (
         <div className="mt-4 rounded border-l-4 border-red-400 bg-red-50 px-4 py-3 text-sm text-red-800">
           {error}
+        </div>
+      )}
+
+      {siteIntel && (siteIntel.council_name || siteIntel.wind_region || siteIntel.climate_zone != null) && (
+        <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50/40 p-5">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-base font-semibold text-slate-900">
+              National site intelligence <span className="font-normal text-slate-400">· all-AU LGA boundaries</span>
+            </h3>
+            <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">GeoJSON</span>
+          </div>
+          {row("LGA / council", siteIntel.council_name)}
+          {row("Wind region", siteIntel.wind_region)}
+          {row("Climate zone", siteIntel.climate_zone)}
+          <p className="mt-3 text-xs text-slate-500">
+            From the canonical national boundary datasets (property-services <code>site-data</code> bucket,
+            point-in-polygon). Covers every AU LGA — so SA addresses resolve here even where the
+            planning-scheme lookup below has no coverage. Needs latitude/longitude.
+          </p>
         </div>
       )}
 

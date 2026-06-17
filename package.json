@@ -21,6 +21,7 @@
     "@caistech/property-launch-kit": "^0.3.2",
     "@caistech/property-services-sdk": "^0.4.0",
     "@caistech/sayfix-embed": "^0.4.0",
+    "@caistech/site-intelligence": "^0.1.1",
     "@elevenlabs/react": "^1.6.7",
     "@supabase/ssr": "0.5.2",
     "@supabase/supabase-js": "2.47.0",
