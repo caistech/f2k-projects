@@ -24,16 +24,16 @@ const PARCEL_FRAME: StaticFrame = {
 
 // Dutton Terrace — first Archetype-C (master-planned / mixed-use) worked build.
 // Early/concept stage: hero + stats + land-use mix + register-interest. No interactive lot map
-// or pricing yet (the land is unzoned). noindex while it's a review draft, not a launched estate.
+// or pricing yet (the land division isn't approved). noindex while it's a review draft, not launched.
 export const metadata: Metadata = {
   title: "Dutton Terrace — Register Your Interest | Factory2Key",
   description:
-    "Dutton Terrace — a proposed master-planned community at Tumby Bay, South Australia (Eyre Peninsula): ~40 family homes plus childcare and aged-care, on 6.3 ha. Concept stage — register your interest.",
+    "Dutton Terrace — a proposed master-planned community at Tumby Bay, South Australia (Eyre Peninsula): ~65 homes plus childcare and aged-care, on 6.3 ha. Concept stage — register your interest.",
   robots: { index: false, follow: false },
   openGraph: {
     title: "Dutton Terrace — a proposed master-planned community (SA)",
     description:
-      "~40 family homes + childcare + aged-care on 6.3 ha. Concept stage — register your interest.",
+      "~65 family homes + childcare + aged-care on 6.3 ha. Concept stage — register your interest.",
     url: "https://f2k-projects.vercel.app/dutton-terrace-estate",
     siteName: "Factory2Key Projects",
     type: "website",
@@ -41,14 +41,14 @@ export const metadata: Metadata = {
 };
 
 const STATS = [
-  { value: "~40", label: "Homes / Lots" },
+  { value: "~65", label: "Homes / Lots" },
   { value: "6.31 ha", label: "Site Area" },
   { value: "Mixed-Use", label: "Resi + Care" },
   { value: "Concept", label: "Stage" },
 ];
 
 const LAND_USE = [
-  { use: "Residential", detail: "~40 single-family lots", status: "Proposed" },
+  { use: "Residential", detail: "~65 single-family lots", status: "Proposed" },
   { use: "Childcare Centre", detail: "Designated area within the plan", status: "Proposed" },
   { use: "Aged-Care Facility", detail: "Designated area within the plan", status: "Proposed" },
 ];
@@ -78,11 +78,28 @@ const TOWN_LIFE: { label: string; body: string }[] = [
 const DETAILS: [string, string][] = [
   ["Location", "Dutton Terrace, Tumby Bay, SA 5605"],
   ["Site Area", "6.306 ha"],
-  ["Homes", "~40 single-family residential"],
+  ["Homes", "~65 single-family residential"],
   ["Land Uses", "Residential · Childcare · Aged-care"],
   ["Parcel", "Allotment 50, Deposited Plan 90582"],
-  ["Zoning", "Unzoned — rezoning to be progressed"],
+  ["Zoning", "Township Zone (PlanSA) — to confirm; new land division required"],
   ["Stage", "Concept · site assessment underway"],
+];
+
+// Indicative site analysis. Planning facts are from f2k's PlanSA desktop review (public-record
+// planning data — no commercial-in-confidence strategy); the environment layer is machine-verified
+// via /admin/site-check (property-services: AS/NZS 1170 wind + NatHERS climate + bushfire). All
+// indicative · subject to SAPPA confirmation and the final Deposited Plan.
+const SITE_PLANNING: { label: string; value: string }[] = [
+  { label: "Council", value: "District Council of Tumby Bay" },
+  { label: "Planning system", value: "SA Planning & Design Code (PlanSA)" },
+  { label: "Indicative zone", value: "Township Zone — to confirm via SAPPA" },
+  { label: "Site", value: "~6.31 ha · greenfield" },
+  { label: "Planning precedent", value: "A previous (now lapsed) approval for ~65 allotments — a fresh land division is required" },
+];
+const SITE_ENVIRONMENT: { label: string; value: string }[] = [
+  { label: "Wind region", value: "A2 (39 m/s)" },
+  { label: "Bushfire (BAL)", value: "BAL-LOW" },
+  { label: "Climate zone", value: "Zone 5" },
 ];
 
 export default function DuttonTerraceEstatePage() {
@@ -103,7 +120,7 @@ export default function DuttonTerraceEstatePage() {
             Dutton Terrace
           </h1>
           <p className="text-xl text-white/75 font-archivo leading-relaxed mb-2 max-w-2xl">
-            A proposed master-planned community — ~40 family homes alongside a childcare centre and
+            A proposed master-planned community — ~65 family homes alongside a childcare centre and
             an aged-care facility.
           </p>
           <p className="text-lg text-white/50 font-archivo mb-8">
@@ -158,8 +175,9 @@ export default function DuttonTerraceEstatePage() {
                 the same delivery model proven across our other Western Australian estates.
               </p>
               <p className="text-sm text-slate/70">
-                The site is currently unzoned and at concept stage. Registering interest now helps us
-                size the right mix of homes and progress planning with real demand behind it.
+                The site is at concept stage, with a new land division still to be approved.
+                Registering interest now helps us size the right mix of homes and progress planning
+                with real demand behind it.
               </p>
             </div>
             <div className="space-y-3">
@@ -234,6 +252,57 @@ export default function DuttonTerraceEstatePage() {
           </div>
         </section>
       )}
+
+      {/* ===== WHAT'S POSSIBLE HERE (indicative site analysis — planning + environment) ===== */}
+      <section className="py-16 px-4 bg-white">
+        <div className="max-w-[900px] mx-auto">
+          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">Site Analysis</p>
+          <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-2">What&apos;s possible here</h2>
+          <p className="text-slate font-archivo leading-relaxed mb-8 max-w-[760px]">
+            A first-pass read of the site — what the planning framework anticipates, and the build
+            conditions a home is designed to. Indicative only: zone, yield and lot layout are
+            confirmed through SA planning (SAPPA) and the final Deposited Plan.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="font-ibm-mono text-[0.65rem] tracking-[0.25em] uppercase text-[#00B5AD] mb-3">
+                Planning <span className="text-slate/40 normal-case tracking-normal">· PlanSA desktop review</span>
+              </h3>
+              <div className="space-y-2">
+                {SITE_PLANNING.map((p) => (
+                  <div key={p.label} className="border-b border-black/5 pb-2">
+                    <div className="font-ibm-mono text-[0.6rem] tracking-wider uppercase text-slate/50 mb-0.5">{p.label}</div>
+                    <div className="font-archivo text-base text-deep-blue">{p.value}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h3 className="font-ibm-mono text-[0.65rem] tracking-[0.25em] uppercase text-[#00B5AD] mb-3">
+                Site &amp; environment <span className="text-slate/40 normal-case tracking-normal">· automated check</span>
+              </h3>
+              <div className="space-y-2">
+                {SITE_ENVIRONMENT.map((p) => (
+                  <div key={p.label} className="border-b border-black/5 pb-2">
+                    <div className="font-ibm-mono text-[0.6rem] tracking-wider uppercase text-slate/50 mb-0.5">{p.label}</div>
+                    <div className="font-archivo text-base text-deep-blue">{p.value}</div>
+                  </div>
+                ))}
+                <p className="font-archivo text-sm text-slate/70 pt-1">
+                  A2 wind and BAL-LOW bushfire suit fixed-price, factory-built homes engineered to the
+                  site&apos;s conditions.
+                </p>
+              </div>
+            </div>
+          </div>
+          <p className="font-archivo text-xs text-slate/50 mt-6">
+            Indicative desktop assessment from public planning data (PlanSA / SAPPA) and an automated
+            site check (AS/NZS 1170 wind region · NatHERS climate zone · bushfire). Not a planning
+            approval, valuation or survey — the zone, lot yield and boundaries are confirmed via SAPPA,
+            detailed assessment and the final Deposited Plan.
+          </p>
+        </div>
+      </section>
 
       {/* ===== LIVING IN TUMBY BAY (town info + lifestyle imagery — Harris RE feedback) ===== */}
       <section className="bg-off-white">
@@ -321,9 +390,9 @@ export default function DuttonTerraceEstatePage() {
           </div>
           <div className="bg-amber-50 border-l-4 border-amber-400 px-4 py-3 mt-6">
             <p className="font-archivo text-sm text-amber-900 leading-relaxed">
-              <strong>Lot plans &amp; pricing coming as planning progresses.</strong> The estate is
-              unzoned today — a detailed subdivision plan, lot selection and pricing will follow once
-              rezoning and approvals advance. Register below and we&apos;ll bring you along.
+              <strong>Lot plans &amp; pricing coming as planning progresses.</strong> The estate is at
+              concept stage today — a detailed subdivision plan, lot selection and pricing follow once
+              the land division is approved. Register below and we&apos;ll bring you along.
             </p>
           </div>
         </div>
@@ -342,7 +411,7 @@ export default function DuttonTerraceEstatePage() {
           <p className="font-archivo text-xs text-slate/60 leading-relaxed">
             Dutton Terrace is a proposed development at concept stage. All information shown —
             including the homes, land uses, site area, and the masterplan vision — is indicative only
-            and subject to site control, rezoning, planning approval and final confirmation. Nothing
+            and subject to site control, planning approval, land division and final confirmation. Nothing
             here is an offer, and registering interest creates no obligation on either side.
           </p>
         </div>
