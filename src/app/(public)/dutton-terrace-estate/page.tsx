@@ -182,9 +182,10 @@ export default function DuttonTerraceEstatePage() {
             <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-2">Tumby Bay, Eyre Peninsula</h2>
             <p className="text-slate font-archivo leading-relaxed mb-6 max-w-[760px]">
               Dutton Terrace sits at Tumby Bay — a coastal town on South Australia&apos;s Eyre Peninsula,
-              on the shores of Spencer Gulf. The dashed outline shows the <strong>indicative ~6.3 ha site
-              extent</strong>; the exact lot boundaries follow once the deposited plan is confirmed and the
-              subdivision is approved.
+              on the shores of Spencer Gulf. The dashed outline is the developer&apos;s
+              <strong> indicative site boundary, shown for orientation only</strong>. It is not a surveyed
+              line — the exact allotment, area and lot layout are confirmed by the final Deposited Plan
+              (DP 90582) and subdivision approval.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {regionMap && (
@@ -221,15 +222,15 @@ export default function DuttonTerraceEstatePage() {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    <span className="absolute top-2 left-2 bg-[#1A2744]/85 text-white font-ibm-mono text-[0.55rem] tracking-[0.15em] uppercase px-2 py-1 rounded">
-                      Indicative extent
+                    <span className="absolute top-2 left-2 bg-[#1A2744]/85 text-white font-ibm-mono text-[0.6rem] tracking-[0.15em] uppercase px-2 py-1 rounded">
+                      Indicative · subject to final DP
                     </span>
                   </div>
-                  <figcaption className="font-ibm-mono text-[0.6rem] tracking-[0.2em] uppercase text-slate/60 mt-2 text-center">Indicative site extent · Tumby Bay</figcaption>
+                  <figcaption className="font-ibm-mono text-[0.6rem] tracking-[0.2em] uppercase text-slate/60 mt-2 text-center">Indicative outline — subject to final DP</figcaption>
                 </figure>
               )}
             </div>
-            <p className="font-archivo text-xs text-slate/50 mt-3">Maps © Mapbox © OpenStreetMap. The outline is an indicative ~6.3 ha extent centred on the site, not a surveyed boundary; the exact parcel (Allotment 50, Deposited Plan 90582) and subdivision layout follow planning confirmation.</p>
+            <p className="font-archivo text-xs text-slate/50 mt-3">Maps © Mapbox © OpenStreetMap. The outline is an <strong>indicative site boundary based on the developer&apos;s drawing</strong> — not a surveyed parcel. It is provided for orientation only and is <strong>subject to the final Deposited Plan</strong> (Allotment 50, DP 90582) and subdivision approval, which confirm the exact boundary, area and lot layout.</p>
           </div>
         </section>
       )}
