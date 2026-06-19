@@ -42,7 +42,7 @@ const schema = z.object({
   current_housing: z.string().max(50).nullable().optional(),
   purchase_timeline: z.string().max(50).nullable().optional(),
   finance_status: z.string().max(50).nullable().optional(),
-  how_heard: z.string().max(50).nullable().optional(),
+  how_heard: z.string().min(1, "Please tell us how you heard about us.").max(50),
   // Referrer — REQUIRED hard gate: the registrant must make an explicit choice (an "none" value
   // is a valid explicit "I found this myself"); a missing/empty referrer_type is rejected.
   referrer_type: z.string().min(1, "Please choose a referrer option.").max(50),

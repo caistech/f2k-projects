@@ -375,6 +375,13 @@ export default function RegistrationForm() {
       return;
     }
 
+    // Hard gate: how they heard about us is required (the "where did you find
+    // us" half — paired with the referrer below).
+    if (!howHeard) {
+      setError("Please tell us how you heard about us.");
+      return;
+    }
+
     // Hard gate: the referrer choice cannot be skipped (an explicit "None" counts).
     if (!referrerType) {
       setError(
@@ -597,6 +604,166 @@ export default function RegistrationForm() {
           </div>
         )}
       </div>
+
+      {/* ===== REGISTRATION FORM ===== */}
+      {selectedLots.length === 0 ? (
+        <div
+          id="register"
+          className="bg-white border-2 border-dashed border-[#00B5AD]/30 p-8 sm:p-12 text-center"
+        >
+          <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+            Your Registration
+          </p>
+          <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
+            Pick a Lot Above to Begin
+          </h2>
+          <p className="text-slate font-archivo leading-relaxed mb-6 max-w-[560px] mx-auto">
+            The registration form opens once you choose at least one lot on the
+            subdivision plan above. You can pick multiple lots — each one will
+            give you a slot to set your price expectation and dwelling
+            preference before you complete the form.
+          </p>
+          <a
+            href="#site-map"
+            className="inline-flex items-center gap-2 bg-[#00B5AD] hover:bg-[#009E97] text-white px-6 py-3 font-archivo font-semibold transition-colors"
+          >
+            <span aria-hidden>↑</span> Scroll back to the subdivision plan
+          </a>
+          <p className="font-archivo text-xs text-slate/60 mt-6 leading-relaxed max-w-[560px] mx-auto">
+            <span className="text-[#00B5AD] font-semibold">Available</span>{" "}
+            lots are coloured green on the plan.{" "}
+            <span className="text-slate font-semibold">Reserved</span>,{" "}
+            <span className="text-slate font-semibold">Sold</span>, and{" "}
+            <span className="text-slate font-semibold">Coming soon</span> lots
+            are not selectable for registration.
+          </p>
+        </div>
+      ) : (
+      <div id="register">
+        <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+          Your Details
+        </p>
+        <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
+          Register Your Interest
+        </h2>
+        <p className="text-slate font-archivo leading-relaxed mb-8">
+          Complete the form below to register your interest in Seafields Estate.
+          No deposit or commitment is required. The more you tell us, the better
+          we can keep you informed with relevant updates.
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Honeypot */}
+          <input
+            tabIndex={-1}
+            aria-hidden
+            autoComplete="off"
+            name="hp_field"
+            id="hp_field"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+            style={{ position: "absolute", left: "-9999px" }}
+          />
+
+          {/* Contact Details */}
+          <div className="border border-black/5 bg-white p-5">
+            <p className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-[#00B5AD] mb-4">
+              Contact Details
+            </p>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="sf-firstName" className={labelClass}>
+                    First Name *
+                  </label>
+                  <input
+                    id="sf-firstName"
+                    type="text"
+                    required
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className={inputClass}
+                    placeholder="Jane"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="sf-lastName" className={labelClass}>
+                    Last Name *
+                  </label>
+                  <input
+                    id="sf-lastName"
+                    type="text"
+                    required
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className={inputClass}
+                    placeholder="Smith"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="sf-email" className={labelClass}>
+                    Email Address *
+                  </label>
+                  <input
+                    id="sf-email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={inputClass}
+                    placeholder="jane@example.com"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="sf-phone" className={labelClass}>
+                    Phone Number
+                  </label>
+                  <input
+                    id="sf-phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className={inputClass}
+                    placeholder="0400 000 000"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="sf-suburb" className={labelClass}>
+                    Current Suburb / Town
+                  </label>
+                  <SuburbAutocomplete
+                    id="sf-suburb"
+                    value={suburb}
+                    onChange={setSuburb}
+                    onSelectPostcode={setPostcode}
+                    className={inputClass}
+                    placeholder="e.g. Geraldton, Waggrakine, Bluff Point"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="sf-postcode" className={labelClass}>
+                    Postcode
+                  </label>
+                  <input
+                    id="sf-postcode"
+                    type="text"
+                    value={postcode}
+                    onChange={(e) => setPostcode(e.target.value)}
+                    className={inputClass}
+                    placeholder="e.g. 6530"
+                    maxLength={4}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
 
       {/* ===== INTEREST TYPE ===== */}
       {selectedLots.length > 0 && (
@@ -931,166 +1098,6 @@ export default function RegistrationForm() {
         </div>
       )}
 
-      {/* ===== REGISTRATION FORM ===== */}
-      {selectedLots.length === 0 ? (
-        <div
-          id="register"
-          className="bg-white border-2 border-dashed border-[#00B5AD]/30 p-8 sm:p-12 text-center"
-        >
-          <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
-            Your Registration
-          </p>
-          <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
-            Pick a Lot Above to Begin
-          </h2>
-          <p className="text-slate font-archivo leading-relaxed mb-6 max-w-[560px] mx-auto">
-            The registration form opens once you choose at least one lot on the
-            subdivision plan above. You can pick multiple lots — each one will
-            give you a slot to set your price expectation and dwelling
-            preference before you complete the form.
-          </p>
-          <a
-            href="#site-map"
-            className="inline-flex items-center gap-2 bg-[#00B5AD] hover:bg-[#009E97] text-white px-6 py-3 font-archivo font-semibold transition-colors"
-          >
-            <span aria-hidden>↑</span> Scroll back to the subdivision plan
-          </a>
-          <p className="font-archivo text-xs text-slate/60 mt-6 leading-relaxed max-w-[560px] mx-auto">
-            <span className="text-[#00B5AD] font-semibold">Available</span>{" "}
-            lots are coloured green on the plan.{" "}
-            <span className="text-slate font-semibold">Reserved</span>,{" "}
-            <span className="text-slate font-semibold">Sold</span>, and{" "}
-            <span className="text-slate font-semibold">Coming soon</span> lots
-            are not selectable for registration.
-          </p>
-        </div>
-      ) : (
-      <div id="register">
-        <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
-          Your Details
-        </p>
-        <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
-          Register Your Interest
-        </h2>
-        <p className="text-slate font-archivo leading-relaxed mb-8">
-          Complete the form below to register your interest in Seafields Estate.
-          No deposit or commitment is required. The more you tell us, the better
-          we can keep you informed with relevant updates.
-        </p>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Honeypot */}
-          <input
-            tabIndex={-1}
-            aria-hidden
-            autoComplete="off"
-            name="hp_field"
-            id="hp_field"
-            value={honeypot}
-            onChange={(e) => setHoneypot(e.target.value)}
-            style={{ position: "absolute", left: "-9999px" }}
-          />
-
-          {/* Contact Details */}
-          <div className="border border-black/5 bg-white p-5">
-            <p className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-[#00B5AD] mb-4">
-              Contact Details
-            </p>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="sf-firstName" className={labelClass}>
-                    First Name *
-                  </label>
-                  <input
-                    id="sf-firstName"
-                    type="text"
-                    required
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className={inputClass}
-                    placeholder="Jane"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="sf-lastName" className={labelClass}>
-                    Last Name *
-                  </label>
-                  <input
-                    id="sf-lastName"
-                    type="text"
-                    required
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className={inputClass}
-                    placeholder="Smith"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="sf-email" className={labelClass}>
-                    Email Address *
-                  </label>
-                  <input
-                    id="sf-email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={inputClass}
-                    placeholder="jane@example.com"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="sf-phone" className={labelClass}>
-                    Phone Number
-                  </label>
-                  <input
-                    id="sf-phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className={inputClass}
-                    placeholder="0400 000 000"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="sf-suburb" className={labelClass}>
-                    Current Suburb / Town
-                  </label>
-                  <SuburbAutocomplete
-                    id="sf-suburb"
-                    value={suburb}
-                    onChange={setSuburb}
-                    onSelectPostcode={setPostcode}
-                    className={inputClass}
-                    placeholder="e.g. Geraldton, Waggrakine, Bluff Point"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="sf-postcode" className={labelClass}>
-                    Postcode
-                  </label>
-                  <input
-                    id="sf-postcode"
-                    type="text"
-                    value={postcode}
-                    onChange={(e) => setPostcode(e.target.value)}
-                    className={inputClass}
-                    placeholder="e.g. 6530"
-                    maxLength={4}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* About You */}
           <div className="border border-black/5 bg-white p-5">
             <p className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-[#00B5AD] mb-1">
@@ -1199,24 +1206,6 @@ export default function RegistrationForm() {
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label htmlFor="sf-howHeard" className={labelClass}>
-                    How did you hear about us?
-                  </label>
-                  <select
-                    id="sf-howHeard"
-                    value={howHeard}
-                    onChange={(e) => setHowHeard(e.target.value)}
-                    className={selectClass}
-                  >
-                    <option value="">— Select —</option>
-                    {HOW_HEARD.map((h) => (
-                      <option key={h} value={h}>
-                        {h}
-                      </option>
-                    ))}
-                  </select>
-                </div>
               </div>
             </div>
           </div>
@@ -1272,23 +1261,47 @@ export default function RegistrationForm() {
             </div>
           </div>
 
-          {/* Referral / Agent */}
+          {/* How You Found Us / Referral — required */}
           <div className="border border-black/5 bg-white p-5">
-            <p className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-slate/50 mb-1">
-              Optional
+            <p className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-[#00B5AD] mb-1">
+              Required
             </p>
-            <p className="font-archivo font-semibold text-deep-blue text-sm mb-4">
-              Were you referred by a real estate agent or other party?
+            <p className="font-archivo font-semibold text-deep-blue text-sm mb-1">
+              How you found us &amp; who referred you
             </p>
             <p className="text-xs text-slate/60 font-archivo mb-4">
-              If someone referred you to this project, provide their details
-              below so we can log them for any applicable referral arrangements.
+              Please tell us how you heard about Seafields Estate and whether
+              anyone referred you — both are required so we can look after you and
+              credit the right agent or partner. Choose “None / I found this
+              myself” for the referrer if no one referred you.
             </p>
 
             <div className="space-y-4">
               <div>
+                <label htmlFor="sf-howHeard" className={labelClass}>
+                  How did you hear about us? *
+                </label>
+                <select
+                  id="sf-howHeard"
+                  value={howHeard}
+                  onChange={(e) => setHowHeard(e.target.value)}
+                  className={selectClass}
+                  required
+                >
+                  <option value="" disabled>
+                    — Please choose —
+                  </option>
+                  {HOW_HEARD.map((h) => (
+                    <option key={h} value={h}>
+                      {h}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
                 <label htmlFor="sf-referrerType" className={labelClass}>
-                  Referrer Type
+                  Were you referred by anyone? *
                 </label>
                 <select
                   id="sf-referrerType"
