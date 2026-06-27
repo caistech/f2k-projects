@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrationsMaintenanceGuard } from "@/lib/maintenance";
 import { createHash } from "node:crypto";
 import { createSupabaseService } from "@/lib/supabase-service";
 import { escapeHtml } from "@/lib/html-escape";
@@ -70,6 +71,9 @@ function getClientIp(req: Request): string | null {
 }
 
 export async function POST(request: Request) {
+  const paused = registrationsMaintenanceGuard();
+  if (paused) return paused;
+
   const fromAddress = process.env.RESEND_FROM_EMAIL_HEMP_HOMES;
   if (!fromAddress) {
     console.error(

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrationsMaintenanceGuard } from "@/lib/maintenance";
 import { createSupabaseService } from "@/lib/supabase-service";
 import { escapeHtml } from "@/lib/html-escape";
 import { guardRecipients } from "@/lib/email/recipient-guard";
@@ -62,6 +63,9 @@ function extFromName(name: string): string {
 }
 
 export async function POST(request: Request) {
+  const paused = registrationsMaintenanceGuard();
+  if (paused) return paused;
+
   const formData = await request.formData().catch(() => null);
   if (!formData) {
     return NextResponse.json(
