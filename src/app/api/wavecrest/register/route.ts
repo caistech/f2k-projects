@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { registrationsMaintenanceGuard } from "@/lib/maintenance";
 import { createSupabaseService } from "@/lib/supabase-service";
 import { escapeHtml } from "@/lib/html-escape";
 import { guardRecipients } from "@/lib/email/recipient-guard";
@@ -35,6 +36,9 @@ const schema = z.object({
 });
 
 export async function POST(request: Request) {
+  const paused = registrationsMaintenanceGuard();
+  if (paused) return paused;
+
   const body = await request.json();
   const parsed = schema.safeParse(body);
 
