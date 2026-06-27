@@ -62,7 +62,10 @@ jobs:
           if [ -f pnpm-lock.yaml ]; then
             pnpm install --frozen-lockfile
           elif [ -f package-lock.json ]; then
-            npm ci
+            # npm ci is strict; fall back to npm install when the lockfile has
+            # cross-platform optional-dep drift (e.g. Linux-only @emnapi entries
+            # absent from a Windows-generated lockfile) so the gate still runs.
+            npm ci || npm install --no-audit --no-fund
           else
             npm install
           fi
