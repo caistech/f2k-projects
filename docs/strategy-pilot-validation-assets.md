@@ -8,10 +8,17 @@ go/no-go design doc: `~/.gstack/projects/dennissolver-f2k-projects/dennis-main-d
 
 > **Guardrail carried from office-hours:** Andrew is the **on-ramp, not the finish line**. The win from
 > the Andrew call is a *named buyer introduction* + an honest partner-or-competitor read. Run a
-> non-Andrew buyer path in parallel (don't single-thread through a competitor-peer). Validation only
-> counts when a **buyer-developer signs a paid pilot** (signed LOI + deposit, or pilot contract) — not
-> a nod, not a warm intro. Before any buyer pitch, lock the modular-supply answer + the pilot price
-> with Uwe.
+> non-Andrew buyer path in parallel (don't single-thread through a competitor-peer). Before any buyer
+> pitch, close the 4 open supply/price gaps with Uwe (clarifying reply sent 2026-06-28).
+>
+> **Updated 2026-06-28 (Uwe's answers):**
+> - **WA-only constraint REMOVED** — F2K has east-coast + offshore modular choices, so the Melbourne
+>   leads (Blueways / Andrew's network) are valid first-pilot targets. Don't restrict the Andrew ask
+>   to WA developers.
+> - **Validation = a PROJECT COMMITMENT, not the platform fee.** The platform licence is only $5–10k
+>   (favour-level for a big developer); the real money + the real "yes" is the developer committing
+>   one project's home-build to F2K modular H&L. The validating signal is a signed commitment of the
+>   project's modular H&L order — NOT a software-subscription payment.
 
 ---
 
@@ -74,9 +81,16 @@ productisation roadmap. Enough for Andrew to vouch + introduce, not enough to ru
 ---
 
 ## Before you send (pre-flight)
-- [ ] Warm-intro ask to Simon/Nelson (asset 3) — this week.
+- [ ] Warm-intro ask to Simon/Nelson (asset 3) — this week. **(WA or east-coast developer — no geo limit.)**
 - [ ] Non-Andrew buyer path: list 1–2 developers you/Uwe already know, in parallel.
-- [ ] Andrew call within 2 weeks; goal = a **named buyer intro**, not "this is great."
-- [ ] Before any *buyer* pitch: lock modular-supply (supplier + package + lead-time + margin) and the
-  pilot price floor with Uwe.
+- [ ] Andrew call within 2 weeks; goal = a **named buyer intro** to a developer with a project + lots.
+- [ ] Before any *buyer* pitch, close the 4 Uwe gaps (clarifying reply sent 2026-06-28):
+  (1) **per-home H&L gross margin** — the load-bearing number; (2) reconcile $10k setup vs $5k/yr;
+  (3) is "agent commission" F2K revenue or pass-through; (4) pilot supplier (i-Homes vs offshore).
+- [ ] Frame the ask as a **project commitment to F2K modular H&L**, not a platform subscription —
+  that's the only thing that counts as validation.
 - [ ] Stop-rule: no signed pilot within ~8 weeks of the first buyer conversation → NO-GO, re-ideate.
+
+**Supply facts now locked (Uwe, 2026-06-28):** i-Homes → F2K offshore programme at scale; 6mo
+pre-design / 9mo custom; capacity yes for 5–20 homes; delivery risk on suppliers, not F2K;
+east-coast + offshore reach.
