@@ -178,14 +178,10 @@ export default function RegistrationForm() {
     e.preventDefault();
     setError(null);
 
-    // Bot trap. hp_field is named non-semantically so browser autofill can't drop a
-    // value into it and silently lose a real registration; we also reject implausibly
-    // fast submits. A normal human submission is never silently dropped.
+    // Bot signals (honeypot + time-trap) are SENT TO THE SERVER, which decides whether to
+    // record the submission. We never fake-success on the client and skip the API — that
+    // silently drops real submissions (PRODUCT_STANDARDS; the 2026-06-15 lost-lead bug).
     const elapsedMs = Date.now() - formLoadedAt.current;
-    if (honeypot || elapsedMs < 2500) {
-      setSuccess(true);
-      return;
-    }
 
     if (selectedUnits.length === 0) {
       setError("Please select at least one home on the site map above.");
@@ -241,6 +237,8 @@ export default function RegistrationForm() {
             referrerAgentId && referrerAgentId !== "no-agent" ? referrerAgentId : null,
           notes: notes.trim() || null,
           consent,
+          hp_field: honeypot,
+          elapsed_ms: elapsedMs,
         }),
       });
 

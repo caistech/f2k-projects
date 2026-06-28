@@ -117,11 +117,10 @@ export default function RegistrationForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    // Bot trap — autofill-safe hp_field + time-trap; a real human is never silently dropped.
-    if (honeypot || Date.now() - formLoadedAt.current < 2500) {
-      setSuccess(true);
-      return;
-    }
+    // Bot signals (honeypot + time-trap) are SENT TO THE SERVER, which decides whether to
+    // record the submission. We never fake-success on the client and skip the API — that
+    // silently drops real submissions (PRODUCT_STANDARDS; the 2026-06-15 lost-lead bug).
+    const elapsedMs = Date.now() - formLoadedAt.current;
     if (!consent) {
       setError("Please confirm you understand this is a Registration of Interest only.");
       return;
@@ -161,6 +160,8 @@ export default function RegistrationForm() {
             referrerAgentId && referrerAgentId !== "no-agent" ? referrerAgentId : null,
           notes: notes.trim() || null,
           consent,
+          hp_field: honeypot,
+          elapsed_ms: elapsedMs,
         }),
       });
       if (!res.ok) {
