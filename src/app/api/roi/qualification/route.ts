@@ -7,6 +7,7 @@ import { escapeHtml } from "@/lib/html-escape";
 import { getActiveRecipients, renderBrandedEmail } from "@/lib/branscombe/notify";
 import { guardRecipients } from "@/lib/email/recipient-guard";
 import { registrantAckFooterHtml } from "@/lib/email/unsubscribe";
+import { forwardRegistrationToGHL } from "@/lib/ghl";
 import { parseQualifyToken } from "@/lib/roi/qualify-link";
 import {
   PURCHASER_ENTITY_TYPES,
@@ -292,6 +293,58 @@ export async function POST(request: Request) {
     });
   } catch (err) {
     console.error("roi qualification email failed:", err);
+  }
+
+  // CRM forward — the EOI carries the rich unit/price/finance signals GHL wants (best-effort).
+  try {
+    let referrerName: string | null = null;
+    if (waitlist.introducing_agent_id) {
+      const { data: agent } = await (supabase.from("agents") as any)
+        .select("name")
+        .eq("id", waitlist.introducing_agent_id)
+        .maybeSingle();
+      referrerName = agent?.name ?? null;
+    }
+    const [firstName, ...rest] = payload.full_name.split(/\s+/);
+    const noteBits = [
+      payload.indicative_price != null
+        ? `Indicative $${payload.indicative_price.toLocaleString()}`
+        : "POA",
+      `Deposit ${payload.deposit}`,
+      `Entity ${payload.purchaser_entity_type}`,
+      `Subject to finance: ${payload.subject_to_finance}`,
+      payload.settlement_timing ? `Settlement: ${payload.settlement_timing}` : null,
+      payload.colour_scheme ? `Colour: ${payload.colour_scheme}` : null,
+      payload.special_comments,
+    ]
+      .filter(Boolean)
+      .join(" · ");
+    await forwardRegistrationToGHL(
+      {
+        email: payload.email,
+        firstName: firstName || payload.full_name,
+        lastName: rest.join(" "),
+        phone: payload.mobile,
+        buyerType: payload.buyer_category,
+        financeStatus: payload.finance_status,
+        itemsSelected: d.ranked_unit_numbers.map((n) => `U${n}`),
+        pricePreferences:
+          payload.indicative_price != null && d.ranked_unit_numbers.length
+            ? Object.fromEntries(
+                d.ranked_unit_numbers.map((n) => [
+                  `U${n}`,
+                  `$${payload.indicative_price!.toLocaleString()}`,
+                ]),
+              )
+            : null,
+        referrerType: referrerName ? "Real Estate Agent" : null,
+        referrerName,
+        notes: noteBits || null,
+      },
+      "branscombe",
+    );
+  } catch (err) {
+    console.error("roi qualification GHL forward threw:", err);
   }
 
   return NextResponse.json({ success: true });
