@@ -124,3 +124,35 @@ mismatch). Keep capital/JV cross-pollination as upside, not the lead.
 
 **Next:** `/office-hours` go/no-go on (a) the positioning, (b) Andrew-as-first-conversation, (c) is
 this a bandwidth trap. Then, on GO: warm-intro request to Simon/Nelson for Andrew.
+
+---
+
+## 7. Update — Uwe's supply + pricing answers (2026-06-28)
+
+Two of these **materially change the office-hours plan**:
+
+**Locked (the offer is mostly deliverable):**
+- **Capability** confirmed ("the whole premise of F2K").
+- **Supplier:** start on **i-Homes**, move to the **F2K offshore-modular programme** at scale.
+- **Lead-time:** 6 months pre-designed / 9 months custom.
+- **Capacity:** yes for a 5–20 home project.
+- **Delivery risk** sits with the **suppliers/partners, not F2K** (clean coordinator position).
+- **Pricing:** $10k + GST platform setup; $5k/yr floor (up to 3 projects); + H&L margins + agent fees.
+
+**CHANGE 1 — the WA-only geographic constraint is REMOVED.** Uwe: *"have east coast and offshore
+choices."* The office-hours narrowing ("first pilot probably WA/Perth") rested on a wrong assumption
+(WA-only supply). **Blueways + Andrew's Melbourne-heavy network are back in play as first-pilot
+targets** — don't restrict the Andrew ask to WA developers.
+
+**CHANGE 2 — recalibrate the validation signal.** The platform fee ($5–10k) is favour-level money for
+a big developer, not a demand signal. The real revenue + commitment is the **modular H&L margin across
+a project's homes**. So the behavioral "yes" that validates the thesis is **a developer committing one
+project's home-build to F2K modular H&L**, NOT a platform-licence payment. Make the pilot ask a
+**project commitment, not a software subscription.**
+
+**Open gaps (close before a buyer pitch — clarifying reply sent to Uwe 2026-06-28):**
+1. **Per-home H&L gross margin** (Wavecrest Lot 91 shape: turnkey − cost = GM) — the load-bearing
+   unknown; that's where ~all the pilot money is.
+2. **Price reconciliation** — $10k setup vs $5k/yr-up-to-3-projects → one coherent line.
+3. **"Agent commission fees"** — F2K revenue (clip on attributed sales) or pass-through to agents?
+4. **Pilot supplier** — does a 5–20 home pilot run on i-Homes or trigger the offshore programme?
