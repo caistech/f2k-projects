@@ -43,6 +43,10 @@ const schema = z.object({
       message: "You must acknowledge this is a registration of interest only",
     }),
   }),
+  // Anti-bot. honeypot accepts ANY value (never a 400); the time-trap is the primary signal.
+  // Handled server-side so a real submission is never silently dropped on the client.
+  hp_field: z.string().optional(),
+  elapsed_ms: z.number().optional(),
 });
 
 export async function POST(request: Request) {
@@ -60,6 +64,20 @@ export async function POST(request: Request) {
   }
 
   const d = parsed.data;
+
+  // Anti-bot (server-side): honeypot filled OR implausibly fast => accept the request shape
+  // but do NOT record it. Never a client-side fake-success that silently loses a real lead.
+  if (
+    (typeof d.hp_field === "string" && d.hp_field.trim() !== "") ||
+    (typeof d.elapsed_ms === "number" && d.elapsed_ms < 2500)
+  ) {
+    console.warn("branscombe register bot trap:", {
+      hp: !!d.hp_field?.trim(),
+      elapsed: d.elapsed_ms,
+    });
+    return NextResponse.json({ success: true });
+  }
+
   const supabase = createSupabaseService();
 
   const { error } = await (supabase.from("branscombe_registrations") as any).insert({

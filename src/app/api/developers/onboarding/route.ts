@@ -146,6 +146,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true });
   }
 
+  // Anti-bot (server-side): honeypot filled OR implausibly fast => accept the request shape
+  // but do NOT record it. Never a client-side fake-success that silently loses a real lead.
+  // honeypot accepts ANY value (never a 400) and the time-trap is the primary signal.
+  const hp = String(formData.get("hp_field") || "");
+  const elapsed = Number(formData.get("elapsed_ms") || 0);
+  if (hp.trim() !== "" || (elapsed && elapsed < 2500)) {
+    console.warn("developers onboarding bot trap:", { hp: !!hp.trim(), elapsed });
+    return NextResponse.json({ success: true });
+  }
+
   const supabase = createSupabaseService();
 
   // ---- Upload files (best-effort per-file; a failed upload is skipped, not fatal) ----

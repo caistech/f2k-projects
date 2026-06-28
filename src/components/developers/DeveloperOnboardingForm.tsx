@@ -162,16 +162,10 @@ export default function DeveloperOnboardingForm({
     e.preventDefault();
     setError(null);
 
-    // Bot trap. The hidden field is named non-semantically (hp_field) so browser
-    // autofill / password managers can't drop a value into it and silently lose a
-    // real submission (the 'company_url' name used to do exactly that). We only
-    // treat it as a bot when that field is filled OR the form is submitted
-    // implausibly fast — never on a normal human submission.
+    // Bot signals (honeypot + time-trap) are SENT TO THE SERVER, which decides whether to
+    // record the submission. We never fake-success on the client and skip the API — that
+    // silently drops real submissions (PRODUCT_STANDARDS; the 2026-06-15 lost-lead bug).
     const elapsedMs = Date.now() - formLoadedAt.current;
-    if (honeypot || elapsedMs < 2500) {
-      setSuccess(true);
-      return;
-    }
     if (!consent) {
       setError("Please tick the consent box so we can contact you.");
       return;
@@ -252,6 +246,9 @@ export default function DeveloperOnboardingForm({
       );
       for (const f of files) fd.append("files", f);
       for (const f of titleFiles) fd.append("title_files", f);
+      // Bot signals sent to the server (it decides) — never a client-side fake-success.
+      fd.append("hp_field", honeypot);
+      fd.append("elapsed_ms", String(elapsedMs));
 
       const res = await fetch("/api/developers/onboarding", {
         method: "POST",
