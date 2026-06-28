@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAgent, canAccess } from "@/components/agent/AgentContext";
+import ShareLinkCard from "@/components/agent/ShareLinkCard";
 
 interface Client {
   registration_id: string;
@@ -224,6 +225,9 @@ export default function MyClientsPage() {
           <a href="/admin/agents" className="text-sm text-[#00766f] hover:underline">← Back to admin</a>
         </div>
       )}
+      {/* Agent self-serve referral link (own session only — not in admin "view as" preview). */}
+      {!isViewAs && <ShareLinkCard />}
+
       <h1 className="text-2xl font-bold text-slate-900 mb-1">My Clients</h1>
       <div className="flex items-center gap-4 mb-6">
         <p className="text-sm text-slate-500 max-w-2xl">The buyers registered to you. These are the registrations linked to your agent account — you see their full details; all other buyers stay private.</p>
