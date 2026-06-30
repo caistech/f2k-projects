@@ -22,7 +22,7 @@ export async function GET(request: Request) {
   if (!e) return NextResponse.json({ error: "Unknown estate" }, { status: 400 });
 
   const { data: waitlist } = await (supabase.from("waitlist_registrations") as any)
-    .select("id, status, introducing_agent_id, nudged_at")
+    .select("id, status, introducing_agent_id, nudged_at, pipeline_stage, pipeline_state, finance_status, exit_reason, exit_stage")
     .eq("estate_id", e.id)
     .limit(5000);
   const { data: regs } = await (supabase.from("registrations") as any)
@@ -49,18 +49,34 @@ export async function GET(request: Request) {
   }
 
   const byStatus: Record<string, number> = {};
+  const byStage: Record<string, number> = {};
+  const byState: Record<string, number> = {};
+  const byFinance: Record<string, number> = {};
+  // Drop-off: withdrawn buyers grouped by the stage they died at × the reason.
+  const dropOff: Record<string, number> = {};
   let attributed = 0;
   let nudged = 0;
   for (const r of wl) {
     byStatus[r.status] = (byStatus[r.status] ?? 0) + 1;
+    byStage[r.pipeline_stage ?? "enquiry"] = (byStage[r.pipeline_stage ?? "enquiry"] ?? 0) + 1;
+    byState[r.pipeline_state ?? "active"] = (byState[r.pipeline_state ?? "active"] ?? 0) + 1;
+    byFinance[r.finance_status ?? "unknown"] = (byFinance[r.finance_status ?? "unknown"] ?? 0) + 1;
+    if (r.pipeline_state === "withdrawn" && r.exit_reason) {
+      const key = `${r.exit_stage ?? "unknown"}|${r.exit_reason}`;
+      dropOff[key] = (dropOff[key] ?? 0) + 1;
+    }
     if (r.introducing_agent_id) attributed++;
     if (r.nudged_at) nudged++;
   }
 
-  const financeReady = rg.filter((r: any) => {
-    const f = r.payload?.finance_status;
-    return f === "Cash" || f === "Pre-approved";
-  }).length;
+  // Finance-qualified buyers (the real signal): cash / pre-approved / qualified.
+  const financeReady = wl.filter((r: any) =>
+    ["cash", "preapproved", "qualified"].includes(r.finance_status),
+  ).length;
+  // Registered = completed the NEW signed qualification form (honest count, not the old conflation).
+  const registeredCount = (byStage["registered"] ?? 0) +
+    (byStage["offer"] ?? 0) + (byStage["contract_conditional"] ?? 0) +
+    (byStage["unconditional"] ?? 0) + (byStage["settled"] ?? 0);
 
   // Per-agent funnel: waitlist count → qualification count.
   const byAgent: Record<string, { agent: string; waitlist: number; qualifications: number }> = {};
@@ -76,12 +92,17 @@ export async function GET(request: Request) {
   return NextResponse.json({
     estate,
     waitlist_total: wl.length,
-    qualification_total: rg.length,
+    qualification_total: rg.length, // legacy field (count of artefact-2 rows); kept for compatibility
+    registered_count: registeredCount, // honest: reached the registered stage or beyond
     attributed,
     unassigned: wl.length - attributed,
     nudged,
     finance_ready: financeReady,
     by_status: byStatus,
+    by_stage: byStage,
+    by_state: byState,
+    by_finance: byFinance,
+    drop_off: dropOff,
     by_agent: Object.values(byAgent).sort((a, b) => b.waitlist - a.waitlist),
   });
 }

@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 
   let query = (supabase.from("waitlist_registrations") as any)
     .select(
-      "id, name, email, mobile, buyer_category, status, consent_contact, nudged_at, qualification_sent_at, qualification_sent_by, submitted_at, introducing_agent_id",
+      "id, name, email, mobile, buyer_category, status, consent_contact, nudged_at, qualification_sent_at, qualification_sent_by, submitted_at, introducing_agent_id, pipeline_stage, pipeline_state, exit_reason, exit_stage, exit_note, viewed_at, viewed_mode, finance_status, nominated_advisor_id, finance_conditional_amount, holding_deposit_at",
     )
     .order("submitted_at", { ascending: false })
     .limit(500);
@@ -56,6 +56,19 @@ export async function GET(request: Request) {
     for (const a of agents ?? []) agentNames[a.id] = a.name;
   }
 
+  // Resolve nominated advisor names (finance gate).
+  const advisorIds = Array.from(
+    new Set((rows ?? []).map((r: any) => r.nominated_advisor_id).filter(Boolean)),
+  );
+  const advisorNames: Record<string, string> = {};
+  if (advisorIds.length) {
+    const { data: advisors } = await (supabase.from("advisors") as any)
+      .select("id, name, firm")
+      .in("id", advisorIds);
+    for (const a of advisors ?? [])
+      advisorNames[a.id] = a.firm ? `${a.name} (${a.firm})` : a.name;
+  }
+
   // Human label for who sent the form.
   const senderLabel = (by: string | null): string | null => {
     if (!by) return null;
@@ -78,6 +91,19 @@ export async function GET(request: Request) {
     submitted_at: r.submitted_at,
     introducing_agent_id: r.introducing_agent_id ?? null,
     agent_name: r.introducing_agent_id ? agentNames[r.introducing_agent_id] ?? "Unknown" : null,
+    // Pipeline spine (0066).
+    pipeline_stage: r.pipeline_stage ?? "enquiry",
+    pipeline_state: r.pipeline_state ?? "active",
+    exit_reason: r.exit_reason ?? null,
+    exit_stage: r.exit_stage ?? null,
+    exit_note: r.exit_note ?? null,
+    viewed_at: r.viewed_at ?? null,
+    viewed_mode: r.viewed_mode ?? null,
+    finance_status: r.finance_status ?? "unknown",
+    nominated_advisor_id: r.nominated_advisor_id ?? null,
+    advisor_name: r.nominated_advisor_id ? advisorNames[r.nominated_advisor_id] ?? "Unknown" : null,
+    finance_conditional_amount: r.finance_conditional_amount ?? null,
+    holding_deposit_at: r.holding_deposit_at ?? null,
   }));
 
   return NextResponse.json({ waitlist });
