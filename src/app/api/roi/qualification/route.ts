@@ -222,18 +222,43 @@ export async function POST(request: Request) {
       payload.indicative_price != null
         ? `$${payload.indicative_price.toLocaleString()}`
         : "POA — discuss with agent";
-    const rows: Array<{ label: string; value: string }> = [
-      { label: "Applicant", value: `<strong>${escapeHtml(payload.full_name)}</strong>` },
-      { label: "Email", value: escapeHtml(payload.email) },
-      { label: "Preferred homes", value: `<strong>${escapeHtml(unitList)}</strong>` },
-      { label: "Entity", value: escapeHtml(payload.purchaser_entity_type) },
-      { label: "Indicative price", value: escapeHtml(priceText) },
-      { label: "Deposit", value: escapeHtml(payload.deposit) },
-      { label: "Finance", value: escapeHtml(payload.finance_status) },
-    ];
-    if (payload.colour_scheme) rows.push({ label: "Colour scheme", value: escapeHtml(payload.colour_scheme) });
+    const depositPct =
+      d.deposit_option === "Other" ? `${d.deposit_other_pct}% (other)` : payload.deposit;
 
-    // F2K admin + introducing-agent copy.
+    // ONE full copy of the submitted (prefilled + completed) form. Everyone gets the same
+    // complete record — registrant, F2K admin (Dennis/Uwe), and the introducing agent —
+    // not an abridged summary (Dennis request 2026-06-30). Empty fields are dropped.
+    const detailRows: Array<{ label: string; value: string | null }> = [
+      { label: "Applicant", value: payload.full_name },
+      {
+        label: "Second applicant",
+        value: payload.applicants_count === 2 ? payload.applicant2_name || "—" : null,
+      },
+      { label: "Email", value: payload.email },
+      { label: "Mobile", value: payload.mobile },
+      { label: "Postal address", value: payload.postal_address },
+      { label: "Buyer category", value: payload.buyer_category },
+      { label: "Purchasing as", value: payload.purchaser_entity_type },
+      { label: "Preferred contact", value: payload.preferred_contact_method },
+      { label: "Preferred homes (ranked)", value: unitList },
+      { label: "Indicative price", value: priceText },
+      { label: "Deposit", value: depositPct },
+      { label: "Finance status", value: payload.finance_status },
+      { label: "Lender / broker", value: payload.lender_broker },
+      { label: "Estimated amount / LVR", value: payload.estimated_amount_or_lvr },
+      { label: "Subject to finance", value: payload.subject_to_finance },
+      { label: "Finance approval (days)", value: payload.finance_approval_days },
+      { label: "Settlement timing", value: payload.settlement_timing },
+      { label: "Colour scheme", value: payload.colour_scheme },
+      { label: "Comments", value: payload.special_comments },
+      { label: "Signed by", value: payload.signature_name },
+      { label: "Date", value: payload.signature_date },
+    ];
+    const filteredDetails = detailRows.filter(
+      (r) => r.value != null && String(r.value).trim() !== "",
+    );
+
+    // F2K admin + introducing-agent copy — full form, same as the registrant sees.
     const recipients = await getActiveRecipients();
     let agentEmail: string | null = null;
     if (waitlist.introducing_agent_id) {
@@ -247,8 +272,11 @@ export async function POST(request: Request) {
     const adminHtml = renderBrandedEmail({
       preheader: `${payload.full_name} completed the registration form`,
       heading: `Qualification (EOI) received — ${escapeHtml(payload.full_name)}`,
-      intro: `${escapeHtml(payload.full_name)} completed the full registration form for ${escapeHtml(unitList)}.`,
-      rows,
+      intro: `${escapeHtml(payload.full_name)} completed the full registration form for ${escapeHtml(unitList)}. Full submission below.`,
+      rows: filteredDetails.map((r) => ({
+        label: r.label,
+        value: escapeHtml(String(r.value)),
+      })),
       ctaLabel: "Open in admin",
       ctaHref: "https://f2k-projects.vercel.app/admin/branscombe-pipeline",
       footer:
@@ -263,7 +291,21 @@ export async function POST(request: Request) {
     });
     if (adminErr) console.error("roi qualification admin notification: Resend send error:", adminErr);
 
-    // Applicant confirmation (restates non-binding).
+    // Applicant confirmation (restates non-binding + echoes back what they submitted,
+    // so the registrant keeps a copy of their entered data — Uwe request 2026-06-30).
+    const detailTable = filteredDetails
+      .map(
+        (r) => `
+            <tr>
+              <td style="padding:8px 12px;font-size:13px;color:#4A5568;border-bottom:1px solid #EDF2F7;vertical-align:top;width:42%">${escapeHtml(
+                r.label,
+              )}</td>
+              <td style="padding:8px 12px;font-size:13px;color:#1A2744;border-bottom:1px solid #EDF2F7;vertical-align:top">${escapeHtml(
+                String(r.value),
+              )}</td>
+            </tr>`,
+      )
+      .join("");
     const confirmGuard = guardRecipients(payload.email, { triggeredByEmail: payload.email });
     const { error: confirmErr } = await resend.emails.send({
       to: confirmGuard.to,
@@ -283,7 +325,16 @@ export async function POST(request: Request) {
               a home, no money is payable, all figures are indicative, and nothing is binding unless and
               until a contract is signed and exchanged.
             </p>
-            <p style="font-size:14px;color:#4A5568;line-height:1.6">
+            <p style="font-size:14px;color:#1A2744;line-height:1.6;margin-top:24px">
+              <strong>A copy of the details you submitted</strong>
+            </p>
+            <table style="width:100%;border-collapse:collapse;margin:8px 0 4px">
+              <tbody>${detailTable}</tbody>
+            </table>
+            <p style="font-size:12px;color:#718096;line-height:1.5;margin-top:4px">
+              If anything above is incorrect, just reply to this email and we'll update it.
+            </p>
+            <p style="font-size:14px;color:#4A5568;line-height:1.6;margin-top:20px">
               Your agent and the Factory2Key team will be in touch. Questions? Just reply to this email.
             </p>
             <p style="font-size:14px;color:#1A2744;margin-top:24px">Warm regards,<br><strong>The Factory2Key Team</strong></p>
