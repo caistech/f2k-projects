@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import HeroSitePlan from "@/components/seafields/HeroSitePlan";
 import RegistrationForm from "@/components/seafields/RegistrationForm";
+import BuyerVoiceAgent from "@/components/estate/BuyerVoiceAgent";
 import JoeyRenderGallery from "@/components/seafields/JoeyRenderGallery";
 import {
   DesignGallery,
@@ -203,6 +204,21 @@ export default function SeafieldsEstatePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ===== BUYER CONCIERGE (Marni) — guide/clarifier ===== */}
+      <section className="py-12 px-4 bg-off-white border-b border-black/5">
+        <div className="max-w-[900px] mx-auto">
+          <BuyerVoiceAgent
+            estate={{
+              name: "Seafields Estate",
+              location: "Geraldton, WA",
+              stage: "Registration Open — Stage 1",
+              pricing: "land from $155k, house & land from $485k (indicative)",
+              model: "lot-map",
+            }}
+          />
         </div>
       </section>
 

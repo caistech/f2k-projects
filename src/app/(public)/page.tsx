@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import AustraliaMap from "@/components/AustraliaMap";
 import EstateCard from "@/components/EstateCard";
+import BuyerVoiceAgent from "@/components/estate/BuyerVoiceAgent";
 import { publicEstates } from "@/data/estates";
 
 const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
@@ -89,9 +90,22 @@ export default function HomePage({
         </div>
       </section>
 
+      {/* Buyer concierge (Marni) — portfolio-level guide on the front door. */}
+      <section className="py-12 px-4 bg-off-white border-b border-black/5">
+        <div className="max-w-[900px] mx-auto">
+          <BuyerVoiceAgent
+            estate={{
+              name: "the Factory2Key estates",
+              extra:
+                "F2K has several estates across WA, SA and TAS at different stages. Ask which suits your budget and location, the difference between buying land or a house-and-land package, and how registering your interest works (it's an expression of interest only — no deposit, no obligation).",
+            }}
+          />
+        </div>
+      </section>
+
       <section className="py-12 px-4 bg-white">
         <div className="max-w-[900px] mx-auto text-center">
-          <p className="font-archivo text-sm text-slate mb-3">
+          <p className="font-archivo text-base text-slate mb-3">
             Questions about a Factory2Key development?
           </p>
           <p className="font-archivo text-deep-blue font-semibold">

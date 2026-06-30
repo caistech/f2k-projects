@@ -78,3 +78,20 @@ export const reportsVoiceConfig: VoiceConfig = {
   mode: "discovery",
   textFallback: true,
 };
+
+// "Marni" — the buyer-facing estate CONCIERGE on the PUBLIC landing + estate pages (the buyer
+// analog of Morgan/Sloane). Reuses the provisioned Morgan agent; BuyerVoiceAgent ALWAYS passes
+// the Marni prompt+greeting (with this estate's indicative facts) via the widget `overrides`, so
+// the shared agent speaks as Marni about THIS estate. The typed fallback routes through
+// /api/estate/voice with the same prompt so spoken + typed never drift. Swapping to a dedicated
+// Marni agent later is just setting NEXT_PUBLIC_ELEVENLABS_ESTATE_AGENT_ID. The text fallback
+// works regardless, so the pages stay functional without any env override.
+export const estateVoiceConfig: VoiceConfig = {
+  agentId:
+    process.env.NEXT_PUBLIC_ELEVENLABS_ESTATE_AGENT_ID ||
+    process.env.NEXT_PUBLIC_ELEVENLABS_DEVELOPER_AGENT_ID ||
+    "agent_5901ktzqy26zf9e9eyvxqfr28x47",
+  placement: "inline",
+  mode: "discovery",
+  textFallback: true,
+};

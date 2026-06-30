@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import WaitlistForm from "@/components/roi/WaitlistForm";
+import BuyerVoiceAgent from "@/components/estate/BuyerVoiceAgent";
 import FloorPlanGallery from "@/components/branscombe/FloorPlanGallery";
 import ElevationGallery from "@/components/branscombe/ElevationGallery";
 import HeroSitePlan from "@/components/branscombe/HeroSitePlan";
@@ -124,10 +125,26 @@ export default function BranscombeEstatePage() {
         </div>
       </section>
 
+      {/* ===== BUYER CONCIERGE (Marni) — guide/clarifier ===== */}
+      <section className="py-12 px-4 bg-off-white border-b border-black/5">
+        <div className="max-w-[900px] mx-auto">
+          <BuyerVoiceAgent
+            estate={{
+              name: "Branscombe Estate",
+              location: "Tasmania",
+              stage: "Registration Open",
+              model: "waitlist",
+              extra:
+                "Architecturally unique homes. Buyers join the waitlist and their agent helps note preferred home(s) and terms later.",
+            }}
+          />
+        </div>
+      </section>
+
       {/* ===== ABOUT THE PROJECT ===== */}
       <section className="py-16 px-4 bg-off-white">
         <div className="max-w-[900px] mx-auto">
-          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+          <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
             About the Development
           </p>
           <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-6">

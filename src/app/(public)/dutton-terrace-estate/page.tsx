@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { getStaticMapUrl } from "@caistech/mapbox";
 import RegistrationForm from "@/components/dutton/RegistrationForm";
+import BuyerVoiceAgent from "@/components/estate/BuyerVoiceAgent";
 import { DUTTON_PARCEL } from "@/data/dutton-parcel";
 import { ringToSvgPoints, type StaticFrame } from "@/lib/static-map-overlay";
 
@@ -154,10 +155,25 @@ export default function DuttonTerraceEstatePage() {
         </div>
       </section>
 
+      {/* ===== BUYER CONCIERGE (Marni) — guide/clarifier ===== */}
+      <section className="py-12 px-4 bg-off-white border-b border-black/5">
+        <div className="max-w-[900px] mx-auto">
+          <BuyerVoiceAgent
+            estate={{
+              name: "Dutton Terrace",
+              location: "Tumby Bay, SA",
+              stage: "Concept stage — land division still to be approved; register your interest",
+              extra:
+                "A concept-stage community (residential + childcare + aged-care). Nothing is for sale yet — registering simply tells us you're interested.",
+            }}
+          />
+        </div>
+      </section>
+
       {/* ===== ABOUT + DETAILS ===== */}
       <section className="py-16 px-4 bg-off-white">
         <div className="max-w-[900px] mx-auto">
-          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">About the Development</p>
+          <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">About the Development</p>
           <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-6">
             A community designed around how people actually live
           </h2>
