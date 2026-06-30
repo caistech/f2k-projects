@@ -57,7 +57,7 @@ export default function HomePage({
       {/* HERO — clickable map of Australia (the front door) */}
       <section className="bg-off-white py-12 md:py-16 px-4 border-b border-black/5">
         <div className="max-w-[1100px] mx-auto">
-          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-ember mb-4">
+          <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-ember mb-4">
             Our Current Developments
           </p>
           <h1 className="font-playfair text-[clamp(2rem,4vw,3rem)] font-black text-deep-blue leading-tight mb-4">

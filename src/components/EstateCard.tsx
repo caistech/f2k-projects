@@ -34,21 +34,21 @@ export default function EstateCard({ estate: p }: { estate: Estate }) {
       </div>
       <div className="p-5 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 mb-2">
-          <span className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-ember">
+          <span className="font-ibm-mono text-xs tracking-[0.3em] uppercase text-ember">
             {p.stateAbbr === "MULTI" ? "Multi-state" : p.stateAbbr} · {p.type}
           </span>
-          <span className="font-archivo text-[0.65rem] font-bold uppercase tracking-wide bg-[#00B5AD]/10 text-[#00B5AD] px-2 py-0.5 rounded-sm whitespace-nowrap">
+          <span className="font-archivo text-xs font-bold uppercase tracking-wide bg-[#00B5AD]/10 text-[#00B5AD] px-2 py-0.5 rounded-sm whitespace-nowrap">
             {p.status}
           </span>
         </div>
         <h3 className="font-playfair text-xl font-black text-deep-blue leading-tight mb-1">
           {p.name}
         </h3>
-        <p className="font-archivo text-sm text-slate/70 mb-3">
+        <p className="font-archivo text-base text-slate/70 mb-3">
           {p.location} · {p.dwellings}
         </p>
-        <p className="font-archivo text-sm text-slate leading-relaxed mb-4 flex-1">{p.blurb}</p>
-        <span className="font-archivo text-sm font-semibold text-[#00B5AD] group-hover:underline mt-auto">
+        <p className="font-archivo text-base text-slate leading-relaxed mb-4 flex-1">{p.blurb}</p>
+        <span className="font-archivo text-base font-semibold text-[#00B5AD] group-hover:underline mt-auto">
           {p.cta} →
         </span>
       </div>

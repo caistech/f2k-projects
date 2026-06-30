@@ -302,7 +302,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
                 key={mode}
                 type="button"
                 onClick={() => setViewMode(mode)}
-                className={`font-archivo text-xs px-3 py-1.5 transition-colors ${
+                className={`font-archivo text-sm px-3.5 py-2.5 min-h-[44px] inline-flex items-center justify-center transition-colors ${
                   isActive
                     ? "bg-deep-blue text-white"
                     : "bg-white text-slate hover:bg-deep-blue/5"
@@ -344,7 +344,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
               onChange={(e) =>
                 setFilterPurchase(e.target.value as PurchaseFilter)
               }
-              className="border border-black/10 px-2 py-1.5 text-deep-blue bg-white focus:outline-none focus:border-[#00B5AD]"
+              className="border border-black/10 px-2 py-2.5 min-h-[44px] text-sm text-deep-blue bg-white focus:outline-none focus:border-[#00B5AD]"
             >
               <option value="any">Any</option>
               <option value="land">Vacant land</option>
@@ -358,7 +358,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
             <select
               value={filterSize}
               onChange={(e) => setFilterSize(e.target.value as SizeFilter)}
-              className="border border-black/10 px-2 py-1.5 text-deep-blue bg-white focus:outline-none focus:border-[#00B5AD]"
+              className="border border-black/10 px-2 py-2.5 min-h-[44px] text-sm text-deep-blue bg-white focus:outline-none focus:border-[#00B5AD]"
             >
               <option value="any">Any size</option>
               <option value="s">Small — up to 500m²</option>
@@ -373,7 +373,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
             <select
               value={filterPrice}
               onChange={(e) => setFilterPrice(e.target.value as PriceFilter)}
-              className="border border-black/10 px-2 py-1.5 text-deep-blue bg-white focus:outline-none focus:border-[#00B5AD]"
+              className="border border-black/10 px-2 py-2.5 min-h-[44px] text-sm text-deep-blue bg-white focus:outline-none focus:border-[#00B5AD]"
             >
               <option value="any">Any price</option>
               <option value="p1">Up to $300k</option>
@@ -453,7 +453,7 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
               key={key}
               type="button"
               onClick={() => setStageFilter(key)}
-              className={`font-archivo text-xs px-3 py-1.5 border-2 transition-colors ${
+              className={`font-archivo text-sm px-3.5 py-2.5 min-h-[44px] inline-flex items-center border-2 transition-colors ${
                 isActive
                   ? "bg-deep-blue text-white border-deep-blue"
                   : "bg-white text-slate border-black/10 hover:border-deep-blue/50"
