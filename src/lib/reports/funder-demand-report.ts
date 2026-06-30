@@ -31,6 +31,10 @@ interface EstateSource {
   registrationsTable: string;
   selectionField: string | null; // lots_selected / units_selected / null (no lot-level interest)
   lotTable?: { table: string; idField: string; hasStage: boolean };
+  // When true, this estate is on the two-stage ROI portal: registered = waitlist_registrations,
+  // qualified = registrations (with ranked_unit_numbers + finance/buyer in payload). When false
+  // (legacy), the single registrationsTable carries everything and registering IS qualifying.
+  roiPortal?: boolean;
 }
 
 const SOURCES: Record<string, EstateSource> = {
@@ -44,9 +48,10 @@ const SOURCES: Record<string, EstateSource> = {
   branscombe: {
     slug: "branscombe",
     name: "Branscombe Estate",
-    registrationsTable: "branscombe_registrations",
+    registrationsTable: "branscombe_registrations", // legacy (superseded by the ROI tables)
     selectionField: "units_selected",
     lotTable: { table: "branscombe_unit_allocations", idField: "unit_number", hasStage: false },
+    roiPortal: true,
   },
   wavecrest: {
     slug: "wavecrest",
@@ -82,8 +87,9 @@ export interface CapabilityEntry {
  * touching SQL or guessing. Keep it in sync with the builders.
  */
 export const FUNDER_REPORT_CAPABILITIES: CapabilityEntry[] = [
-  { metric: "registered count", basis: "real", note: "row count of ROI submissions (self-declared identity)." },
+  { metric: "registered count", basis: "real", note: "top-of-funnel leads — waitlist_registrations (ROI portal) or row count (legacy)." },
   { metric: "distinct registrants", basis: "real", note: "de-duplicated by lowercased email." },
+  { metric: "qualified (completed registration form)", basis: "real", note: "distinct registrants who completed the 2nd-stage form — registrations rows for ROI-portal estates; equals registered for legacy single-form estates." },
   { metric: "verified / spoken to", basis: "gap", note: "no contact/verification field on a registration." },
   { metric: "pre-qualified (borrowing capacity)", basis: "gap", note: "no income/capacity captured." },
   { metric: "finance pre-approval", basis: "self-declared", note: "finance_status = 'Pre-approved by lender' (unverified)." },
@@ -98,7 +104,7 @@ export const FUNDER_REPORT_CAPABILITIES: CapabilityEntry[] = [
   { metric: "borrowing-capacity / income bands", basis: "gap", note: "not captured." },
   { metric: "registrations week-by-week + run-rate", basis: "real", note: "from created_at." },
   { metric: "projected date to cover trigger", basis: "real", note: "registered-interest stage only; needs a threshold + lot supply." },
-  { metric: "registered→qualified velocity", basis: "gap", note: "no qualified-stage timestamp." },
+  { metric: "registered→qualified velocity", basis: "real", note: "registered (waitlist) and qualified (registrations) are both real counts, so the conversion + qualified-stage trend are computed for ROI-portal estates." },
 ];
 
 // ── Assembled report ─────────────────────────────────────────────────────────────────────────────
@@ -154,25 +160,83 @@ export async function buildFunderDemandReport(
   const supabase = createSupabaseService();
   let dataError: string | null = null;
 
-  // --- registrations ---
-  let regRows: RegRow[] = [];
-  const regCols = ["email", "buyer_type", "finance_status", "created_at"];
-  if (source.selectionField) regCols.push(source.selectionField);
-  const { data: regData, error: regErr } = await supabase
-    .from(source.registrationsTable)
-    .select(regCols.join(","));
-  if (regErr) {
-    dataError = `Could not read ${source.registrationsTable}: ${regErr.message}`;
+  // `registeredRows` = top of funnel (every lead); `qualifiedRows` = those who completed the
+  // 2nd-stage form. For legacy estates they're the same set (one form does both).
+  let registeredRows: RegRow[] = [];
+  let qualifiedRows: RegRow[] = [];
+  let coverStageLabel: string | undefined;
+
+  if (source.roiPortal) {
+    // --- new two-stage ROI flow (keyed by estate_id) ---
+    coverStageLabel =
+      "completed registrations (EOI with a home selection) — NOT finance-ready buyers";
+    const { data: estateRow } = await (supabase.from("estates") as any)
+      .select("id")
+      .eq("slug", source.slug)
+      .maybeSingle();
+    const estateId = estateRow?.id ?? null;
+    if (!estateId) {
+      dataError = `Estate '${source.slug}' is not in the estates table.`;
+    } else {
+      // Registered (stage 1): the light waitlist. No lot/finance here.
+      const { data: wl, error: wlErr } = await (supabase.from("waitlist_registrations") as any)
+        .select("email, buyer_category, submitted_at, created_at")
+        .eq("estate_id", estateId);
+      if (wlErr) {
+        dataError = `Could not read waitlist_registrations: ${wlErr.message}`;
+      } else {
+        registeredRows = (wl ?? []).map((r: any) => ({
+          email: r.email,
+          selection: [],
+          buyerType: canonicalBuyerType(r.buyer_category),
+          financeStatus: null,
+          createdAt: r.submitted_at ?? r.created_at,
+        }));
+      }
+      // Qualified (stage 2): the EOI. Lot selection + buyer/finance live in payload.
+      if (!dataError) {
+        const { data: rg, error: rgErr } = await (supabase.from("registrations") as any)
+          .select("ranked_unit_numbers, submitted_at, created_at, payload")
+          .eq("estate_id", estateId);
+        if (rgErr) {
+          dataError = `Could not read registrations: ${rgErr.message}`;
+        } else {
+          qualifiedRows = (rg ?? []).map((r: any) => {
+            const p = (r.payload ?? {}) as Record<string, unknown>;
+            return {
+              email: (p.email as string) ?? null,
+              selection: normaliseSelection(r.ranked_unit_numbers),
+              buyerType: canonicalBuyerType(
+                (p.buyer_category as string) ?? (p.buyer_type as string) ?? null,
+              ),
+              financeStatus: (p.finance_status as string) ?? null,
+              createdAt: r.submitted_at ?? r.created_at,
+            };
+          });
+        }
+      }
+    }
   } else {
-    regRows = (regData as unknown as RawReg[] | null ?? []).map((r) => ({
-      email: r.email,
-      selection: source.selectionField
-        ? normaliseSelection(r[source.selectionField])
-        : [],
-      buyerType: r.buyer_type,
-      financeStatus: r.finance_status,
-      createdAt: r.created_at,
-    }));
+    // --- legacy single-table flow (registering IS qualifying) ---
+    const regCols = ["email", "buyer_type", "finance_status", "created_at"];
+    if (source.selectionField) regCols.push(source.selectionField);
+    const { data: regData, error: regErr } = await supabase
+      .from(source.registrationsTable)
+      .select(regCols.join(","));
+    if (regErr) {
+      dataError = `Could not read ${source.registrationsTable}: ${regErr.message}`;
+    } else {
+      registeredRows = (regData as unknown as RawReg[] | null ?? []).map((r) => ({
+        email: r.email,
+        selection: source.selectionField
+          ? normaliseSelection(r[source.selectionField])
+          : [],
+        buyerType: r.buyer_type,
+        financeStatus: r.finance_status,
+        createdAt: r.created_at,
+      }));
+    }
+    qualifiedRows = registeredRows; // one form does both
   }
 
   // --- lots (only where a priced table exists) ---
@@ -202,21 +266,24 @@ export async function buildFunderDemandReport(
   }
 
   // --- run the primitives ---
-  const funnel = buildFunnel(regRows);
+  // Funnel spans both stages; coverage / buyer-mix / trend run on the QUALIFIED rows, because
+  // that's where lot selection + finance live (for legacy, qualified === registered).
+  const funnel = buildFunnel(registeredRows, qualifiedRows);
   const conversions = funnelConversions(funnel.stages);
-  const coverage = buildCoverage(regRows, lotRows);
-  const buyerMix = buildBuyerMix(regRows);
+  const coverage = buildCoverage(qualifiedRows, lotRows, { coverStageLabel });
+  const buyerMix = buildBuyerMix(qualifiedRows);
   const totalLots = isOk(coverage) ? coverage.value.totalLots : undefined;
-  const trend = buildTrend(regRows, {
+  const trend = buildTrend(qualifiedRows, {
     coverThreshold: opts.coverThreshold ?? DEFAULT_COVER_THRESHOLD,
     totalLots,
     now,
+    coverStageLabel,
   });
 
   return {
     estate: { slug: source.slug, name: source.name },
     generatedAt: now.toISOString(),
-    coverStage: COVER_STAGE_LABEL,
+    coverStage: coverStageLabel ?? COVER_STAGE_LABEL,
     dataError,
     funnel,
     conversions,
@@ -230,10 +297,25 @@ export async function buildFunderDemandReport(
 
 // ── helpers ──────────────────────────────────────────────────────────────────────────────────────
 
-/** lots_selected / units_selected come back as a TEXT[]; coerce defensively to string[]. */
+/** lots_selected / units_selected / ranked_unit_numbers come back as an array; coerce to string[]. */
 function normaliseSelection(v: unknown): string[] {
   if (Array.isArray(v)) return v.map((x) => String(x));
   return [];
+}
+
+/**
+ * Translate the ROI portal's short buyer vocabulary (owner-occupier | investor |
+ * first-home-buyer) into the engine's canonical strings, so the (legacy-calibrated)
+ * classifyBuyer / FHB logic in funder-demand.ts works unchanged. Legacy-style values pass
+ * through untouched.
+ */
+function canonicalBuyerType(v: string | null): string | null {
+  if (!v) return null;
+  const t = v.toLowerCase();
+  if (t.includes("first") && t.includes("home")) return "First Home Buyer";
+  if (t.includes("investor")) return "Investor — Rental / SMSF";
+  if (t.includes("owner")) return "Owner Occupier";
+  return v;
 }
 
 /** Flatten every structured gap across the sections into the "Data to instrument" appendix. */

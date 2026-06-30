@@ -89,25 +89,48 @@ export interface FunnelStage {
   basis: StageBasis;
 }
 
-const PRE_APPROVED = "Pre-approved by lender";
-const CASH_BUYER = "Cash buyer — no finance needed";
+/**
+ * Finance-status matching is vocabulary-tolerant: the legacy estate forms used long strings
+ * ("Pre-approved by lender", "Cash buyer — no finance needed") while the ROI portal uses short
+ * ones ("Pre-approved", "Cash"). Substring match covers both so the seam never has to perfectly
+ * translate every variant.
+ */
+export const isPreApproved = (s: string | null): boolean =>
+  !!s && s.toLowerCase().includes("pre-approv");
+export const isCashBuyer = (s: string | null): boolean =>
+  !!s && s.toLowerCase().includes("cash");
 
-/** The demand-to-settlement funnel: registered is real, finance is self-declared, the rest are gaps. */
-export function buildFunnel(rows: RegRow[]): { stages: FunnelStage[] } {
-  const people = dedupeByPerson(rows);
-  const preApproved = people.filter((r) => r.financeStatus === PRE_APPROVED).length;
+/**
+ * The demand-to-settlement funnel. `registeredRows` is the top of funnel (every lead);
+ * `qualifiedRows` is those who completed the second-stage registration form (defaults to
+ * `registeredRows` for legacy single-form estates, where registering IS qualifying). Registered +
+ * qualified are real counts; finance is self-declared; the rest are gaps.
+ */
+export function buildFunnel(
+  registeredRows: RegRow[],
+  qualifiedRows: RegRow[] = registeredRows,
+): { stages: FunnelStage[] } {
+  const people = dedupeByPerson(registeredRows);
+  const qualifiedPeople = dedupeByPerson(qualifiedRows);
+  const preApproved = qualifiedPeople.filter((r) => isPreApproved(r.financeStatus)).length;
 
   const stages: FunnelStage[] = [
     {
       key: "registered",
       label: "Registered (expressions of interest)",
-      metric: ok(rows.length),
+      metric: ok(registeredRows.length),
       basis: "self-declared",
     },
     {
       key: "registered_deduped",
       label: "Distinct registrants (de-duplicated by email)",
       metric: ok(people.length),
+      basis: "self-declared",
+    },
+    {
+      key: "qualified",
+      label: "Qualified — completed the registration (2nd-stage) form",
+      metric: ok(qualifiedPeople.length),
       basis: "self-declared",
     },
     {
@@ -281,7 +304,7 @@ function isFirmBuyer(allocatedTo: string | null): boolean {
 export function buildCoverage(
   rows: RegRow[],
   lots: LotRow[],
-  opts: { cheapestN?: number } = {},
+  opts: { cheapestN?: number; coverStageLabel?: string } = {},
 ): Metric<CoverageResult> {
   if (lots.length === 0) {
     return gap(
@@ -345,7 +368,7 @@ export function buildCoverage(
       cover: cheapest.length > 0 ? cheapestDemand / cheapest.length : 0,
       lotIds: cheapest.map((l) => l.id),
     },
-    coverStage: COVER_STAGE_LABEL,
+    coverStage: opts.coverStageLabel ?? COVER_STAGE_LABEL,
   });
 }
 
@@ -394,8 +417,8 @@ export function buildBuyerMix(rows: RegRow[]): BuyerMix {
         unknownType++;
     }
     if ((r.buyerType ?? "").toLowerCase().includes("first home")) firstHomeBuyer++;
-    if (r.financeStatus === PRE_APPROVED || r.financeStatus === CASH_BUYER) financeReady++;
-    if (r.financeStatus === PRE_APPROVED) financePreApproval++;
+    if (isPreApproved(r.financeStatus) || isCashBuyer(r.financeStatus)) financeReady++;
+    if (isPreApproved(r.financeStatus)) financePreApproval++;
   }
 
   return {
@@ -448,7 +471,7 @@ export interface TrendResult {
  */
 export function buildTrend(
   rows: RegRow[],
-  opts: { coverThreshold?: number; totalLots?: number; now?: Date } = {},
+  opts: { coverThreshold?: number; totalLots?: number; now?: Date; coverStageLabel?: string } = {},
 ): TrendResult {
   const now = opts.now ?? new Date();
   const counts = new Map<string, number>();
@@ -491,5 +514,11 @@ export function buildTrend(
     });
   }
 
-  return { byWeek, runRatePerWeek, total, projectedCover, coverStage: COVER_STAGE_LABEL };
+  return {
+    byWeek,
+    runRatePerWeek,
+    total,
+    projectedCover,
+    coverStage: opts.coverStageLabel ?? COVER_STAGE_LABEL,
+  };
 }
