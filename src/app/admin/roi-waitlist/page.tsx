@@ -11,6 +11,8 @@ interface WaitlistRow {
   status: string;
   consent_contact: boolean;
   nudged_at: string | null;
+  qualification_sent_at: string | null;
+  qualification_sent_by: string | null;
   submitted_at: string;
   agent_name: string | null;
   introducing_agent_id: string | null;
@@ -224,7 +226,16 @@ export default function AdminRoiWaitlistPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-slate-500 text-xs">
-                    {r.nudged_at ? new Date(r.nudged_at).toLocaleDateString() : "—"}
+                    {r.qualification_sent_at ? (
+                      <>
+                        <div>{new Date(r.qualification_sent_at).toLocaleDateString()}</div>
+                        {r.qualification_sent_by && (
+                          <div className="text-[11px] text-slate-400">by {r.qualification_sent_by}</div>
+                        )}
+                      </>
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <button
@@ -232,7 +243,11 @@ export default function AdminRoiWaitlistPage() {
                       disabled={sending === r.id}
                       className="text-xs px-3 py-1.5 min-h-[36px] rounded border border-[#00B5AD] text-[#00766f] hover:bg-[#00B5AD]/10 disabled:opacity-50 font-semibold"
                     >
-                      {sending === r.id ? "Sending…" : "Send qualification form"}
+                      {sending === r.id
+                        ? "Sending…"
+                        : r.qualification_sent_at
+                          ? "Resend form"
+                          : "Send qualification form"}
                     </button>
                   </td>
                 </tr>

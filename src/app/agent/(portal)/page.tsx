@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAgent, canAccess } from "@/components/agent/AgentContext";
 import ShareLinkCard from "@/components/agent/ShareLinkCard";
+import WaitlistToSend from "@/components/agent/WaitlistToSend";
 
 interface Client {
   registration_id: string;
@@ -227,6 +228,10 @@ export default function MyClientsPage() {
       )}
       {/* Agent self-serve referral link (own session only — not in admin "view as" preview). */}
       {!isViewAs && <ShareLinkCard />}
+
+      {/* Buyers awaiting their registration (second) form — the agent's own send action.
+          Own session only (the admin "view as" preview is read-only). */}
+      {!isViewAs && <WaitlistToSend />}
 
       <h1 className="text-2xl font-bold text-slate-900 mb-1">My Clients</h1>
       <div className="flex items-center gap-4 mb-6">

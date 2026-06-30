@@ -231,6 +231,51 @@ export async function POST(request: Request) {
       `,
     });
     if (confirmErr) console.error("roi waitlist applicant confirmation: Resend send error:", confirmErr);
+
+    // Introducing-agent notification — "you have a new lead, send them the registration form".
+    // The agent actions it from their portal (the WaitlistToSend panel). Transactional notice to
+    // a business contact (the agent), not a commercial message to the buyer.
+    if (introducingAgentId) {
+      const { data: agent } = await (supabase.from("agents") as any)
+        .select("name, email")
+        .eq("id", introducingAgentId)
+        .maybeSingle();
+      if (agent?.email) {
+        const portalUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://f2k-projects.vercel.app"}/agent`;
+        const { error: agentErr } = await resend.emails.send({
+          to: agent.email,
+          from,
+          subject: `New ${estate.name} lead — ${d.name}`,
+          html: `
+            <div style="max-width:600px;font-family:sans-serif">
+              <div style="background:#1A2744;padding:24px 32px">
+                <h1 style="color:#FFFFFF;margin:0;font-size:22px">${e.estateName}</h1>
+                <p style="color:#00B5AD;margin:4px 0 0;font-size:13px">Agent portal</p>
+              </div>
+              <div style="padding:32px;background:#FFFFFF">
+                <p style="font-size:16px;color:#1A2744">Hi ${escapeHtml(agent.name || "there")},</p>
+                <p style="font-size:14px;color:#4A5568;line-height:1.6">
+                  A new buyer registered their interest and is attributed to you:
+                </p>
+                <p style="font-size:14px;color:#1A2744;line-height:1.6">
+                  <strong>${e.name}</strong><br>${e.email}${d.mobile ? `<br>${e.mobile}` : ""}<br>${e.category}
+                </p>
+                <p style="font-size:14px;color:#4A5568;line-height:1.6">
+                  Send them the registration form to capture their preferred home(s) and indicative
+                  terms — it's pre-filled with what they've already given.
+                </p>
+                <p style="margin:24px 0">
+                  <a href="${portalUrl}" style="background:#00B5AD;color:#FFFFFF;text-decoration:none;padding:14px 28px;border-radius:8px;font-weight:600;font-size:15px;display:inline-block">
+                    Open my portal →
+                  </a>
+                </p>
+              </div>
+            </div>
+          `,
+        });
+        if (agentErr) console.error("roi waitlist agent notification: Resend send error:", agentErr);
+      }
+    }
   } catch (err) {
     console.error("roi waitlist email failed:", err);
   }

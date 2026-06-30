@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 
   let query = (supabase.from("waitlist_registrations") as any)
     .select(
-      "id, name, email, mobile, buyer_category, status, consent_contact, nudged_at, submitted_at, introducing_agent_id",
+      "id, name, email, mobile, buyer_category, status, consent_contact, nudged_at, qualification_sent_at, qualification_sent_by, submitted_at, introducing_agent_id",
     )
     .order("submitted_at", { ascending: false })
     .limit(500);
@@ -39,17 +39,30 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Failed to load waitlist" }, { status: 500 });
   }
 
-  // Resolve agent names in one pass.
-  const agentIds = Array.from(
-    new Set((rows ?? []).map((r: any) => r.introducing_agent_id).filter(Boolean)),
-  );
+  // Resolve agent names in one pass — covers both the introducing agent AND an agent who SENT
+  // the form (qualification_sent_by = 'agent:<id>'), so admin sees who sent it.
+  const agentIds = new Set<string>();
+  for (const r of rows ?? []) {
+    if (r.introducing_agent_id) agentIds.add(r.introducing_agent_id);
+    if (typeof r.qualification_sent_by === "string" && r.qualification_sent_by.startsWith("agent:")) {
+      agentIds.add(r.qualification_sent_by.slice("agent:".length));
+    }
+  }
   const agentNames: Record<string, string> = {};
-  if (agentIds.length) {
+  if (agentIds.size) {
     const { data: agents } = await (supabase.from("agents") as any)
       .select("id, name")
-      .in("id", agentIds);
+      .in("id", Array.from(agentIds));
     for (const a of agents ?? []) agentNames[a.id] = a.name;
   }
+
+  // Human label for who sent the form.
+  const senderLabel = (by: string | null): string | null => {
+    if (!by) return null;
+    if (by.startsWith("admin:")) return `Admin (${by.slice("admin:".length)})`;
+    if (by.startsWith("agent:")) return agentNames[by.slice("agent:".length)] ?? "Agent";
+    return by; // 'legacy' or other
+  };
 
   const waitlist = (rows ?? []).map((r: any) => ({
     id: r.id,
@@ -60,6 +73,8 @@ export async function GET(request: Request) {
     status: r.status,
     consent_contact: r.consent_contact,
     nudged_at: r.nudged_at,
+    qualification_sent_at: r.qualification_sent_at ?? null,
+    qualification_sent_by: senderLabel(r.qualification_sent_by ?? null),
     submitted_at: r.submitted_at,
     introducing_agent_id: r.introducing_agent_id ?? null,
     agent_name: r.introducing_agent_id ? agentNames[r.introducing_agent_id] ?? "Unknown" : null,
