@@ -21,6 +21,7 @@ const GLOBAL_NAV: NavItem[] = [
   { href: "/admin/roi-waitlist", label: "Buyer Pipeline" },
   { href: "/admin/agents", label: "Agents" },
   { href: "/admin/advisors", label: "Brokers & Advisors" },
+  { href: "/admin/funder-dataroom", label: "Funder Data Room" },
   { href: "/admin/email-templates", label: "Email Templates", group: "Compliance" },
   { href: "/admin/audit-log", label: "Audit Log", group: "Compliance" },
 ];

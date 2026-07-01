@@ -15,6 +15,14 @@ const AGENT_PUBLIC_ROUTES = new Set([
   "/agent/reset-password",
 ]);
 
+// Funder dataroom public routes — reachable without a session (invite activation + auth).
+const DATAROOM_PUBLIC_ROUTES = new Set([
+  "/dataroom/login",
+  "/dataroom/activate",
+  "/dataroom/forgot-password",
+  "/dataroom/reset-password",
+]);
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -26,11 +34,14 @@ export async function middleware(request: NextRequest) {
   // the auth callback). /api/* routes self-gate via getAdminUser / getAgentUser.
   const isAdmin = pathname.startsWith("/admin");
   const isAgent = pathname.startsWith("/agent");
+  const isDataroom = pathname.startsWith("/dataroom");
   const isAuthCallback = pathname.startsWith("/api/auth/callback");
   const isPublicRoute =
-    ADMIN_PUBLIC_ROUTES.has(pathname) || AGENT_PUBLIC_ROUTES.has(pathname);
+    ADMIN_PUBLIC_ROUTES.has(pathname) ||
+    AGENT_PUBLIC_ROUTES.has(pathname) ||
+    DATAROOM_PUBLIC_ROUTES.has(pathname);
 
-  if ((!isAdmin && !isAgent) || isAuthCallback || isPublicRoute) {
+  if ((!isAdmin && !isAgent && !isDataroom) || isAuthCallback || isPublicRoute) {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
@@ -64,7 +75,11 @@ export async function middleware(request: NextRequest) {
 
   if (!user) {
     const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = isAgent ? "/agent/login" : "/admin/login";
+    loginUrl.pathname = isAgent
+      ? "/agent/login"
+      : isDataroom
+        ? "/dataroom/login"
+        : "/admin/login";
     loginUrl.searchParams.set("redirectTo", pathname);
     return NextResponse.redirect(loginUrl);
   }
