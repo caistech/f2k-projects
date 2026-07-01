@@ -19,6 +19,7 @@ const ABOUT_F2K: NavItem = {
 const DEFAULT_NAV: NavItem[] = [
   { href: "/", label: "Projects" },
   { href: "/developers", label: "For Developers" },
+  { href: "/agents", label: "For Agents" },
   { href: "/blog", label: "Blog" },
   ABOUT_F2K,
 ];

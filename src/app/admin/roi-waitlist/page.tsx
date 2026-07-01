@@ -47,6 +47,12 @@ interface AgentLite {
   estate_access: string[];
 }
 
+interface AdvisorLite {
+  id: string;
+  name: string;
+  firm: string | null;
+}
+
 interface Metrics {
   waitlist_total: number;
   registered_count: number;
@@ -55,6 +61,7 @@ interface Metrics {
   unassigned: number;
   by_stage: Record<string, number>;
   by_state: Record<string, number>;
+  drop_off: Record<string, number>;
 }
 
 interface TimelineEvent {
@@ -83,19 +90,22 @@ const financeBadgeClass = (s: string) =>
 export default function AdminRoiWaitlistPage() {
   const [rows, setRows] = useState<WaitlistRow[]>([]);
   const [agents, setAgents] = useState<AgentLite[]>([]);
+  const [advisors, setAdvisors] = useState<AdvisorLite[]>([]);
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [selected, setSelected] = useState<WaitlistRow | null>(null);
   const [showExited, setShowExited] = useState(false);
+  const [showFunnel, setShowFunnel] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [wlRes, agRes, mRes] = await Promise.all([
+      const [wlRes, agRes, mRes, advRes] = await Promise.all([
         fetch(`/api/admin/roi/waitlist?estate=${ESTATE}`),
         fetch("/api/admin/agents"),
         fetch(`/api/admin/roi/metrics?estate=${ESTATE}`),
+        fetch("/api/admin/advisors?active=1"),
       ]);
       const wl = await wlRes.json();
       if (wlRes.ok) setRows(wl.waitlist || []);
@@ -105,6 +115,7 @@ export default function AdminRoiWaitlistPage() {
         setAgents((ag.agents || []).filter((a: AgentLite) => a.estate_access?.includes(ESTATE)));
       }
       if (mRes.ok) setMetrics(await mRes.json());
+      if (advRes.ok) setAdvisors((await advRes.json()).advisors || []);
     } catch {
       setMsg({ type: "error", text: "Network error" });
     } finally {
@@ -166,6 +177,19 @@ export default function AdminRoiWaitlistPage() {
               <div className="text-xs text-slate-500">{m.label}</div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Funnel + drop-off analytics (Phase 5) — computed from the same metrics payload. */}
+      {metrics && (
+        <div className="mb-4">
+          <button
+            onClick={() => setShowFunnel((v) => !v)}
+            className="text-sm font-semibold text-slate-600 hover:text-slate-900"
+          >
+            {showFunnel ? "▾" : "▸"} Funnel &amp; drop-off
+          </button>
+          {showFunnel && <FunnelPanel metrics={metrics} />}
         </div>
       )}
 
@@ -237,6 +261,7 @@ export default function AdminRoiWaitlistPage() {
         <BuyerDrawer
           row={selected}
           agents={agents}
+          advisors={advisors}
           onClose={() => setSelected(null)}
           onChanged={(text) => {
             setMsg({ type: "success", text });
@@ -245,6 +270,80 @@ export default function AdminRoiWaitlistPage() {
           onError={(text) => setMsg({ type: "error", text })}
         />
       )}
+    </div>
+  );
+}
+
+function FunnelPanel({ metrics }: { metrics: Metrics }) {
+  const total = metrics.waitlist_total || 1;
+  // Funnel = how many reached AT LEAST each backbone stage (cumulative from the far end).
+  const stageOrder = [...PIPELINE_STAGES];
+  const reachedAtOrBeyond: Record<string, number> = {};
+  for (let i = 0; i < stageOrder.length; i++) {
+    let sum = 0;
+    for (let j = i; j < stageOrder.length; j++) sum += metrics.by_stage?.[stageOrder[j]] ?? 0;
+    reachedAtOrBeyond[stageOrder[i]] = sum;
+  }
+
+  // Drop-off: keys are "exit_stage|reason_code".
+  const drop = Object.entries(metrics.drop_off || {})
+    .map(([k, n]) => {
+      const [stage, reason] = k.split("|");
+      return { stage, reason, n };
+    })
+    .sort((a, b) => b.n - a.n);
+  const dropTotal = drop.reduce((s, d) => s + d.n, 0);
+
+  return (
+    <div className="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-5 border border-slate-200 rounded-lg p-4 bg-white">
+      <div>
+        <h3 className="text-sm font-semibold text-slate-800 mb-2">Funnel — reached each gate</h3>
+        <div className="space-y-1.5">
+          {stageOrder.map((s) => {
+            const n = reachedAtOrBeyond[s];
+            const pct = Math.round((n / total) * 100);
+            return (
+              <div key={s} className="flex items-center gap-2">
+                <span className="text-xs text-slate-600 w-32 shrink-0">{STAGE_LABELS[s]}</span>
+                <div className="flex-1 bg-slate-100 rounded h-5 overflow-hidden">
+                  <div
+                    className="bg-[#00B5AD] h-full rounded"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+                <span className="text-xs text-slate-500 w-16 text-right shrink-0">
+                  {n} · {pct}%
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-semibold text-slate-800 mb-2">
+          Drop-off — where &amp; why ({dropTotal})
+        </h3>
+        {drop.length === 0 ? (
+          <p className="text-sm text-slate-400">No withdrawals recorded yet.</p>
+        ) : (
+          <table className="w-full text-sm">
+            <tbody>
+              {drop.map((d, i) => (
+                <tr key={i} className="border-b border-slate-100">
+                  <td className="py-1.5 text-slate-600">
+                    {EXIT_REASON_LABELS[d.reason] ?? d.reason}
+                  </td>
+                  <td className="py-1.5 text-slate-400 text-xs">
+                    at {stageLabel(d.stage)}
+                  </td>
+                  <td className="py-1.5 text-right font-semibold text-slate-700">{d.n}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }
@@ -292,12 +391,14 @@ function BuyerCard({
 function BuyerDrawer({
   row,
   agents,
+  advisors,
   onClose,
   onChanged,
   onError,
 }: {
   row: WaitlistRow;
   agents: AgentLite[];
+  advisors: AdvisorLite[];
   onClose: () => void;
   onChanged: (text: string) => void;
   onError: (text: string) => void;
@@ -469,8 +570,31 @@ function BuyerDrawer({
               </option>
             ))}
           </select>
-          {row.advisor_name && (
-            <p className="text-xs text-slate-500 mt-1">Advisor: {row.advisor_name}</p>
+          <label className="block text-[11px] text-slate-400 font-semibold mt-2 mb-1">
+            Nominated broker / advisor
+          </label>
+          <select
+            value={row.nominated_advisor_id ?? ""}
+            disabled={busy}
+            onChange={(e) =>
+              act(
+                { action: "set_finance", finance_status: row.finance_status, advisor_id: e.target.value || null },
+                e.target.value ? "Advisor nominated" : "Advisor cleared",
+              )
+            }
+            className="w-full border border-slate-300 rounded px-3 py-2 text-sm min-h-[44px]"
+          >
+            <option value="">— None —</option>
+            {advisors.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.firm ? `${a.name} (${a.firm})` : a.name}
+              </option>
+            ))}
+          </select>
+          {advisors.length === 0 && (
+            <p className="text-xs text-slate-400 mt-1">
+              No advisors yet — add them under Brokers &amp; Advisors.
+            </p>
           )}
         </Section>
 
