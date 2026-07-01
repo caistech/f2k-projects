@@ -36,6 +36,7 @@ interface WaitlistRow {
   viewed_at: string | null;
   viewed_mode: string | null;
   finance_status: string;
+  finance_declared: string | null;
   nominated_advisor_id: string | null;
   advisor_name: string | null;
   finance_conditional_amount: number | null;
@@ -365,9 +366,13 @@ function BuyerCard({
       <div className="font-medium text-slate-900 text-sm truncate">{row.name}</div>
       <div className="text-[11px] text-slate-400 truncate">{row.agent_name || "Unassigned"}</div>
       <div className="flex flex-wrap gap-1 mt-1.5">
-        <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${financeBadgeClass(row.finance_status)}`}>
-          {financeLabel(row.finance_status)}
-        </span>
+        {/* Verified-finance badge ONLY once the gate has run (finance_status left 'unknown' until
+            an advisor assesses). Self-declared finance is NOT shown here — it lives, muted, in the drawer. */}
+        {row.finance_status !== "unknown" && (
+          <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${financeBadgeClass(row.finance_status)}`}>
+            {financeLabel(row.finance_status)}
+          </span>
+        )}
         {row.viewed_at && (
           <span className="text-[10px] px-1.5 py-0.5 rounded font-medium bg-indigo-100 text-indigo-700">
             Viewed
@@ -518,9 +523,11 @@ function BuyerDrawer({
               {row.pipeline_state === "withdrawn" ? "Withdrawn" : "On hold"}
             </span>
           )}
-          <span className={`text-xs px-2 py-0.5 rounded font-medium ${financeBadgeClass(row.finance_status)}`}>
-            {financeLabel(row.finance_status)}
-          </span>
+          {row.finance_status !== "unknown" && (
+            <span className={`text-xs px-2 py-0.5 rounded font-medium ${financeBadgeClass(row.finance_status)}`}>
+              {financeLabel(row.finance_status)}
+            </span>
+          )}
         </div>
 
         {/* Stage control */}
@@ -556,8 +563,17 @@ function BuyerDrawer({
           </select>
         </Section>
 
-        {/* Finance milestone (advisor nomination dropdown lands in Phase 4) */}
+        {/* Finance gate. finance_status is the VERIFIED track (advisor-run); the self-declared
+            value from the registration form is shown muted below — it is not a verified signal. */}
         <Section title="Finance">
+          {row.finance_declared && (
+            <p className="text-xs text-slate-400 mb-1.5 italic">
+              Self-declared at registration: {financeLabel(row.finance_declared)} — unverified
+            </p>
+          )}
+          <label className="block text-[11px] text-slate-400 font-semibold mb-1">
+            Verified status (via advisor)
+          </label>
           <select
             value={row.finance_status}
             disabled={busy}

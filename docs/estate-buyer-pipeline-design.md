@@ -99,6 +99,17 @@ doesn't do it. Model (refined 2026-07-01, Dennis):
 This gives F2K a **finance-referral relationship it owns** (a named panel it controls), not just a
 self-reported free-text flag.
 
+**Self-declared vs verified (added 2026-07-01).** The finance a buyer ticks on the initial waitlist
+form is a *self-declaration only* — no questioning, no broker, no credit check. It must not
+masquerade as the verified gate. Two fields:
+- `finance_declared` — the low-trust self-declaration. **Informational only; shown muted + labelled
+  "unverified"; never counts as "finance-ready"; not shown as a badge on the board.**
+- `finance_status` — the **verified** milestone. Starts `unknown`; only advances through the advisor
+  gate (`in_assessment → qualified/declined`). The finance badge + the "finance-ready" metric reflect
+  ONLY this. So we never appear to endorse or question a declaration we haven't checked.
+Migration 0067 split them: the carried legacy self-declarations moved to `finance_declared`,
+`finance_status` reset to `unknown` (nobody has actually been assessed).
+
 ## 5. Data model (D5 — spine on existing rows + events table)
 
 Put the spine on `waitlist_registrations` (already one-per-buyer-per-estate = the journey origin).

@@ -18,7 +18,7 @@ export async function GET() {
   const service = createSupabaseService();
   const { data, error } = await (service.from("waitlist_registrations") as any)
     .select(
-      "id, name, email, mobile, buyer_category, status, qualification_sent_at, submitted_at, pipeline_stage, pipeline_state, finance_status, viewed_at, viewed_mode, exit_reason, exit_stage, estate:estates(slug, name)",
+      "id, name, email, mobile, buyer_category, status, qualification_sent_at, submitted_at, pipeline_stage, pipeline_state, finance_status, finance_declared, viewed_at, viewed_mode, exit_reason, exit_stage, estate:estates(slug, name)",
     )
     .eq("introducing_agent_id", agent.id)
     .order("submitted_at", { ascending: false })
@@ -44,6 +44,7 @@ export async function GET() {
       pipeline_stage: r.pipeline_stage ?? "enquiry",
       pipeline_state: r.pipeline_state ?? "active",
       finance_status: r.finance_status ?? "unknown",
+      finance_declared: r.finance_declared ?? null,
       viewed_at: r.viewed_at ?? null,
       viewed_mode: r.viewed_mode ?? null,
       exit_reason: r.exit_reason ?? null,

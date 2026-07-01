@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 
   let query = (supabase.from("waitlist_registrations") as any)
     .select(
-      "id, name, email, mobile, buyer_category, status, consent_contact, nudged_at, qualification_sent_at, qualification_sent_by, submitted_at, introducing_agent_id, pipeline_stage, pipeline_state, exit_reason, exit_stage, exit_note, viewed_at, viewed_mode, finance_status, nominated_advisor_id, finance_conditional_amount, holding_deposit_at",
+      "id, name, email, mobile, buyer_category, status, consent_contact, nudged_at, qualification_sent_at, qualification_sent_by, submitted_at, introducing_agent_id, pipeline_stage, pipeline_state, exit_reason, exit_stage, exit_note, viewed_at, viewed_mode, finance_status, finance_declared, nominated_advisor_id, finance_conditional_amount, holding_deposit_at",
     )
     .order("submitted_at", { ascending: false })
     .limit(500);
@@ -100,6 +100,7 @@ export async function GET(request: Request) {
     viewed_at: r.viewed_at ?? null,
     viewed_mode: r.viewed_mode ?? null,
     finance_status: r.finance_status ?? "unknown",
+    finance_declared: r.finance_declared ?? null,
     nominated_advisor_id: r.nominated_advisor_id ?? null,
     advisor_name: r.nominated_advisor_id ? advisorNames[r.nominated_advisor_id] ?? "Unknown" : null,
     finance_conditional_amount: r.finance_conditional_amount ?? null,

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   stageLabel,
+  financeLabel,
   FINANCE_STATUSES,
   FINANCE_LABELS,
   VIEWED_MODES,
@@ -25,6 +26,7 @@ interface Lead {
   pipeline_stage: string;
   pipeline_state: string;
   finance_status: string;
+  finance_declared: string | null;
   viewed_at: string | null;
   viewed_mode: string | null;
   exit_reason: string | null;
@@ -171,6 +173,12 @@ export default function WaitlistToSend() {
                 )}
               </div>
             </div>
+
+            {l.finance_declared && (
+              <p className="text-xs text-slate-400 italic mb-2">
+                Self-declared: {financeLabel(l.finance_declared)} — unverified
+              </p>
+            )}
 
             <div className="flex flex-wrap items-center gap-2">
               {l.pipeline_stage === "enquiry" && (
