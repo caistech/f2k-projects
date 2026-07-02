@@ -30,7 +30,7 @@ export default function DevelopersPage() {
           </h1>
           <p className="text-xl text-white/70 font-archivo leading-relaxed mb-3 max-w-2xl">
             Factory2Key partners with developers to bring residential estates to
-            life with architecturally-designed modular homes.
+            life with modular homes designed to suit your estate and your buyers.
           </p>
           <p className="text-lg text-white/50 font-archivo max-w-2xl">
             Tell us about your project — your vision, your goals and how you like
@@ -172,7 +172,7 @@ export default function DevelopersPage() {
               </p>
               <ul className="space-y-3">
                 {[
-                  "Architecturally-designed modular homes ready to populate your estate",
+                  "Homes designed to suit your estate and your buyers — not off-the-shelf boxes",
                   "Factory-built for cost certainty and predictable delivery timelines",
                   "A pipeline of quality homes — consistent, repeatable, and proven",
                   "House-and-land packages buyers can register interest in from day one",
