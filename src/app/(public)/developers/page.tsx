@@ -40,6 +40,82 @@ export default function DevelopersPage() {
         </div>
       </section>
 
+      {/* ===== WHAT WE MEAN BY AN "ESTATE" (define it up front) ===== */}
+      <section className="bg-off-white border-b border-black/5">
+        <div className="max-w-[1100px] mx-auto px-4 py-16">
+          <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+            First — what we mean by an &ldquo;estate&rdquo;
+          </p>
+          <h2 className="font-playfair text-[clamp(1.75rem,3.5vw,2.5rem)] font-black text-deep-blue leading-tight mb-4 max-w-3xl">
+            A new residential site with room for at least 20 homes.
+          </h2>
+          <p className="font-archivo text-slate leading-relaxed mb-10 max-w-2xl">
+            To Factory2Key, an &ldquo;estate&rdquo; is a new residential site
+            with the potential for a{" "}
+            <strong className="text-deep-blue">minimum of 20 dwellings</strong>{" "}
+            — whether or not you plan to build the homes yourself. There are two
+            kinds of developer we work with, and the approach is similar for
+            both — only the story is different.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Path A — land subdivider */}
+            <div className="bg-white border border-black/5 rounded-lg p-8">
+              <p className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-[#00B5AD] mb-3">
+                Path A
+              </p>
+              <h3 className="font-archivo font-bold text-deep-blue text-xl mb-2">
+                You&apos;re subdividing land
+              </h3>
+              <p className="font-archivo text-sm text-slate leading-relaxed">
+                You sell lots, not homes. We help you position those lots{" "}
+                <strong className="text-deep-blue">
+                  alongside real home options
+                </strong>{" "}
+                — because a lot shown with the home it could carry reveals the
+                true development potential of the land. If the market signals
+                prove up the model, we can help support the sales too.
+              </p>
+            </div>
+
+            {/* Path B — developer with dwellings in the masterplan */}
+            <div className="bg-white border border-black/5 rounded-lg p-8">
+              <p className="font-ibm-mono text-[0.6rem] tracking-[0.3em] uppercase text-[#00B5AD] mb-3">
+                Path B
+              </p>
+              <h3 className="font-archivo font-bold text-deep-blue text-xl mb-2">
+                You&apos;re planning homes too
+              </h3>
+              <p className="font-archivo text-sm text-slate leading-relaxed">
+                Your masterplan already includes dwellings. We offer a{" "}
+                <strong className="text-deep-blue">
+                  modular alternative
+                </strong>{" "}
+                to the traditional building plan you may have — often faster to
+                deliver and more cost-certain — so you can compare it against
+                your current approach before you commit.
+              </p>
+            </div>
+          </div>
+
+          {/* Low-cost entry point + masterplan help */}
+          <div className="mt-8 bg-deep-blue/[0.03] border-l-4 border-[#00B5AD] px-6 py-5 rounded-r-lg">
+            <p className="font-archivo text-deep-blue leading-relaxed">
+              <strong>Either way, this is a low-cost way in.</strong> Listing
+              your estate is a cheap, fast way to test your masterplan against
+              real market demand before you spend big. Don&apos;t have a
+              masterplan yet, or yours needs work? We can develop{" "}
+              <strong>compliant masterplan alternatives</strong> for your land.
+            </p>
+          </div>
+
+          <p className="font-archivo text-xs text-slate/60 mt-6 max-w-2xl">
+            We focus on residential estates for now — commercial and industrial
+            may follow.
+          </p>
+        </div>
+      </section>
+
       {/* ===== THE F2K ESTATE PROCESS (end-to-end offer) ===== */}
       <section className="bg-white border-b border-black/5">
         <div className="max-w-[1100px] mx-auto px-4 py-16">
