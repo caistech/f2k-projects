@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 const ITEMS = [
   { href: "/dataroom", label: "Overview" },
   { href: "/dataroom/documents", label: "Documents" },
+  { href: "/dataroom/ask", label: "Ask" },
   { href: "/dataroom/reports", label: "Reports" },
 ];
 

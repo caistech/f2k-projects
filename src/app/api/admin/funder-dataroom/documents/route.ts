@@ -13,7 +13,7 @@ export async function GET() {
   }
   const supabase = createSupabaseService();
   const { data, error } = await (supabase.from("funder_documents") as any)
-    .select("id, display_name, category, confidentiality_tier, format, file_size, created_at")
+    .select("id, display_name, category, confidentiality_tier, format, file_size, chunk_count, ingested_at, created_at")
     .order("created_at", { ascending: false });
   if (error) return NextResponse.json({ error: "Failed to load" }, { status: 500 });
   return NextResponse.json({ documents: data ?? [] });
@@ -54,18 +54,31 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Upload failed" }, { status: 502 });
   }
 
-  const { error: iErr } = await (supabase.from("funder_documents") as any).insert({
-    display_name: displayName,
-    category,
-    confidentiality_tier: tier,
-    format: ext,
-    storage_path: storagePath,
-    file_size: file.size,
-    uploaded_by: admin.email,
-  });
+  const { data: inserted, error: iErr } = await (supabase.from("funder_documents") as any)
+    .insert({
+      display_name: displayName,
+      category,
+      confidentiality_tier: tier,
+      format: ext,
+      storage_path: storagePath,
+      file_size: file.size,
+      uploaded_by: admin.email,
+    })
+    .select("id")
+    .single();
   if (iErr) {
     console.error("funder doc registry error:", iErr);
     return NextResponse.json({ error: "Could not register the document" }, { status: 500 });
   }
-  return NextResponse.json({ ok: true });
+
+  // Index for the RAG "ask" (best-effort — the doc is usable even if indexing lags; admin can
+  // Re-index from the console). A failure here must not fail the upload.
+  let indexed: number | null = null;
+  try {
+    const { ingestFunderDocument } = await import("@/lib/funders/ingest");
+    indexed = await ingestFunderDocument(inserted.id);
+  } catch (err) {
+    console.error("funder doc auto-index failed (upload still succeeded):", err);
+  }
+  return NextResponse.json({ ok: true, id: inserted.id, indexed });
 }

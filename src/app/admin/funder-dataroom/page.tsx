@@ -19,6 +19,8 @@ interface Doc {
   category: string;
   confidentiality_tier: string;
   format: string;
+  chunk_count: number;
+  ingested_at: string | null;
   created_at: string;
 }
 interface Audit {
@@ -73,6 +75,22 @@ export default function AdminFunderDataroomPage() {
       setMsg({ type: "success", text: "Document deleted" });
       load();
     } else setMsg({ type: "error", text: "Delete failed" });
+  }
+
+  const [reindexing, setReindexing] = useState<string | null>(null);
+  async function reindex(d: Doc) {
+    setReindexing(d.id);
+    setMsg(null);
+    try {
+      const res = await fetch(`/api/admin/funder-dataroom/documents/${d.id}/reindex`, { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        setMsg({ type: "success", text: `Indexed "${d.display_name}" — ${data.chunk_count} chunk(s)` });
+        load();
+      } else setMsg({ type: "error", text: data.error || "Re-index failed" });
+    } finally {
+      setReindexing(null);
+    }
   }
 
   return (
@@ -181,6 +199,7 @@ export default function AdminFunderDataroomPage() {
                     <th className="text-left px-4 py-3 font-semibold">Document</th>
                     <th className="text-left px-4 py-3 font-semibold">Category</th>
                     <th className="text-left px-4 py-3 font-semibold">Tier</th>
+                    <th className="text-left px-4 py-3 font-semibold">Indexed</th>
                     <th className="text-left px-4 py-3 font-semibold"></th>
                   </tr>
                 </thead>
@@ -194,8 +213,20 @@ export default function AdminFunderDataroomPage() {
                           {d.confidentiality_tier === "deep" ? "Deep-dive" : "Base"}
                         </span>
                       </td>
+                      <td className="px-4 py-3 text-xs">
+                        {d.ingested_at ? (
+                          <span className="text-emerald-600">{d.chunk_count} chunk{d.chunk_count === 1 ? "" : "s"}</span>
+                        ) : (
+                          <span className="text-slate-400">not indexed</span>
+                        )}
+                      </td>
                       <td className="px-4 py-3 text-right">
-                        <button onClick={() => deleteDoc(d)} className="text-xs px-2.5 py-1.5 min-h-[36px] rounded border border-red-300 text-red-700 hover:bg-red-50 font-medium">Delete</button>
+                        <div className="flex gap-2 justify-end">
+                          <button onClick={() => reindex(d)} disabled={reindexing === d.id} className="text-xs px-2.5 py-1.5 min-h-[36px] rounded border border-slate-300 hover:bg-slate-50 font-medium disabled:opacity-50">
+                            {reindexing === d.id ? "Indexing…" : "Re-index"}
+                          </button>
+                          <button onClick={() => deleteDoc(d)} className="text-xs px-2.5 py-1.5 min-h-[36px] rounded border border-red-300 text-red-700 hover:bg-red-50 font-medium">Delete</button>
+                        </div>
                       </td>
                     </tr>
                   ))}
