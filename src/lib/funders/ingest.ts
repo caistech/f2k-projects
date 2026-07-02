@@ -2,6 +2,7 @@
 // store into funder_document_chunks. Runs server-side with the service role (the chunks table is
 // service-role-only). Ported from the LingoPure ingest pipeline. Spec: funder-dataroom-build memory.
 
+import Anthropic from "@anthropic-ai/sdk";
 import mammoth from "mammoth";
 import * as XLSX from "xlsx";
 import { createSupabaseService } from "@/lib/supabase-service";
@@ -12,6 +13,45 @@ const CHUNK_OVERLAP = 480; // ~120 tokens
 const EMBED_BATCH = 64;
 
 const TEXT_FORMATS = new Set(["txt", "csv", "md", "json", "log"]);
+const IMAGE_MEDIA: Record<string, string> = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  webp: "image/webp",
+  gif: "image/gif",
+};
+const VISION_MODEL = process.env.FUNDER_VISION_MODEL ?? "claude-sonnet-4-6";
+const VISION_PROMPT =
+  "You are cataloguing a funder data-room image for a searchable index. Describe this image " +
+  "precisely and factually: what it shows, the type of chart/diagram/plan, every axis label, " +
+  "legend, series name, and any numbers or units visible, and the single claim or takeaway it " +
+  "makes. If it is a screenshot of a document or dashboard, transcribe the key text and figures. " +
+  "Do not speculate beyond what is visible. Write 1-3 dense paragraphs.";
+
+/** Caption an image with Claude vision so image-only docs become searchable text. */
+async function captionImage(bytes: Buffer, mediaType: string): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY not configured");
+  const anthropic = new Anthropic({ apiKey });
+  const resp = await anthropic.messages.create({
+    model: VISION_MODEL,
+    max_tokens: 1024,
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "image", source: { type: "base64", media_type: mediaType as any, data: bytes.toString("base64") } },
+          { type: "text", text: VISION_PROMPT },
+        ],
+      },
+    ],
+  });
+  return resp.content
+    .filter((b) => b.type === "text")
+    .map((b) => (b.type === "text" ? b.text : ""))
+    .join("\n")
+    .trim();
+}
 
 async function extractText(bytes: Buffer, format: string): Promise<string> {
   const fmt = format.toLowerCase();
@@ -71,8 +111,18 @@ export async function ingestFunderDocument(documentId: string): Promise<number> 
   if (dl.error || !dl.data) throw new Error("Could not download the file for indexing");
   const bytes = Buffer.from(await dl.data.arrayBuffer());
 
-  const text = await extractText(bytes, doc.format);
-  const pieces = chunkText(text);
+  // Images become a single Claude-vision caption chunk; everything else is extracted + chunked.
+  const fmt = String(doc.format).toLowerCase();
+  const mediaType = IMAGE_MEDIA[fmt];
+  let pieces: string[];
+  let isVision = false;
+  if (mediaType) {
+    const caption = await captionImage(bytes, mediaType);
+    pieces = caption ? [caption] : [];
+    isVision = true;
+  } else {
+    pieces = chunkText(await extractText(bytes, doc.format));
+  }
 
   // Replace existing chunks for this document (idempotent re-index).
   await (svc.from("funder_document_chunks") as any).delete().eq("document_id", documentId);
@@ -96,7 +146,7 @@ export async function ingestFunderDocument(documentId: string): Promise<number> 
         page: null,
         chunk_index: i + j,
         content,
-        is_vision_caption: false,
+        is_vision_caption: isVision,
         embedding: vectors[j],
       });
     });

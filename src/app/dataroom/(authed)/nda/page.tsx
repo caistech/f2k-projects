@@ -35,16 +35,33 @@ export default function DataroomNdaPage() {
         unlock it. Your acceptance is recorded with a timestamp.
       </p>
 
-      <div className="border border-slate-200 rounded-lg bg-white p-4 text-sm text-slate-700 leading-relaxed max-h-72 overflow-y-auto mb-4">
-        <p className="mb-2">
-          By accepting, I agree that all deep-dive materials in this data room are confidential and
-          commercial-in-confidence, are provided to me solely to assess a potential funding
-          relationship with Factory2Key, and will not be disclosed, copied, or used for any other
-          purpose without Factory2Key&apos;s written consent.
+      <div className="border border-slate-200 rounded-lg bg-white p-4 text-sm text-slate-700 leading-relaxed max-h-80 overflow-y-auto mb-4 space-y-2.5">
+        <p className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1">
+          PLACEHOLDER — indicative wording only, pending Factory2Key&apos;s legal adviser. Not the final agreement.
         </p>
-        <p className="text-slate-400 text-xs">
-          (Placeholder wording — final NDA text to be confirmed by Factory2Key&apos;s legal adviser
-          before go-live.)
+        <p className="font-semibold text-slate-900">Confidentiality Undertaking — Factory2Key Funder Data Room</p>
+        <p><strong>1. Confidential Information.</strong> &ldquo;Confidential Information&rdquo; means all
+          material made available to me in this data room marked or provided as deep-dive, including
+          financial models, projections, costings, legal documents, plans, and any commercial terms,
+          whether in document, image, or generated-answer form.</p>
+        <p><strong>2. Purpose.</strong> The Confidential Information is provided solely so that I (and
+          the institution I represent) may evaluate a potential funding relationship with Factory2Key.
+          I will not use it for any other purpose.</p>
+        <p><strong>3. Non-disclosure.</strong> I will keep the Confidential Information strictly
+          confidential, will not disclose it to any third party without Factory2Key&apos;s prior written
+          consent, and will limit access to those within my institution who need it for the Purpose and
+          are bound by equivalent obligations.</p>
+        <p><strong>4. No copying / return.</strong> I will not copy, reproduce, or retain the
+          Confidential Information beyond what is necessary for the Purpose, and will destroy or return
+          it on request.</p>
+        <p><strong>5. No representation.</strong> The Confidential Information is provided for indicative
+          assessment; figures are estimates and nothing here is an offer, an invitation, or financial
+          product advice, and nothing is binding unless and until a separate written agreement is executed.</p>
+        <p><strong>6. Term.</strong> These obligations continue notwithstanding that access is later
+          withdrawn.</p>
+        <p className="text-slate-400 text-xs pt-1">
+          Final wording to be confirmed by Factory2Key&apos;s legal adviser before go-live; your
+          acceptance is recorded with your name, timestamp and IP for the audit record.
         </p>
       </div>
 
