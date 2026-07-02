@@ -30,6 +30,12 @@ const ALLOWED_MIME = new Set([
 
 const detailsSchema = z.object({
   developer_name: z.string().min(1, "Your name is required").max(200),
+  company_name: z.string().max(300).nullable().optional(),
+  abn: z
+    .string()
+    .regex(/^\d{11}$/, "ABN must be the 11-digit number")
+    .nullable()
+    .optional(),
   email: z.string().email("Please enter a valid email address"),
   mobile: z.string().max(40).nullable().optional(),
   website: z.string().max(300).nullable().optional(),
@@ -227,6 +233,8 @@ export async function POST(request: Request) {
   )
     .insert({
       developer_name: d.developer_name,
+      company_name: d.company_name ?? null,
+      abn: d.abn ?? null,
       email: d.email,
       mobile: d.mobile ?? null,
       website: d.website ?? null,
@@ -351,6 +359,8 @@ export async function POST(request: Request) {
 
     const e = {
       developer_name: escapeHtml(d.developer_name),
+      company_name: escapeHtml(d.company_name),
+      abn: escapeHtml(d.abn),
       email: escapeHtml(d.email),
       mobile: escapeHtml(d.mobile),
       website: escapeHtml(d.website),
@@ -411,6 +421,8 @@ export async function POST(request: Request) {
           <table style="border-collapse:collapse;font-size:14px;width:100%">
             ${row("Enquiring as", e.submitter_role)}
             ${row("Contact", `<strong>${e.developer_name}</strong>`)}
+            ${row("Company", e.company_name)}
+            ${row("ABN", e.abn)}
             ${row("Email", `<a href="mailto:${encodeURIComponent(d.email)}" style="color:#1A2744">${e.email}</a>`)}
             ${row("Mobile", e.mobile)}
             ${row("Website", d.website ? `<a href="${escapeHtml(d.website)}" style="color:#00B5AD">${e.website}</a>` : "")}
