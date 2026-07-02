@@ -51,6 +51,18 @@ const TARGET_MARKETS = [
   "Retirees", "Essential / government workers", "Owner-occupiers",
 ] as const;
 
+/** Standard ABN checksum (ATO weighting). Returns true for a structurally valid 11-digit ABN. */
+function isValidAbn(raw: string): boolean {
+  const digits = raw.replace(/\s+/g, "");
+  if (!/^\d{11}$/.test(digits)) return false;
+  const weights = [10, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19];
+  const sum = digits
+    .split("")
+    .map((d, i) => (i === 0 ? Number(d) - 1 : Number(d)) * weights[i])
+    .reduce((a, b) => a + b, 0);
+  return sum % 89 === 0;
+}
+
 const LAND_USES = [
   "Residential lots", "Childcare centre", "Aged-care facility", "Commercial / town centre",
   "School / education", "Recreation / parks", "Tourism / short-stay", "Community facility",
@@ -67,6 +79,8 @@ export default function DeveloperOnboardingForm({
 }: Props) {
   const [submitterRole, setSubmitterRole] = useState("");
   const [developerName, setDeveloperName] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [abn, setAbn] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [website, setWebsite] = useState("");
@@ -166,6 +180,10 @@ export default function DeveloperOnboardingForm({
     // record the submission. We never fake-success on the client and skip the API — that
     // silently drops real submissions (PRODUCT_STANDARDS; the 2026-06-15 lost-lead bug).
     const elapsedMs = Date.now() - formLoadedAt.current;
+    if (abn.trim() && !isValidAbn(abn)) {
+      setError("That ABN doesn't look right — please check it's the 11-digit number.");
+      return;
+    }
     if (!consent) {
       setError("Please tick the consent box so we can contact you.");
       return;
@@ -202,6 +220,8 @@ export default function DeveloperOnboardingForm({
         "data",
         JSON.stringify({
           developer_name: developerName.trim(),
+          company_name: companyName.trim() || null,
+          abn: abn.trim() ? abn.replace(/\s+/g, "") : null,
           email: email.trim(),
           mobile: mobile.trim() || null,
           website: website.trim() || null,
@@ -373,6 +393,40 @@ export default function DeveloperOnboardingForm({
                 className={inputClass}
                 placeholder="jane@example.com"
               />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="companyName" className={labelClass}>
+                Company / entity name
+              </label>
+              <input
+                id="companyName"
+                type="text"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                className={inputClass}
+                placeholder="e.g. Riverbend Developments Pty Ltd"
+                autoComplete="organization"
+              />
+            </div>
+            <div>
+              <label htmlFor="abn" className={labelClass}>
+                ABN
+              </label>
+              <input
+                id="abn"
+                type="text"
+                inputMode="numeric"
+                value={abn}
+                onChange={(e) => setAbn(e.target.value)}
+                className={inputClass}
+                placeholder="11-digit ABN"
+              />
+              <p className="text-xs text-slate/50 font-archivo mt-1">
+                Your registered entity, if you have one — helps us confirm who
+                we&apos;re dealing with. Leave blank if it&apos;s early days.
+              </p>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
