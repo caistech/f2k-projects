@@ -19,6 +19,7 @@ const GLOBAL_NAV: NavItem[] = [
   { href: "/admin/site-check", label: "Site Check" },
   { href: "/admin/registrations", label: "All Registrations" },
   { href: "/admin/roi-waitlist", label: "Buyer Pipeline" },
+  { href: "/admin/developer-onboarding", label: "Developer Onboarding" },
   { href: "/admin/agents", label: "Agents" },
   { href: "/admin/advisors", label: "Brokers & Advisors" },
   { href: "/admin/funder-dataroom", label: "Funder Data Room" },
