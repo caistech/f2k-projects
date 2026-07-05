@@ -20,8 +20,13 @@ interface PropertyCheck {
   lga_coverage?: string | null;
   zoning_code?: string | null;
   zoning_name?: string | null;
+  modular_provisions?: string | null;
   subdivision_permitted?: boolean | null;
   max_lots?: number | null;
+  buildability?: string | null;
+  slope_percent?: number | null;
+  lot_size?: number | null;
+  parcel_id?: string | null;
   overlays?: Array<{ type: string; name: string; requiresReport: boolean }>;
 }
 
@@ -151,6 +156,9 @@ export default function SiteCheckPage() {
               {row("Address used", result.address)}
               {row("LGA / council", result.lga_name ? `${result.lga_name}${result.lga_coverage && result.lga_coverage !== "full" && result.lga_coverage !== "none" ? ` (${result.lga_coverage} coverage)` : ""}` : null)}
               {row("Zoning", result.zoning_code ? `${result.zoning_code}${result.zoning_name ? ` — ${result.zoning_name}` : ""}` : null)}
+              {row("Modular provisions", result.modular_provisions)}
+              {row("Buildability", result.buildability ? `${result.buildability}${result.slope_percent != null ? ` (${result.slope_percent}% slope)` : ""}` : result.slope_percent != null ? `${result.slope_percent}% slope` : null)}
+              {row("Lot size", result.lot_size != null ? `${result.lot_size} m²` : null)}
               {row("Subdivision permitted", result.subdivision_permitted == null ? null : result.subdivision_permitted ? "Yes" : "No")}
               {row("Indicative max lots (Torrens)", result.max_lots)}
               {row("Wind region", result.wind_region ? `${result.wind_region}${result.wind_speed ? ` (${result.wind_speed} m/s)` : ""}` : null)}

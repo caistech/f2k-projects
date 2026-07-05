@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAdminUser, hasPermission } from "@/lib/admin-auth";
 import { createSupabaseService } from "@/lib/supabase-service";
 import { canBuildEstate, hasTitleEvidence, type GateVerdict } from "@/lib/deal-model/gate";
+import type { PropertyCheck } from "@/lib/property-check";
 
 /**
  * List developer-onboarding intakes with their deal-model gate status, for the admin
@@ -20,7 +21,7 @@ export async function GET() {
   const { data: rows, error } = await service
     .from("developer_onboarding")
     .select(
-      "id, developer_name, email, estate_name, estate_location, status, site_control, uploads, deal_id, cleared_for_build_at, cleared_for_build_by, created_at",
+      "id, developer_name, email, estate_name, estate_location, status, site_control, uploads, deal_id, cleared_for_build_at, cleared_for_build_by, created_at, property_check",
     )
     .order("created_at", { ascending: false });
   if (error) {
@@ -62,6 +63,7 @@ export async function GET() {
       gate,
       clearedForBuildAt: r.cleared_for_build_at,
       clearedForBuildBy: r.cleared_for_build_by,
+      propertyCheck: (r.property_check ?? null) as PropertyCheck | null,
     };
   });
 
