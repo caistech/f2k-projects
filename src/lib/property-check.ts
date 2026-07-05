@@ -31,8 +31,13 @@ export interface PropertyCheck {
   lga_coverage?: string | null;
   zoning_code?: string | null;
   zoning_name?: string | null;
+  modular_provisions?: string | null;
   subdivision_permitted?: boolean | null;
   max_lots?: number | null;
+  buildability?: string | null;
+  slope_percent?: number | null;
+  lot_size?: number | null;
+  parcel_id?: string | null;
   overlays?: Array<{ type: string; name: string; requiresReport: boolean }>;
   data?: unknown;
 }
@@ -143,8 +148,13 @@ export async function runPropertyCheck(
       lga_coverage: d.metadata?.lgaCoverage ?? null,
       zoning_code: d.zoning?.code ?? null,
       zoning_name: d.zoning?.name ?? null,
+      modular_provisions: d.zoning?.modularProvisions ?? null,
       subdivision_permitted: d.zoning?.subdivisionPermitted ?? null,
       max_lots: d.subdivision?.torrens?.maxLots ?? null,
+      buildability: d.terrain?.buildability ?? null,
+      slope_percent: d.terrain?.slopePercent ?? null,
+      lot_size: d.lot?.lotSize ?? null,
+      parcel_id: d.lot?.parcelId ?? null,
       overlays: (d.overlays ?? []).map((o) => ({
         type: o.type,
         name: o.name,
@@ -192,6 +202,9 @@ export function propertyCheckEmailBlock(
       ${row("Climate zone", pc.climate_zone)}
       ${row("LGA / council", pc.lga_name ? `${pc.lga_name}${pc.lga_coverage && pc.lga_coverage !== "full" ? ` (${pc.lga_coverage} coverage)` : ""}` : null)}
       ${row("Zoning", pc.zoning_code ? `${pc.zoning_code}${pc.zoning_name ? ` — ${pc.zoning_name}` : ""}` : null)}
+      ${row("Modular provisions", pc.modular_provisions)}
+      ${row("Buildability", pc.buildability ? `${pc.buildability}${pc.slope_percent != null ? ` (${pc.slope_percent}% slope)` : ""}` : pc.slope_percent != null ? `${pc.slope_percent}% slope` : null)}
+      ${row("Lot size", pc.lot_size != null ? `${pc.lot_size} m²` : null)}
       ${row("Subdivision permitted", pc.subdivision_permitted == null ? null : pc.subdivision_permitted ? "Yes" : "No")}
       ${row("Est. max lots (Torrens)", pc.max_lots)}
       ${row("Overlays", overlays)}
