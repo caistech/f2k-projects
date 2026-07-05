@@ -1,15 +1,20 @@
 import { createPropertyServices } from "@caistech/property-services-sdk";
+import type { PropertyProfile, SiteDossier } from "@caistech/property-services-sdk";
 
 /**
- * Kickstart property analysis for a developer-onboarding lead.
+ * Kickstart property analysis for an estate address.
  *
- * Calls @caistech/property-services `dossier` for the enquiry's location and returns a flat,
- * storable summary. `dossier` is ONE metered call that aggregates every dataset property-services
- * offers — the derived profile (wind/BAL/climate, zoning envelope, terrain/buildability, LGA,
- * overlays, torrens/strata subdivision yield), the AI suitability assessment (scored against the
- * F2K modular-estate use case), the Domain AVM price position + comparables, and the panel-review
- * checklist + any prior professional write-backs. Every dossier section is fail-open, so a failing
- * leg leaves its section null and the rest still returns.
+ * Two depths (the `depth` arg), because the two callers have opposite constraints:
+ *  - `dossier` (default) — ONE metered call that aggregates every dataset property-services offers:
+ *    the derived profile (wind/BAL/climate, zoning envelope, terrain/buildability, LGA, overlays,
+ *    torrens/strata yield), the AI suitability assessment (scored against the F2K modular-estate use
+ *    case), the Domain AVM price position + comparables, and the panel-review checklist + write-backs.
+ *    The AI + AVM legs make it slow (tens of seconds), so it is for the OPERATOR-INITIATED site-check
+ *    tool where a long budget + a spinner are fine. Every dossier section is fail-open.
+ *  - `profile` — the fast `derive` leg only (everything EXCEPT price + suitability + panel review).
+ *    For the lead-capture onboarding path, which must respond quickly and only ever displays the
+ *    profile fields anyway; the dossier's slow legs would time out and block the prospect's submit.
+ *    Price/suitability/panel fields come back null in this mode.
  *
  * Best-effort by contract: env-gated, time-bounded, and never throws — a failure returns a
  * {status:'skipped'|'error'} record so the onboarding submission is never blocked.
@@ -108,6 +113,7 @@ export function auStateFromPostcode(pc?: string | null): string | null {
 export async function runPropertyCheck(
   lead: LeadLocation,
   timeoutMs = 25_000,
+  depth: "profile" | "dossier" = "dossier",
 ): Promise<PropertyCheck> {
   const ran_at = new Date().toISOString();
   // Accept either the server-side names or the portfolio's NEXT_PUBLIC_* convention
@@ -145,28 +151,44 @@ export async function runPropertyCheck(
   const client = createPropertyServices({ supabaseUrl, apiKey, product: "f2k" });
 
   try {
+    // Pass lat/lng/state when known so property-services skips re-geocoding (exact match).
+    const call =
+      depth === "dossier"
+        ? // ONE metered call → profile + assessment + price + panel review + write-backs.
+          client.dossier({
+            address,
+            lat,
+            lng,
+            suburb,
+            state: expectedState,
+            postcode: postcode || undefined,
+            useCase: F2K_USE_CASE,
+          })
+        : // Fast path → the derive profile leg only (no slow AVM / AI legs).
+          client.derive({
+            address,
+            lat,
+            lng,
+            suburb,
+            state: expectedState,
+            postcode: postcode || undefined,
+          });
+
     const res = (await Promise.race([
-      // ONE metered call → profile + assessment + price + panel review + write-backs.
-      // Pass lat/lng/state when known so property-services skips re-geocoding (exact match).
-      client.dossier({
-        address,
-        lat,
-        lng,
-        suburb,
-        state: expectedState,
-        postcode: postcode || undefined,
-        useCase: F2K_USE_CASE,
-      }),
+      call,
       new Promise((_, reject) =>
         setTimeout(() => reject(new Error("timeout")), timeoutMs),
       ),
-    ])) as Awaited<ReturnType<typeof client.dossier>>;
+    ])) as Awaited<ReturnType<typeof client.dossier>> | Awaited<ReturnType<typeof client.derive>>;
 
     if (!res?.success || !res.data) {
-      return { status: "error", ran_at, address, reason: res?.error || "dossier returned no data" };
+      return { status: "error", ran_at, address, reason: res?.error || `${depth} returned no data` };
     }
-    const dossier = res.data;
-    const profile = dossier.profile;
+
+    // Normalise the two shapes: `dossier` wraps the profile in `.profile` and adds the
+    // assessment/price/plannerReview/contributions legs; `derive` returns the profile as `.data`.
+    const dossier = depth === "dossier" ? (res.data as SiteDossier) : null;
+    const profile = (dossier ? dossier.profile : (res.data as PropertyProfile)) ?? null;
 
     // The profile (derive) is the core leg — with it null there is no meaningful site analysis.
     if (!profile) {
@@ -191,8 +213,8 @@ export async function runPropertyCheck(
       };
     }
 
-    const assessment = dossier.assessment;
-    const price = dossier.price;
+    const assessment = dossier?.assessment ?? null;
+    const price = dossier?.price ?? null;
     const torrens = profile.subdivision?.torrens;
 
     const pc: PropertyCheck = {
@@ -242,16 +264,20 @@ export async function runPropertyCheck(
       price_confidence: price?.estimate?.confidence ?? null,
       comparables_count: price?.stats?.count ?? null,
       comparables_median: price?.stats?.median ?? null,
-      // Panel review + write-backs
-      panel_review_open: (dossier.plannerReview ?? []).filter((i) => i.status !== "completed").length,
-      panel_review_completed: (dossier.plannerReview ?? []).filter((i) => i.status === "completed").length,
-      contributions_count: (dossier.contributions ?? []).length,
+      // Panel review + write-backs (dossier depth only)
+      panel_review_open: dossier
+        ? dossier.plannerReview.filter((i) => i.status !== "completed").length
+        : null,
+      panel_review_completed: dossier
+        ? dossier.plannerReview.filter((i) => i.status === "completed").length
+        : null,
+      contributions_count: dossier ? dossier.contributions.length : null,
       overlays: (profile.overlays ?? []).map((o) => ({
         type: o.type,
         name: o.name,
         requiresReport: o.requiresReport,
       })),
-      data: dossier,
+      data: dossier ?? profile,
     };
 
     // LGA / wind / climate come nationally from property-services (point-in-polygon over the
@@ -263,7 +289,7 @@ export async function runPropertyCheck(
       status: "error",
       ran_at,
       address,
-      reason: err instanceof Error ? err.message : "dossier failed",
+      reason: err instanceof Error ? err.message : `${depth} failed`,
     };
   }
 }

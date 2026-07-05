@@ -168,11 +168,33 @@ export default function SiteCheckPage() {
         >
           {loading ? "Running site check…" : "Run site check"}
         </button>
+        <p className="mt-2 text-xs text-slate-500">
+          Each run makes a live, metered property-services lookup (LGA, zoning, terrain, plus an AI
+          suitability read and a Domain price estimate). It can take up to a minute.
+        </p>
+        {loading && (
+          <p
+            className="mt-2 flex items-center gap-2 text-sm text-slate-600"
+            role="status"
+            aria-live="polite"
+          >
+            <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-slate-300 border-t-slate-600" />
+            Running the site check — this can take up to ~60s (one live property lookup)…
+          </p>
+        )}
       </div>
 
       {error && (
         <div className="mt-4 rounded border-l-4 border-red-400 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {error}
+          <p>{error}</p>
+          <button
+            type="button"
+            onClick={run}
+            disabled={loading}
+            className="mt-2 rounded border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 disabled:opacity-50"
+          >
+            {loading ? "Retrying…" : "Retry"}
+          </button>
         </div>
       )}
 
@@ -243,6 +265,17 @@ export default function SiteCheckPage() {
               <p className="font-medium">Couldn&apos;t complete the site check.</p>
               <p className="mt-1">{result.reason}</p>
               {result.address && <p className="mt-1 text-slate-500">Address tried: {result.address}</p>}
+              <p className="mt-2 text-slate-500">
+                The address looks right? This can be a slow rural lookup — try again.
+              </p>
+              <button
+                type="button"
+                onClick={run}
+                disabled={loading}
+                className="mt-2 rounded border border-amber-300 bg-white px-3 py-1.5 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-50 disabled:opacity-50"
+              >
+                {loading ? "Retrying…" : "Retry site check"}
+              </button>
             </div>
           )}
           {result.status === "skipped" && (

@@ -43,9 +43,9 @@ export default async function AdminLayout({
         <AdminSidebar email={adminUser.email} />
         <div className="flex-1 flex flex-col">
           <PreviewModeBanner />
-          <header className="bg-white border-b px-6 py-4">
+          <header className="bg-white border-b px-6 py-4 pl-16 lg:pl-6">
             <div className="flex items-center justify-between">
-              <h1 className="text-lg font-semibold text-slate-900">
+              <h1 className="text-base font-semibold text-slate-900 sm:text-lg">
                 Factory2Key Projects — Administration
               </h1>
               <span className="text-xs text-slate-500">

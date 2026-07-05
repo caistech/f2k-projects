@@ -71,6 +71,13 @@ const LAST_ESTATE_KEY = "f2k.admin.lastEstate";
 export function AdminSidebar({ email }: { email?: string | null }) {
   const pathname = usePathname();
   const [signingOut, setSigningOut] = useState(false);
+  // Mobile drawer: the sidebar is a fixed 256px rail on lg+, an off-canvas drawer below it.
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Close the drawer whenever the route changes (a nav link was followed).
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const groups = useMemo(groupByState, []);
 
@@ -133,7 +140,49 @@ export function AdminSidebar({ email }: { email?: string | null }) {
   );
 
   return (
-    <aside className="flex min-h-screen w-64 flex-shrink-0 flex-col bg-slate-950 p-4 text-white">
+    <>
+      {/* Mobile hamburger — opens the drawer (lg+: the sidebar is always visible) */}
+      <button
+        type="button"
+        onClick={() => setMobileOpen(true)}
+        aria-label="Open admin menu"
+        aria-expanded={mobileOpen}
+        className="fixed left-3 top-3 z-50 flex h-11 w-11 items-center justify-center rounded-lg bg-slate-950 text-white shadow-lg lg:hidden"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+
+      {/* Backdrop when the drawer is open on mobile */}
+      {mobileOpen && (
+        <div
+          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 flex min-h-screen w-64 flex-shrink-0 flex-col overflow-y-auto bg-slate-950 p-4 text-white transition-transform duration-200 lg:static lg:z-auto lg:translate-x-0 ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {/* Close button (mobile only) */}
+        <button
+          type="button"
+          onClick={() => setMobileOpen(false)}
+          aria-label="Close admin menu"
+          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded text-slate-400 hover:bg-white/10 hover:text-white lg:hidden"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+
       <a href="/admin" className="mb-8 flex items-center gap-3 no-underline">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#22c55e] text-sm font-bold text-white">
           F2K
@@ -247,7 +296,8 @@ export function AdminSidebar({ email }: { email?: string | null }) {
           ↗ Public site
         </a>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
 

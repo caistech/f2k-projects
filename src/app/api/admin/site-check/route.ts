@@ -12,6 +12,10 @@ import { runPropertyCheck } from "@/lib/property-check";
 // This is the "address → show the analysis" substrate behind the estate-page pipeline: feed any
 // estate address, get the machine-verified planning/environment layer to surface on its page.
 export const dynamic = "force-dynamic";
+// The full dossier runs the AI-suitability + Domain-AVM legs on top of derive, so it can take
+// tens of seconds. Give the function room well past the ~30s the aggregate needs (Vercel's
+// platform default is 300s; we cap at 120s) so the operator gets a real result, not a timeout.
+export const maxDuration = 120;
 
 interface SiteCheckBody {
   suburb?: string;
@@ -59,7 +63,8 @@ export async function POST(request: Request) {
       estate_lng: num(body.lng),
       lot_plan_reference: body.lotPlanReference?.trim() || null,
     },
-    25_000,
+    100_000,
+    "dossier",
   );
 
   return NextResponse.json({ result });

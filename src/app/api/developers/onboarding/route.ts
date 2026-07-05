@@ -300,10 +300,12 @@ export async function POST(request: Request) {
     }
   }
 
-  // Kickstart property analysis (best-effort, env-gated, time-bounded — never blocks).
-  // One property-services `dossier` call pulls the full site DD — wind/bushfire/climate +
-  // zoning envelope/LGA/overlays/terrain/subdivision yield + AI suitability + Domain price — so it
-  // lands with the enquiry. Full dossier stored on the row + key facts shown in the admin email.
+  // Kickstart property analysis (best-effort, env-gated, time-bounded — never blocks the submit).
+  // Uses the FAST `profile` depth (derive only): wind/bushfire/climate + zoning envelope/LGA/
+  // overlays/terrain/subdivision yield — every field this lead flow displays (admin email + the
+  // onboarding admin view), returned in seconds. The slow dossier legs (AI suitability + Domain
+  // price) would time out and block the prospect's submit, so they are NOT run here — an operator
+  // pulls the full dossier on demand from /admin/site-check when they work the lead.
   let propertyCheck = null;
   try {
     propertyCheck = await runPropertyCheck(
@@ -316,6 +318,7 @@ export async function POST(request: Request) {
         lot_plan_reference: d.lot_plan_reference,
       },
       15_000,
+      "profile",
     );
     if (inserted?.id) {
       await (supabase.from("developer_onboarding") as any)
