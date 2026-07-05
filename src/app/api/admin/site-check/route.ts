@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/admin-auth";
 import { runPropertyCheck } from "@/lib/property-check";
 
-// Admin-gated, reusable estate "site check": runs @caistech/property-services derive for an
-// estate address and returns the first-pass site analysis (LGA, zoning, wind/BAL/climate, overlays,
-// indicative max-lots). Runs server-side in production where PROPERTY_SERVICES_URL/_API_KEY live
-// (both sensitive, prod-only — never NEXT_PUBLIC), so the key is never exposed to the client.
+// Admin-gated, reusable estate "site check": runs the @caistech/property-services `dossier` (one
+// metered call → profile + AI suitability + Domain price + panel review) for an estate address and
+// returns the first-pass site analysis (LGA, zoning envelope, wind/BAL/climate, terrain, overlays,
+// indicative max-lots, price, suitability). Runs server-side in production where
+// PROPERTY_SERVICES_URL/_API_KEY live (both sensitive, prod-only — never NEXT_PUBLIC), so the key
+// is never exposed to the client.
 //
 // This is the "address → show the analysis" substrate behind the estate-page pipeline: feed any
 // estate address, get the machine-verified planning/environment layer to surface on its page.
@@ -45,9 +47,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "A suburb/locality is required" }, { status: 400 });
   }
 
-  // property-services `derive` now resolves LGA / wind / climate nationally (point-in-polygon over
-  // the canonical GeoJSON, server-side) plus zoning/overlays/BAL where it has planning coverage.
-  // Single metered API call — no direct bucket access.
+  // property-services resolves LGA / wind / climate nationally (point-in-polygon over the canonical
+  // GeoJSON, server-side) plus zoning/overlays/BAL/terrain/price/suitability where it has coverage.
+  // Single metered `dossier` call — no direct bucket access.
   const result = await runPropertyCheck(
     {
       estate_location: suburb,

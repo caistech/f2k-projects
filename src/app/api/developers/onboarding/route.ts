@@ -301,8 +301,9 @@ export async function POST(request: Request) {
   }
 
   // Kickstart property analysis (best-effort, env-gated, time-bounded — never blocks).
-  // Geocodes the location and pulls wind/bushfire/climate + zoning/LGA/overlays/yield so the
-  // first-pass site DD lands with the enquiry. Stored on the row + shown in the admin email.
+  // One property-services `dossier` call pulls the full site DD — wind/bushfire/climate +
+  // zoning envelope/LGA/overlays/terrain/subdivision yield + AI suitability + Domain price — so it
+  // lands with the enquiry. Full dossier stored on the row + key facts shown in the admin email.
   let propertyCheck = null;
   try {
     propertyCheck = await runPropertyCheck(

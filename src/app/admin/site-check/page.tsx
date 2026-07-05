@@ -20,14 +20,44 @@ interface PropertyCheck {
   lga_coverage?: string | null;
   zoning_code?: string | null;
   zoning_name?: string | null;
+  zoning_max_height?: number | null;
+  zoning_min_lot_size?: number | null;
+  zoning_permitted_uses?: string[] | null;
   modular_provisions?: string | null;
+  lot_size?: number | null;
+  lot_number?: string | null;
+  plan_number?: string | null;
+  parcel_id?: string | null;
+  slope_percent?: number | null;
+  buildability?: string | null;
   subdivision_permitted?: boolean | null;
   max_lots?: number | null;
-  buildability?: string | null;
-  slope_percent?: number | null;
-  lot_size?: number | null;
-  parcel_id?: string | null;
+  lot_size_each?: number | null;
+  strata_permitted?: boolean | null;
+  subdivision_recommendations?: string[] | null;
+  subdivision_warnings?: string[] | null;
+  suitability_suitable?: boolean | null;
+  suitability_confidence?: string | null;
+  suitability_verdict?: string | null;
+  suitability_risks?: string[] | null;
+  suitability_next_steps?: string[] | null;
+  price_lower?: number | null;
+  price_mid?: number | null;
+  price_upper?: number | null;
+  price_confidence?: string | null;
+  comparables_count?: number | null;
+  comparables_median?: number | null;
+  panel_review_open?: number | null;
+  panel_review_completed?: number | null;
+  contributions_count?: number | null;
   overlays?: Array<{ type: string; name: string; requiresReport: boolean }>;
+}
+
+function fmtAud(v: number | null | undefined): string {
+  if (v == null || !Number.isFinite(v)) return "";
+  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(v % 1_000_000 === 0 ? 0 : 1)}M`;
+  if (v >= 1_000) return `$${Math.round(v / 1_000)}k`;
+  return `$${Math.round(v)}`;
 }
 
 const DUTTON_DEFAULTS = {
@@ -95,11 +125,12 @@ export default function SiteCheckPage() {
       {/* Explanatory header (§5) */}
       <h2 className="text-xl font-semibold text-slate-900">Estate site check</h2>
       <p className="mt-1 mb-6 max-w-prose text-sm text-slate-600">
-        Run an automated first-pass site analysis for an estate address. It queries our
-        property-services (LGA / council, zoning, wind &amp; bushfire, climate, overlays, indicative
-        max-lots) so you can surface what&apos;s possible on the estate page. Pass the precise
-        latitude/longitude (from the address autocomplete) to skip geocoding and avoid the wrong-state
-        misfire. Read-only — nothing is saved.
+        Run an automated first-pass site analysis for an estate address. One property-services call
+        returns the full site dossier — LGA / council, zoning envelope, wind &amp; bushfire, climate,
+        terrain / buildability, overlays, indicative Torrens &amp; strata yield, an AI suitability
+        read for a modular estate, and the Domain price position — so you can surface what&apos;s
+        possible on the estate page. Pass the precise latitude/longitude (from the address
+        autocomplete) to skip geocoding and avoid the wrong-state misfire. Read-only — nothing is saved.
       </p>
 
       <div className="rounded-lg border border-slate-200 bg-white p-5">
@@ -156,15 +187,54 @@ export default function SiteCheckPage() {
               {row("Address used", result.address)}
               {row("LGA / council", result.lga_name ? `${result.lga_name}${result.lga_coverage && result.lga_coverage !== "full" && result.lga_coverage !== "none" ? ` (${result.lga_coverage} coverage)` : ""}` : null)}
               {row("Zoning", result.zoning_code ? `${result.zoning_code}${result.zoning_name ? ` — ${result.zoning_name}` : ""}` : null)}
+              {row("Max building height", result.zoning_max_height ? `${result.zoning_max_height} m` : null)}
+              {row("Min lot size", result.zoning_min_lot_size ? `${result.zoning_min_lot_size} m²` : null)}
               {row("Modular provisions", result.modular_provisions)}
-              {row("Buildability", result.buildability ? `${result.buildability}${result.slope_percent != null ? ` (${result.slope_percent}% slope)` : ""}` : result.slope_percent != null ? `${result.slope_percent}% slope` : null)}
               {row("Lot size", result.lot_size != null ? `${result.lot_size} m²` : null)}
+              {row("Buildability", result.buildability ? `${result.buildability}${result.slope_percent != null ? ` (${result.slope_percent}% slope)` : ""}` : result.slope_percent != null ? `${result.slope_percent}% slope` : null)}
               {row("Subdivision permitted", result.subdivision_permitted == null ? null : result.subdivision_permitted ? "Yes" : "No")}
-              {row("Indicative max lots (Torrens)", result.max_lots)}
+              {row("Indicative max lots (Torrens)", result.max_lots ? `${result.max_lots}${result.lot_size_each ? ` @ ~${result.lot_size_each} m² each` : ""}` : null)}
+              {row("Strata subdivision", result.strata_permitted == null ? null : result.strata_permitted ? "Feasible" : "Not feasible")}
+              {row("Est. land value", (() => {
+                const lo = fmtAud(result.price_lower);
+                const hi = fmtAud(result.price_upper);
+                const mid = fmtAud(result.price_mid);
+                const range = lo && hi ? `${lo}–${hi}${mid ? ` (mid ${mid})` : ""}` : mid;
+                return range ? `${range}${result.price_confidence ? ` — ${result.price_confidence}` : ""}` : null;
+              })())}
+              {row("Comparable sales", result.comparables_count ? `${result.comparables_count}${result.comparables_median ? ` (median ${fmtAud(result.comparables_median)})` : ""}` : null)}
               {row("Wind region", result.wind_region ? `${result.wind_region}${result.wind_speed ? ` (${result.wind_speed} m/s)` : ""}` : null)}
               {row("Bushfire (BAL)", result.bal)}
               {row("Climate zone", result.climate_zone)}
               {row("Overlays", (result.overlays ?? []).map((o) => o.name + (o.requiresReport ? " (report required)" : "")).join(", ") || null)}
+              {row("Panel review items", result.panel_review_open != null || result.panel_review_completed != null ? `${result.panel_review_completed ?? 0} done / ${result.panel_review_open ?? 0} open${result.contributions_count ? `, ${result.contributions_count} write-back(s)` : ""}` : null)}
+              {result.suitability_verdict && (
+                <div className="mt-4 rounded-md border border-slate-200 bg-slate-50 p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Suitability — modular estate
+                    {result.suitability_confidence ? ` · ${result.suitability_confidence} confidence` : ""}
+                  </p>
+                  <p className="mt-1 text-sm font-medium text-slate-900">
+                    {result.suitability_suitable ? "✓ Suitable" : "⚠ Needs a closer look"} — {result.suitability_verdict}
+                  </p>
+                  {(result.suitability_risks?.length ?? 0) > 0 && (
+                    <div className="mt-2">
+                      <p className="text-xs font-medium text-slate-500">Risks</p>
+                      <ul className="mt-1 list-disc pl-5 text-sm text-slate-700">
+                        {result.suitability_risks!.map((r, i) => <li key={i}>{r}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                  {(result.suitability_next_steps?.length ?? 0) > 0 && (
+                    <div className="mt-2">
+                      <p className="text-xs font-medium text-slate-500">Next steps</p>
+                      <ul className="mt-1 list-disc pl-5 text-sm text-slate-700">
+                        {result.suitability_next_steps!.map((s, i) => <li key={i}>{s}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
               {result.summary && <p className="mt-3 text-sm text-slate-600">{result.summary}</p>}
             </>
           )}
