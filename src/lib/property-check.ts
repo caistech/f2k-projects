@@ -73,10 +73,14 @@ export interface PropertyCheck {
   suitability_risks?: string[] | null;
   suitability_next_steps?: string[] | null;
   // --- Price position (Domain AVM / comparables leg) ---
+  /** Whether the price leg was actually run (dossier depth) — lets the UI distinguish
+   *  "ran, no data for this locality" from "not requested" (profile depth). */
+  price_checked?: boolean;
   price_lower?: number | null;
   price_mid?: number | null;
   price_upper?: number | null;
   price_confidence?: string | null;
+  price_unavailable_reason?: string | null;
   comparables_count?: number | null;
   comparables_median?: number | null;
   // --- Panel review checklist + professional write-backs ---
@@ -84,8 +88,36 @@ export interface PropertyCheck {
   panel_review_completed?: number | null;
   contributions_count?: number | null;
   overlays?: Array<{ type: string; name: string; requiresReport: boolean }>;
+  /** Soft data-quality flags (e.g. the address geocoded to a region, not a parcel). Not an
+   *  error — the dossier still returned — but the operator should sanity-check the address. */
+  warnings?: string[];
   /** The full SiteDossier as returned — nothing property-services provided is dropped. */
   data?: unknown;
+}
+
+/** m² above which a "single lot" is almost certainly a region/council polygon, not a parcel
+ *  (10,000 ha). Even a very large rural estate sits well under this; an unincorporated-region
+ *  geocode returns billions of m². */
+const IMPLAUSIBLE_LOT_M2 = 100_000_000;
+
+/** Sanity-check a resolved profile and return soft warnings (never blocks — the dossier still
+ *  returns). Catches the "fat-fingered suburb geocodes to a region and looks like a clean site
+ *  check" failure mode: an unincorporated-region LGA, or an implausibly large parcel area. */
+function sanityWarnings(pc: PropertyCheck): string[] {
+  const warnings: string[] = [];
+  const lga = pc.lga_name ?? "";
+  if (/unincorporated/i.test(lga)) {
+    warnings.push(
+      `Geocoded to "${lga}", which is a region rather than a specific council — the address may not have resolved to a real parcel. Enter a full street address and re-run.`,
+    );
+  }
+  if (pc.lot_size != null && pc.lot_size > IMPLAUSIBLE_LOT_M2) {
+    const ha = Math.round(pc.lot_size / 10_000).toLocaleString("en-AU");
+    warnings.push(
+      `The resolved parcel area (~${ha} ha) is implausibly large for a single lot — this is likely a region or boundary polygon, not the intended parcel. Confirm the address.`,
+    );
+  }
+  return warnings;
 }
 
 interface LeadLocation {
@@ -257,11 +289,13 @@ export async function runPropertyCheck(
       suitability_verdict: assessment?.verdict ?? null,
       suitability_risks: assessment?.risks ?? null,
       suitability_next_steps: assessment?.nextSteps ?? null,
-      // Price position (Domain AVM / comparables)
+      // Price position (Domain AVM / comparables) — the price leg only runs in dossier depth.
+      price_checked: depth === "dossier",
       price_lower: price?.estimate?.lower ?? null,
       price_mid: price?.estimate?.mid ?? null,
       price_upper: price?.estimate?.upper ?? null,
       price_confidence: price?.estimate?.confidence ?? null,
+      price_unavailable_reason: price?.unavailableReason ?? null,
       comparables_count: price?.stats?.count ?? null,
       comparables_median: price?.stats?.median ?? null,
       // Panel review + write-backs (dossier depth only)
@@ -279,6 +313,9 @@ export async function runPropertyCheck(
       })),
       data: dossier ?? profile,
     };
+
+    const warnings = sanityWarnings(pc);
+    if (warnings.length) pc.warnings = warnings;
 
     // LGA / wind / climate come nationally from property-services (point-in-polygon over the
     // canonical site-data GeoJSON, server-side). No client-side fallback or direct bucket access —
@@ -323,8 +360,17 @@ export function propertyCheckEmailBlock(
   const hi = fmtAud(pc.price_upper);
   const mid = fmtAud(pc.price_mid);
   const priceRange = lo && hi ? `${lo}–${hi}${mid ? ` (mid ${mid})` : ""}` : mid || "";
+  const priceDisplay =
+    priceRange || (pc.price_checked ? "No Domain estimate available for this locality" : null);
+  const warningsHtml = (pc.warnings ?? [])
+    .map(
+      (w) =>
+        `<p style="font-size:12px;color:#9b6b00;background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;margin:4px 0">⚠ ${escapeHtml(w)}</p>`,
+    )
+    .join("");
   return `
     <h3 style="color:#1A2744;font-size:14px;margin:20px 0 4px">Property check <span style="color:#999;font-weight:normal">(auto, first-pass)</span></h3>
+    ${warningsHtml}
     <table style="border-collapse:collapse;font-size:13px;width:100%">
       ${row("Wind region", pc.wind_region ? `${pc.wind_region}${pc.wind_speed ? ` (${pc.wind_speed} m/s)` : ""}` : null)}
       ${row("Bushfire (BAL)", pc.bal)}
@@ -336,7 +382,7 @@ export function propertyCheckEmailBlock(
       ${row("Buildability", pc.buildability ? `${pc.buildability}${pc.slope_percent != null ? ` (${pc.slope_percent}% slope)` : ""}` : null)}
       ${row("Subdivision permitted", pc.subdivision_permitted == null ? null : pc.subdivision_permitted ? "Yes" : "No")}
       ${row("Est. max lots (Torrens)", pc.max_lots ? `${pc.max_lots}${pc.lot_size_each ? ` @ ~${pc.lot_size_each} m² each` : ""}` : null)}
-      ${row("Est. land value", priceRange)}
+      ${row("Est. land value", priceDisplay)}
       ${row("Suitability (modular estate)", pc.suitability_verdict ? `${pc.suitability_suitable ? "Suitable" : "Check"} — ${pc.suitability_verdict}${pc.suitability_confidence ? ` (${pc.suitability_confidence} confidence)` : ""}` : null)}
       ${row("Overlays", overlays)}
     </table>

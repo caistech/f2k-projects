@@ -41,16 +41,19 @@ interface PropertyCheck {
   suitability_verdict?: string | null;
   suitability_risks?: string[] | null;
   suitability_next_steps?: string[] | null;
+  price_checked?: boolean;
   price_lower?: number | null;
   price_mid?: number | null;
   price_upper?: number | null;
   price_confidence?: string | null;
+  price_unavailable_reason?: string | null;
   comparables_count?: number | null;
   comparables_median?: number | null;
   panel_review_open?: number | null;
   panel_review_completed?: number | null;
   contributions_count?: number | null;
   overlays?: Array<{ type: string; name: string; requiresReport: boolean }>;
+  warnings?: string[];
 }
 
 function fmtAud(v: number | null | undefined): string {
@@ -206,6 +209,15 @@ export default function SiteCheckPage() {
                 <h3 className="text-base font-semibold text-slate-900">Site analysis</h3>
                 <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">OK</span>
               </div>
+              {(result.warnings ?? []).length > 0 && (
+                <div className="mb-3 rounded-md border-l-4 border-amber-400 bg-amber-50 px-4 py-3">
+                  {result.warnings!.map((w, i) => (
+                    <p key={i} className="text-sm text-amber-800">
+                      ⚠ {w}
+                    </p>
+                  ))}
+                </div>
+              )}
               {row("Address used", result.address)}
               {row("LGA / council", result.lga_name ? `${result.lga_name}${result.lga_coverage && result.lga_coverage !== "full" && result.lga_coverage !== "none" ? ` (${result.lga_coverage} coverage)` : ""}` : null)}
               {row("Zoning", result.zoning_code ? `${result.zoning_code}${result.zoning_name ? ` — ${result.zoning_name}` : ""}` : null)}
@@ -222,9 +234,21 @@ export default function SiteCheckPage() {
                 const hi = fmtAud(result.price_upper);
                 const mid = fmtAud(result.price_mid);
                 const range = lo && hi ? `${lo}–${hi}${mid ? ` (mid ${mid})` : ""}` : mid;
-                return range ? `${range}${result.price_confidence ? ` — ${result.price_confidence}` : ""}` : null;
+                if (range) return `${range}${result.price_confidence ? ` — ${result.price_confidence}` : ""}`;
+                // Ran the price leg but Domain had nothing for this locality — say so explicitly
+                // rather than silently dropping the row.
+                if (result.price_checked)
+                  return `No Domain estimate available for this locality${result.price_unavailable_reason ? ` (${result.price_unavailable_reason})` : ""}`;
+                return null;
               })())}
-              {row("Comparable sales", result.comparables_count ? `${result.comparables_count}${result.comparables_median ? ` (median ${fmtAud(result.comparables_median)})` : ""}` : null)}
+              {row(
+                "Comparable sales",
+                result.comparables_count
+                  ? `${result.comparables_count}${result.comparables_median ? ` (median ${fmtAud(result.comparables_median)})` : ""}`
+                  : result.price_checked
+                    ? "None found for this locality"
+                    : null,
+              )}
               {row("Wind region", result.wind_region ? `${result.wind_region}${result.wind_speed ? ` (${result.wind_speed} m/s)` : ""}` : null)}
               {row("Bushfire (BAL)", result.bal)}
               {row("Climate zone", result.climate_zone)}
