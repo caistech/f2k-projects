@@ -17,7 +17,7 @@
     "@caistech/elevenlabs-convai": "^0.4.9",
     "@caistech/email-compliance": "^0.2.0",
     "@caistech/ghl-client": "^0.1.2",
-    "@caistech/mapbox": "^0.2.0",
+    "@caistech/mapbox": "^0.2.1",
     "@caistech/property-launch-kit": "^0.3.2",
     "@caistech/property-services-sdk": "^0.7.1",
     "@caistech/sayfix-embed": "^0.4.0",
