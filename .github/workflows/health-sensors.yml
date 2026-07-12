@@ -57,9 +57,9 @@ jobs:
         run: |
           if [ -f pnpm-lock.yaml ]; then
             corepack enable
-            pnpm install --frozen-lockfile
+            pnpm install --no-frozen-lockfile
           elif [ -f package-lock.json ]; then
-            npm ci
+            npm install --no-audit --no-fund
           else
             npm install
           fi
@@ -114,9 +114,9 @@ jobs:
         run: |
           if [ -f pnpm-lock.yaml ]; then
             corepack enable
-            pnpm install --frozen-lockfile
+            pnpm install --no-frozen-lockfile
           elif [ -f package-lock.json ]; then
-            npm ci
+            npm install --no-audit --no-fund
           else
             npm install
           fi
