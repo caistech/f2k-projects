@@ -43,6 +43,10 @@ export async function GET() {
       name: e.name,
       href: e.href,
       stateName: e.stateAbbr === "MULTI" ? "Multi-state" : e.stateName,
+      // `parked` is the CODE-level unlist flag (src/data/estates.ts). It hides the estate from
+      // public surfaces just like `archived`, but is set in code (needs a deploy) — surfaced here
+      // so an operator sees "Parked (unlisted)" rather than a misleading "Live".
+      parked: Boolean(e.parked),
       archived: Boolean(row?.archived),
       archived_at: row?.archived_at ?? null,
       archived_by: row?.archived_by ?? null,
@@ -73,11 +77,21 @@ export async function POST(req: Request) {
 
   const slug = (body.slug ?? "").trim();
   const archived = Boolean(body.archived);
-  const reason = (body.reason ?? "").trim() || null;
+  const reasonText = (body.reason ?? "").trim();
 
   if (!slug || !estateBySlug(slug)) {
     return NextResponse.json({ error: "Unknown estate" }, { status: 400 });
   }
+
+  // Deactivating an estate hides a public page — a reason (≥10 chars) is required, mirroring the
+  // material-change reason gate used across admin (e.g. AdminLotEditModal). Activating needs none.
+  if (archived && reasonText.length < 10) {
+    return NextResponse.json(
+      { error: "A reason (at least 10 characters) is required to deactivate an estate." },
+      { status: 400 },
+    );
+  }
+  const reason = reasonText || null;
 
   const nowIso = new Date().toISOString();
   const supabase = createSupabaseService();
