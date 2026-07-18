@@ -14,6 +14,7 @@ interface NavItem {
 }
 const GLOBAL_NAV: NavItem[] = [
   { href: "/admin", label: "Dashboard" },
+  { href: "/admin/estates", label: "Estate Pages" },
   { href: "/admin/analytics", label: "Analytics" },
   { href: "/admin/reports", label: "Reports" },
   { href: "/admin/site-check", label: "Site Check" },

@@ -1,4 +1,6 @@
 import { Metadata } from "next";
+import { isEstateArchived } from "@/lib/estates/status";
+import EstateArchivedNotice from "@/components/estate/EstateArchivedNotice";
 import WaitlistForm from "@/components/roi/WaitlistForm";
 import BuyerVoiceAgent from "@/components/estate/BuyerVoiceAgent";
 import FloorPlanGallery from "@/components/branscombe/FloorPlanGallery";
@@ -33,7 +35,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BranscombeEstatePage() {
+export default async function BranscombeEstatePage() {
+  if (await isEstateArchived("branscombe")) {
+    return <EstateArchivedNotice estateName="Branscombe Estate" />;
+  }
   return (
     <>
       {/* ===== HERO ===== */}

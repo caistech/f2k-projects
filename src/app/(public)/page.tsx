@@ -4,10 +4,11 @@ import AustraliaMap from "@/components/AustraliaMap";
 import EstateCard from "@/components/EstateCard";
 import BuyerVoiceAgent from "@/components/estate/BuyerVoiceAgent";
 import { publicEstates } from "@/data/estates";
+import { getArchivedSlugs } from "@/lib/estates/status";
 
 const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
-export default function HomePage({
+export default async function HomePage({
   searchParams,
 }: {
   searchParams: { code?: string };
@@ -21,6 +22,11 @@ export default function HomePage({
       `/api/auth/callback?code=${encodeURIComponent(searchParams.code)}&next=/admin`,
     );
   }
+
+  // Admin-archived estates drop off the front door (cards + map) just like the code `parked` flag.
+  const archived = await getArchivedSlugs();
+  const archivedSlugs = [...archived];
+  const cards = publicEstates().filter((e) => !archived.has(e.slug));
 
   // Show product CTA banner in demo mode
   const showProductBanner = isDemoMode;
@@ -71,7 +77,7 @@ export default function HomePage({
           </p>
 
           <div className="max-w-[820px] mx-auto">
-            <AustraliaMap />
+            <AustraliaMap archivedSlugs={archivedSlugs} />
           </div>
         </div>
       </section>
@@ -83,7 +89,7 @@ export default function HomePage({
             Every Factory2Key development
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {publicEstates().map((e) => (
+            {cards.map((e) => (
               <EstateCard key={e.slug} estate={e} />
             ))}
           </div>

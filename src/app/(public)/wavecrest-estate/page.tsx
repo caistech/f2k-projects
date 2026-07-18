@@ -1,4 +1,6 @@
 import { Metadata } from "next";
+import { isEstateArchived } from "@/lib/estates/status";
+import EstateArchivedNotice from "@/components/estate/EstateArchivedNotice";
 import RegistrationForm from "@/components/wavecrest/RegistrationForm";
 import SiteMap from "@/components/wavecrest/SiteMap";
 import LotList from "@/components/wavecrest/LotList";
@@ -30,7 +32,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function WavecrestEstatePage() {
+export default async function WavecrestEstatePage() {
+  if (await isEstateArchived("wavecrest")) {
+    return <EstateArchivedNotice estateName="Wavecrest Estate" />;
+  }
   return (
     <>
       {/* ===== HERO ===== */}

@@ -8,6 +8,7 @@ import {
   estatesInState,
   type StateAbbr,
 } from "@/data/estates";
+import { getArchivedSlugs } from "@/lib/estates/status";
 
 /**
  * /estates/[state] — the per-state page reached by clicking a state polygon on the landing map.
@@ -36,11 +37,12 @@ export function generateMetadata({ params }: { params: { state: string } }): Met
   };
 }
 
-export default function StatePage({ params }: { params: { state: string } }) {
+export default async function StatePage({ params }: { params: { state: string } }) {
   const abbr = toAbbr(params.state);
   if (!abbr) notFound();
   const name = STATE_NAMES[abbr];
-  const estates = estatesInState(abbr);
+  const archived = await getArchivedSlugs();
+  const estates = estatesInState(abbr).filter((e) => !archived.has(e.slug));
 
   return (
     <div className="bg-off-white min-h-screen">

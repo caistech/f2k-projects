@@ -8,9 +8,6 @@ import {
   STATE_COLORS,
   STATE_NAMES,
   ALL_STATE_ABBRS,
-  estatesInState,
-  pinnedEstates,
-  activeStateAbbrs,
   type StateAbbr,
 } from "@/data/estates";
 import { AUSTRALIA, projectLngLat } from "@/lib/australia-map";
@@ -31,15 +28,37 @@ import { AUSTRALIA, projectLngLat } from "@/lib/australia-map";
 const MUTED_FILL = "#D8D2C6"; // states with no estate yet
 const stateHref = (abbr: string) => `/estates/${abbr.toLowerCase()}`;
 
-export default function AustraliaMap() {
+export default function AustraliaMap({
+  archivedSlugs = [],
+}: {
+  archivedSlugs?: string[];
+}) {
   const router = useRouter();
   const [hoverState, setHoverState] = useState<string | null>(null);
   const [hoverPin, setHoverPin] = useState<string | null>(null);
-  const active = useMemo(() => activeStateAbbrs(), []);
+
+  // Public estates minus any an admin has archived (DB-backed) — mirrors the code `parked` filter.
+  const visibleEstates = useMemo(() => {
+    const archived = new Set(archivedSlugs);
+    return publicEstates().filter((e) => !archived.has(e.slug));
+  }, [archivedSlugs]);
+
+  // States that currently have at least one visible (non-archived) estate → "active" styling.
+  const active = useMemo(
+    () =>
+      new Set(
+        visibleEstates
+          .filter((e) => e.stateAbbr !== "MULTI")
+          .map((e) => e.stateAbbr as StateAbbr),
+      ),
+    [visibleEstates],
+  );
 
   // Project pins, then fan out any that land on the same spot.
   const pins = useMemo(() => {
-    const base = pinnedEstates().map((e) => {
+    const base = visibleEstates
+      .filter((e) => e.coords !== null)
+      .map((e) => {
       const { x, y } = projectLngLat(e.coords!.lng, e.coords!.lat);
       return { estate: e, x, y };
     });
@@ -64,7 +83,7 @@ export default function AustraliaMap() {
       });
     }
     return out;
-  }, []);
+  }, [visibleEstates]);
 
   const { width, height, states } = AUSTRALIA;
   const pinR = 9;
@@ -85,7 +104,7 @@ export default function AustraliaMap() {
           const isActive = active.has(abbr);
           const isHover = hoverState === s.abbr;
           const fill = isActive ? STATE_COLORS[abbr] ?? MUTED_FILL : MUTED_FILL;
-          const count = estatesInState(abbr).length;
+          const count = visibleEstates.filter((e) => e.stateAbbr === abbr).length;
           return (
             <g
               key={s.abbr}
@@ -205,7 +224,7 @@ export default function AustraliaMap() {
               <Link href={stateHref(abbr)}>{STATE_NAMES[abbr]}</Link>
             </li>
           ))}
-          {publicEstates().map((e) => (
+          {visibleEstates.map((e) => (
             <li key={e.slug}>
               <Link href={e.href}>
                 {e.name} — {e.location}

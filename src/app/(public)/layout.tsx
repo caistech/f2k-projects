@@ -1,6 +1,7 @@
 import Script from "next/script";
 import ProjectsHeader from "@/components/ProjectsHeader";
 import ProjectsFooter from "@/components/ProjectsFooter";
+import { getArchivedSlugs } from "@/lib/estates/status";
 
 // FTK analytics Phase 1 — Umami tracking, cookieless, no consent banner.
 // Mounted ONLY in the (public) layout (NOT the root layout) so /admin, /agent, and the demo
@@ -12,11 +13,12 @@ const umamiSrc =
 const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 const analyticsEnabled = Boolean(umamiWebsiteId) && !isDemoMode;
 
-export default function PublicLayout({
+export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const archivedSlugs = [...(await getArchivedSlugs())];
   return (
     <div className="min-h-screen bg-off-white flex flex-col">
       {analyticsEnabled && (
@@ -27,7 +29,7 @@ export default function PublicLayout({
           defer
         />
       )}
-      <ProjectsHeader />
+      <ProjectsHeader archivedSlugs={archivedSlugs} />
       <main className="flex-1">{children}</main>
       <ProjectsFooter />
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Fragment } from "react";
+import { useState, useMemo, Fragment } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { publicEstates } from "@/data/estates";
@@ -26,21 +26,25 @@ const DEFAULT_NAV: NavItem[] = [
 
 // Estates grouped State → Estate for the hub mega-menu, read from the registry. Location is shown
 // as each estate's subtitle (so the place is visible without a third nav level — matches the
-// admin switcher's two-step shape).
-const ESTATE_MENU: { state: string; estates: { href: string; name: string; location: string }[] }[] =
-  (() => {
-    const order: string[] = [];
-    const map = new Map<string, { href: string; name: string; location: string }[]>();
-    for (const e of publicEstates()) {
-      const state = e.stateAbbr === "MULTI" ? "Multi-state" : e.stateName;
-      if (!map.has(state)) {
-        map.set(state, []);
-        order.push(state);
-      }
-      map.get(state)!.push({ href: e.href, name: e.shortName, location: e.location });
+// admin switcher's two-step shape). `archivedSlugs` (admin-toggled, DB-backed) are dropped so a
+// deactivated estate disappears from the nav — the same effect the code-level `parked` flag has.
+type EstateMenuGroup = { state: string; estates: { href: string; name: string; location: string }[] };
+
+function buildEstateMenu(archivedSlugs: string[]): EstateMenuGroup[] {
+  const archived = new Set(archivedSlugs);
+  const order: string[] = [];
+  const map = new Map<string, { href: string; name: string; location: string }[]>();
+  for (const e of publicEstates()) {
+    if (archived.has(e.slug)) continue;
+    const state = e.stateAbbr === "MULTI" ? "Multi-state" : e.stateName;
+    if (!map.has(state)) {
+      map.set(state, []);
+      order.push(state);
     }
-    return order.map((state) => ({ state, estates: map.get(state)! }));
-  })();
+    map.get(state)!.push({ href: e.href, name: e.shortName, location: e.location });
+  }
+  return order.map((state) => ({ state, estates: map.get(state)! }));
+}
 
 // Developer credited in the header differs per project (Dennis, 2026-06-12):
 // Seafields + Wavecrest are developed by Dual Focus; Branscombe + Hemp Homes by
@@ -89,10 +93,18 @@ function isFunderRoute(pathname: string | null): boolean {
   return pathname === "/funders" || (pathname?.endsWith("/funders") ?? false);
 }
 
-export default function ProjectsHeader() {
+export default function ProjectsHeader({
+  archivedSlugs = [],
+}: {
+  archivedSlugs?: string[];
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [estatesOpen, setEstatesOpen] = useState(false);
   const pathname = usePathname();
+  const estateMenu = useMemo(
+    () => buildEstateMenu(archivedSlugs),
+    [archivedSlugs],
+  );
   const navItems = navItemsForPath(pathname);
   const developer = developerForPath(pathname);
   const funderRoute = isFunderRoute(pathname);
@@ -171,7 +183,7 @@ export default function ProjectsHeader() {
                     </button>
                     {estatesOpen && (
                       <div className="absolute left-0 top-full z-50 mt-1 w-64 rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
-                        {ESTATE_MENU.map((grp) => (
+                        {estateMenu.map((grp) => (
                           <div key={grp.state} className="py-1">
                             <p className="px-3 py-1 text-[0.6rem] uppercase tracking-wide text-slate-400">
                               {grp.state}
@@ -246,7 +258,7 @@ export default function ProjectsHeader() {
                 )}
                 {showEstatesMenu && item.href === "/" && (
                   <div className="my-1 border-y border-slate-100 py-1">
-                    {ESTATE_MENU.map((grp) => (
+                    {estateMenu.map((grp) => (
                       <div key={grp.state}>
                         <p className="px-4 pt-2 text-[0.6rem] uppercase tracking-wide text-slate-400">
                           {grp.state}

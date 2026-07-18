@@ -1,4 +1,6 @@
 import { Metadata } from "next";
+import { isEstateArchived } from "@/lib/estates/status";
+import EstateArchivedNotice from "@/components/estate/EstateArchivedNotice";
 import HeroSitePlan from "@/components/seafields/HeroSitePlan";
 import RegistrationForm from "@/components/seafields/RegistrationForm";
 import BuyerVoiceAgent from "@/components/estate/BuyerVoiceAgent";
@@ -111,7 +113,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function SeafieldsEstatePage() {
+export default async function SeafieldsEstatePage() {
+  if (await isEstateArchived("seafields")) {
+    return <EstateArchivedNotice estateName="Seafields Estate" />;
+  }
   return (
     <div className="sf-page">
       {/* ===== HERO ===== */}

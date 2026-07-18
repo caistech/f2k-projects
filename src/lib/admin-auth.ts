@@ -83,6 +83,7 @@ export function hasPermission(role: AdminRole, action: string): boolean {
     manage_hemp_homes_pricing: ["super_admin", "fund_manager"],
     manage_hemp_homes_outreach: ["super_admin", "fund_manager"],
     manage_admin_users: ["super_admin"],
+    manage_estate_status: ["super_admin", "fund_manager"],
     manage_agents: ["super_admin", "fund_manager"],
     manage_developer_onboarding: ["super_admin", "fund_manager"],
     manage_seafields_notifications: ["super_admin"],

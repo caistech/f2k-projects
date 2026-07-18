@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import type { Metadata } from "next";
+import { isEstateArchived } from "@/lib/estates/status";
+import EstateArchivedNotice from "@/components/estate/EstateArchivedNotice";
 import HempHomesWaitlistForm from "@/components/hemp-homes/HempHomesWaitlistForm";
 import { JourneyTimeline } from "@/components/hemp-homes/JourneyTimeline";
 import HempHomesGallerySection from "@/components/hemp-homes/HempHomesGallerySection";
@@ -51,7 +53,10 @@ const PRINCIPLES = [
   },
 ];
 
-export default function HempHomesForEcoCommunitiesPage() {
+export default async function HempHomesForEcoCommunitiesPage() {
+  if (await isEstateArchived("hemp-homes")) {
+    return <EstateArchivedNotice estateName="Hemp Homes for Eco-Communities" />;
+  }
   return (
     <>
       {/* Skip link */}

@@ -1,4 +1,6 @@
 import { Metadata } from "next";
+import { isEstateArchived } from "@/lib/estates/status";
+import EstateArchivedNotice from "@/components/estate/EstateArchivedNotice";
 import { getStaticMapUrl } from "@caistech/mapbox";
 import RegistrationForm from "@/components/dutton/RegistrationForm";
 import BuyerVoiceAgent from "@/components/estate/BuyerVoiceAgent";
@@ -103,7 +105,10 @@ const SITE_ENVIRONMENT: { label: string; value: string }[] = [
   { label: "Climate zone", value: "Zone 5" },
 ];
 
-export default function DuttonTerraceEstatePage() {
+export default async function DuttonTerraceEstatePage() {
+  if (await isEstateArchived("dutton-terrace")) {
+    return <EstateArchivedNotice estateName="Dutton Terrace" />;
+  }
   const regionMap = getStaticMapUrl(DUTTON.lat, DUTTON.lng, { width: 640, height: 380, zoom: 5, style: "streets-v12" });
   // Satellite map framed on the parcel (zoom must match PARCEL_FRAME so the outline aligns).
   const parcelMap = getStaticMapUrl(DUTTON.lat, DUTTON.lng, { width: 640, height: 380, zoom: PARCEL_FRAME.zoom, style: "satellite-streets-v12" });
