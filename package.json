@@ -20,7 +20,7 @@
     "@caistech/mapbox": "^0.2.1",
     "@caistech/property-launch-kit": "^0.3.2",
     "@caistech/property-services-sdk": "^0.7.1",
-    "@caistech/sayfix-embed": "^0.4.0",
+    "@caistech/sayfix-embed": "^0.6.0",
     "@elevenlabs/react": "^1.6.7",
     "@supabase/ssr": "0.5.2",
     "@supabase/supabase-js": "2.47.0",
