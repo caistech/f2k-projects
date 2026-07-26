@@ -22,6 +22,7 @@ import {
   renderBrandedEmail,
 } from "@/lib/branscombe/notify";
 import { guardRecipients } from "@/lib/email/recipient-guard";
+import { isEstateCommsPaused } from "@/lib/estates/comms";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -55,6 +56,13 @@ function authorised(req: Request): boolean {
 export async function GET(req: Request) {
   if (!authorised(req)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Estate deactivated => the daily digest stops with everything else. A frozen estate produces a
+  // digest of zeroes every morning, which trains recipients to ignore the one that matters when it
+  // comes back. Resumes automatically on reactivation.
+  if (await isEstateCommsPaused("branscombe")) {
+    return NextResponse.json({ ok: true, skipped: "estate_archived" });
   }
 
   const supabase = createSupabaseService();

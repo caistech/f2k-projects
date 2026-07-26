@@ -20,6 +20,7 @@ import {
   renderBrandedEmail,
 } from "@/lib/seafields/notify";
 import { guardRecipients } from "@/lib/email/recipient-guard";
+import { isEstateCommsPaused } from "@/lib/estates/comms";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -64,6 +65,12 @@ function authorised(req: Request): boolean {
 export async function GET(req: Request) {
   if (!authorised(req)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Estate deactivated => the digest stops with every other estate communication (see
+  // lib/estates/comms.ts). Resumes automatically on reactivation.
+  if (await isEstateCommsPaused("seafields")) {
+    return NextResponse.json({ ok: true, skipped: "estate_archived" });
   }
 
   const supabase = createSupabaseService();

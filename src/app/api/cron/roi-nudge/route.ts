@@ -7,7 +7,11 @@
  *   - consent_contact = true (Spam Act — never nudge a non-consenting buyer),
  *   - not in email_suppressions (honoured unsubscribe),
  *   - nudged_at IS NULL (send once),
- *   - submitted_at older than 48h.
+ *   - submitted_at older than 48h,
+ *   - the estate is not archived (lib/estates/comms.ts) — a development that has been taken off
+ *     market must not keep chasing its buyers with a "book a call" email. This is the single most
+ *     important gate here: it is the one path that emails REGISTRANTS unprompted, and it ran for a
+ *     deactivated estate until this check existed.
  *
  * Runs daily via Vercel cron; a row becomes eligible at 48h and is nudged on the next run.
  * Cron auth: Vercel sends Authorization: Bearer <CRON_SECRET>.
@@ -16,6 +20,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseService } from "@/lib/supabase-service";
 import { isSuppressed } from "@/lib/email/unsubscribe";
+import { isEstateCommsPaused } from "@/lib/estates/comms";
 import { buildQualifyUrl } from "@/lib/roi/qualify-link";
 import { buildCoveringEmail } from "@/lib/roi/covering-email";
 
@@ -61,6 +66,7 @@ export async function GET(request: Request) {
 
   let sent = 0;
   let skipped = 0;
+  let skippedArchived = 0;
   const { Resend } = await import("resend");
   const resend = new Resend(process.env.RESEND_API_KEY);
   const from =
@@ -85,6 +91,13 @@ export async function GET(request: Request) {
       }
       if (!estate) {
         skipped++;
+        continue;
+      }
+
+      // Estate taken off market => no automated buyer contact. Leave nudged_at NULL so the buyer is
+      // still nudged if the estate comes back, rather than silently burning their one follow-up.
+      if (await isEstateCommsPaused(estate.slug)) {
+        skippedArchived++;
         continue;
       }
 
@@ -131,8 +144,8 @@ export async function GET(request: Request) {
     action: "roi_nudge_run",
     entity_type: "waitlist_registration",
     entity_id: null,
-    details: { sent, skipped, candidates: rows.length },
+    details: { sent, skipped, skipped_archived: skippedArchived, candidates: rows.length },
   });
 
-  return NextResponse.json({ sent, skipped });
+  return NextResponse.json({ sent, skipped, skipped_archived: skippedArchived });
 }

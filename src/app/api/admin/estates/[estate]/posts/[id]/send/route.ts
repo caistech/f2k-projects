@@ -3,6 +3,7 @@ import { getAdminUser, hasPermission } from "@/lib/admin-auth";
 import { createSupabaseServiceWithActor } from "@/lib/supabase-service";
 import { getEstateBlog, estatePermission } from "@/lib/estates/blog-config";
 import { buildUnsubscribeUrl, buildUnsubscribeApiUrl, renderPostEmailHtml, sendRawEmail } from "@/lib/estates/email";
+import { estateArchivedSendGuard } from "@/lib/estates/comms";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -28,6 +29,14 @@ export async function POST(request: Request, { params }: RouteCtx) {
     if (body?.mode === "live") mode = "live";
   } catch {
     // default test
+  }
+
+  // A deactivated estate does not email its subscribers a build-journal update — that is exactly
+  // the "future communications" a status change is meant to stop. A TEST send (to the admin only)
+  // stays allowed so a post can still be drafted and previewed while the estate is off market.
+  if (mode === "live") {
+    const archived = await estateArchivedSendGuard(cfg.slug, cfg.name);
+    if (archived) return archived;
   }
 
   const supabase = createSupabaseServiceWithActor(admin.email, `email ${cfg.slug} post (${mode})`);

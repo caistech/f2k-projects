@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { registrationsMaintenanceGuard } from "@/lib/maintenance";
+import { estateArchivedPublicGuard } from "@/lib/estates/comms";
 import { createHash } from "node:crypto";
 import { createSupabaseService } from "@/lib/supabase-service";
 import { escapeHtml } from "@/lib/html-escape";
@@ -73,6 +74,12 @@ function getClientIp(req: Request): string | null {
 export async function POST(request: Request) {
   const paused = registrationsMaintenanceGuard();
   if (paused) return paused;
+
+  // Estate deactivated => registrations are closed (lib/estates/comms.ts). The form is unreachable
+  // from the site once archived, so this catches a stale tab or a direct POST — accepting a lead we
+  // have committed not to follow up is worse than declining it.
+  const archived = await estateArchivedPublicGuard("hemp-homes");
+  if (archived) return archived;
 
   const fromAddress = process.env.RESEND_FROM_EMAIL_HEMP_HOMES;
   if (!fromAddress) {

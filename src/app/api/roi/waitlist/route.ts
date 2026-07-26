@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies, headers } from "next/headers";
 import { z } from "zod";
 import { registrationsMaintenanceGuard } from "@/lib/maintenance";
+import { estateArchivedPublicGuard } from "@/lib/estates/comms";
 import { createSupabaseService } from "@/lib/supabase-service";
 import { escapeHtml } from "@/lib/html-escape";
 import { getActiveRecipients, renderBrandedEmail } from "@/lib/branscombe/notify";
@@ -77,6 +78,12 @@ export async function POST(request: Request) {
   if (!estate) {
     return NextResponse.json({ error: "Unknown estate" }, { status: 400 });
   }
+
+  // Estate deactivated => registrations are closed. The form isn't reachable from the site once the
+  // estate is archived, so this catches a stale tab or a direct POST — and it matters, because
+  // accepting a registration we've committed not to follow up is worse than declining it.
+  const archived = await estateArchivedPublicGuard(estate.slug);
+  if (archived) return archived;
 
   // First-touch attribution from the signed cookie the resolver set. Never typed by the buyer.
   const cookieStore = cookies();

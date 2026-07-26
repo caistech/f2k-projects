@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { z } from "zod";
 import { registrationsMaintenanceGuard } from "@/lib/maintenance";
+import { estateArchivedPublicGuard } from "@/lib/estates/comms";
 import { createSupabaseService } from "@/lib/supabase-service";
 import { escapeHtml } from "@/lib/html-escape";
 import { getActiveRecipients, renderBrandedEmail } from "@/lib/branscombe/notify";
@@ -118,6 +119,18 @@ export async function POST(request: Request) {
     .maybeSingle();
   if (!waitlist) {
     return NextResponse.json({ error: "Registration link not found." }, { status: 404 });
+  }
+
+  // Estate deactivated => the qualification form closes with it. The link an agent sent last week
+  // stays clickable, so this is the check that stops a buyer completing an EOI on a development
+  // that has been withdrawn.
+  const { data: estateRow } = await (supabase.from("estates") as any)
+    .select("slug")
+    .eq("id", waitlist.estate_id)
+    .maybeSingle();
+  if (estateRow?.slug) {
+    const archived = await estateArchivedPublicGuard(estateRow.slug);
+    if (archived) return archived;
   }
 
   // Representation guardrail: ranked units must be real units of this estate (spec §8).

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { registrationsMaintenanceGuard } from "@/lib/maintenance";
+import { estateArchivedPublicGuard } from "@/lib/estates/comms";
 import { createSupabaseService } from "@/lib/supabase-service";
 import { escapeHtml } from "@/lib/html-escape";
 import { sendTemplated } from "@/lib/email/send";
@@ -74,6 +75,12 @@ const schema = z.object({
 export async function POST(request: Request) {
   const paused = registrationsMaintenanceGuard();
   if (paused) return paused;
+
+  // Estate deactivated => registrations are closed (lib/estates/comms.ts). The form is unreachable
+  // from the site once archived, so this catches a stale tab or a direct POST — accepting a lead we
+  // have committed not to follow up is worse than declining it.
+  const archived = await estateArchivedPublicGuard("seafields");
+  if (archived) return archived;
 
   const body = await request.json();
   const parsed = schema.safeParse(body);
