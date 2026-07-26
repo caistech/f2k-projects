@@ -13,13 +13,13 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.98.0",
     "@caistech/ai-client": "^0.1.0",
-    "@caistech/corporate-components": "^0.3.3",
-    "@caistech/elevenlabs-convai": "^0.9.0",
-    "@caistech/email-compliance": "^0.2.0",
+    "@caistech/corporate-components": "^0.7.0",
+    "@caistech/elevenlabs-convai": "^0.10.0",
+    "@caistech/email-compliance": "^0.4.0",
     "@caistech/ghl-client": "^0.1.2",
     "@caistech/mapbox": "^0.2.1",
     "@caistech/property-launch-kit": "^0.3.2",
-    "@caistech/property-services-sdk": "^0.7.1",
+    "@caistech/property-services-sdk": "^0.8.0",
     "@caistech/sayfix-embed": "^0.6.0",
     "@elevenlabs/react": "^1.6.7",
     "@supabase/ssr": "0.5.2",
@@ -42,7 +42,7 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
-    "@caistech/portfolio-gate": "^0.3.0",
+    "@caistech/portfolio-gate": "^0.8.2",
     "@types/mapbox-gl": "^3.5.0",
     "@types/node": "^22.0.0",
     "@types/react": "^18.3.0",
