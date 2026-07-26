@@ -73,6 +73,18 @@ interface Receipt {
 
 const BRAND = "#1B4332";
 
+/**
+ * Resend caps at 10 requests/second and this loop sends serially with no network wait between
+ * calls, so a mid-sized estate blows straight through it — the first live run announced Branscombe
+ * to 11 recipients and lost one to "Too many requests". A dropped announcement is exactly the
+ * failure this feature exists to prevent, so the loop is paced under the cap. 150ms (≈6.7/sec)
+ * leaves headroom for anything else the deploy is sending at the same moment; even 60 recipients
+ * still finishes inside the route's 60s budget.
+ */
+const SEND_INTERVAL_MS = 150;
+
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 function shell(title: string, inner: string, footer: string): string {
   return `<div style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:600px;margin:0 auto;color:#1f2937;line-height:1.55;">
   <h1 style="font-size:22px;line-height:1.3;color:#0f172a;margin:0 0 16px;">${escapeHtml(title)}</h1>
@@ -333,6 +345,10 @@ export async function notifyEstateStatusChange(args: NotifyArgs): Promise<Notify
     html: string,
     receiptId: string,
   ) => {
+    // Pace under the provider's rate limit (see SEND_INTERVAL_MS). Applied before every send after
+    // the first, so a single-recipient announcement is not slowed for nothing.
+    if (result.attempted > 0) await delay(SEND_INTERVAL_MS);
+
     result.attempted++;
     const guard = guardRecipients(to);
     let error: string | null = null;
