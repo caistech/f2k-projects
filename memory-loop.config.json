@@ -1,0 +1,5 @@
+{
+  "_doc": "Per-audience voice routes (developers / funders / estate / employer / admin reports) plus /api/convai/webhooks/post-call, but none of the package memory handlers and no convai_memory table — the voice tables are agents and developer_voice_conversations (transcript capture per audience). No cross-session recall to probe.",
+  "memoryLoop": false,
+  "webhookPath": "/api/convai/webhooks"
+}
