@@ -54,7 +54,14 @@ export default function LotBadge({
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         aria-label={ariaLabel}
-        className="relative inline-flex items-center justify-between gap-1 rounded-full px-2 py-1 transition-all duration-100 cursor-pointer w-full"
+        /*
+          min-h-[44px] on mobile: this pill IS the lot selector, and selecting a
+          lot is how a buyer registers. At px-2 py-1 it measured 73x24 on a
+          375px viewport — comfortably bigger than the ~17x8 SVG region in plan
+          view, but still under the 44px minimum for a primary action. Relaxed
+          from sm: up, where a mouse makes the denser grid the better layout.
+        */
+        className="relative inline-flex items-center justify-between gap-1 rounded-full px-2 py-1 min-h-[44px] sm:min-h-0 transition-all duration-100 cursor-pointer w-full"
         style={pillStyle}
       >
         <span
@@ -79,9 +86,13 @@ export default function LotBadge({
           </span>
         )}
       </button>
+      {/*
+        12px is the portfolio floor for any on-screen text; this was 9px, which
+        is the lot's AREA — the single number a buyer compares lots on.
+      */}
       <span
         className="font-archivo text-slate/70 leading-none"
-        style={{ fontSize: "9px" }}
+        style={{ fontSize: "12px" }}
       >
         {area}m²
       </span>
