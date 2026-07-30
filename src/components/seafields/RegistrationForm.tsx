@@ -231,6 +231,34 @@ export default function RegistrationForm() {
   // Expanded lot panel
   const [expandedLot, setExpandedLot] = useState<string | null>(null);
 
+  /**
+   * Has the visitor typed anything into the form yet?
+   *
+   * The form is swapped out for the "Pick a Lot Above to Begin" panel whenever
+   * the last lot is deselected. Every field above is state on THIS component,
+   * which stays mounted, so nothing is actually lost — re-picking a lot brings
+   * it all back. But the form VANISHING reads as data loss, and a tester
+   * reported it as exactly that. When there is something to reassure them
+   * about, say so explicitly rather than showing the generic first-time copy.
+   */
+  const hasEnteredDetails = Boolean(
+    firstName ||
+      lastName ||
+      email ||
+      phone ||
+      notes ||
+      suburb ||
+      postcode ||
+      buyerType ||
+      buyerProfile ||
+      currentHousing ||
+      purchaseTimeline ||
+      financeStatus ||
+      howHeard ||
+      referrerType ||
+      interestType,
+  );
+
   // Lead-source attribution. A partner QR code / short link carries a
   // ?ref=<tag> param. We record the raw tag for the `source` column and, for
   // known campaigns, pre-fill the referrer fields so the lead is attributed to
@@ -613,17 +641,33 @@ export default function RegistrationForm() {
             Your Registration
           </p>
           <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
-            Pick a Lot Above to Begin
+            {hasEnteredDetails
+              ? "Your Details Are Safe — Pick a Lot to Continue"
+              : "Pick a Lot Above to Begin"}
           </h2>
-          <p className="text-slate font-archivo leading-relaxed mb-6 max-w-[560px] mx-auto">
-            The registration form opens once you choose at least one lot on the
-            subdivision plan above. You can pick multiple lots — each one will
-            give you a slot to set your price expectation and dwelling
-            preference before you complete the form.
-          </p>
+          {hasEnteredDetails ? (
+            <p className="text-slate font-archivo leading-relaxed mb-6 max-w-[560px] mx-auto">
+              Nothing you typed has been lost. Everything you&apos;ve entered is still
+              here — choose a lot on the subdivision plan above and the form reopens
+              with all your details exactly as you left them.
+            </p>
+          ) : (
+            <p className="text-slate font-archivo leading-relaxed mb-6 max-w-[560px] mx-auto">
+              The registration form opens once you choose at least one lot on the
+              subdivision plan above. You can pick multiple lots — each one will
+              give you a slot to set your price expectation and dwelling
+              preference before you complete the form.
+            </p>
+          )}
+          {/*
+            Outlined, NOT solid teal. This used to carry the exact classes as the
+            "Register My Interest" submit button, so on the panel that replaces
+            the form it read as the submit action — a tester took it for one and
+            recorded the resulting jump to #site-map as a failed submission.
+          */}
           <a
             href="#site-map"
-            className="inline-flex items-center gap-2 bg-[#00B5AD] hover:bg-[#009E97] text-white px-6 py-3 font-archivo font-semibold transition-colors"
+            className="inline-flex items-center gap-2 border-2 border-[#00B5AD] text-[#00B5AD] hover:bg-[#00B5AD] hover:text-white px-6 py-3 font-archivo font-semibold transition-colors"
           >
             <span aria-hidden>↑</span> Scroll back to the subdivision plan
           </a>

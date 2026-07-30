@@ -279,8 +279,18 @@ export default async function RegistrationsPage({
         </a>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
+      {/*
+        overflow-x-auto, not overflow-hidden. This table is 11 columns and was
+        clipped inside its own container: measured 1285px of table inside a
+        1287px overflow-x:hidden parent, so 8 of the 11 columns (Email, Items,
+        Land/H&L, Buyer, Timeline, Agent, Status, Actions) were simply
+        unreachable on a phone, with names truncated mid-word. Horizontal scroll
+        inside a bordered container is the sanctioned mobile strategy for a data
+        grid (PRODUCT_STANDARDS §1); min-w on the table makes the scroll actually
+        engage instead of the columns crushing.
+      */}
+      <div className="bg-white border border-slate-200 rounded-lg overflow-x-auto">
+        <table className="w-full min-w-[64rem] text-sm">
           <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
             <tr className="text-left">
               <th className="px-4 py-2 font-semibold">When</th>
