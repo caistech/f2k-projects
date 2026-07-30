@@ -54,21 +54,27 @@ function LoginInner() {
     setInfo(null);
     setLoading("magic");
 
-    const supabase = getClient();
-    const { error: otpError } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/api/auth/callback?next=/admin`,
-      },
-    });
-
-    if (otpError) {
-      setError(otpError.message);
+    // Send via our own /api/auth/magic-link route (service-role token minted
+    // server-side, delivered through Resend). The old client-side
+    // signInWithOtp relied on Supabase's built-in mailer, which fails here with
+    // "Error sending magic link email" so no link was ever delivered.
+    try {
+      const res = await fetch("/api/auth/magic-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        setError(data.error || "Could not send the magic link. Please try again.");
+        return;
+      }
+      setInfo(`Magic link sent to ${email}. Check your inbox (and spam folder).`);
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
       setLoading(null);
-      return;
     }
-    setInfo(`Magic link sent to ${email}. Check your inbox (and spam folder).`);
-    setLoading(null);
   }
 
   async function handleForgotPassword() {
