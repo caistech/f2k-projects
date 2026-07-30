@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { requestMagicLink } from "@/lib/auth/magic-link";
 
 export default function DataroomActivatePage() {
   const [email, setEmail] = useState("");
@@ -17,14 +18,23 @@ export default function DataroomActivatePage() {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       );
-      const { error } = await supabase.auth.signInWithOtp({
-        email: email.trim(),
-        options: { emailRedirectTo: `${window.location.origin}/dataroom` },
-      });
+      // Invited members already exist (inviteUserByEmail created them), so
+      // requiring an existing account costs nothing here and stops the form
+      // provisioning an account for any address a stranger types.
+      const outcome = await requestMagicLink(
+        supabase,
+        email,
+        `${window.location.origin}/dataroom`,
+      );
       setMsg(
-        error
-          ? { type: "error", text: error.message }
-          : { type: "info", text: "Check your email for a sign-in link." },
+        outcome.kind === "error"
+          ? { type: "error", text: outcome.message }
+          : outcome.kind === "throttled"
+            ? { type: "info", text: outcome.message }
+            : {
+                type: "info",
+                text: "If that address has been invited, a sign-in link is on its way. Check your email.",
+              },
       );
     } finally {
       setBusy(false);

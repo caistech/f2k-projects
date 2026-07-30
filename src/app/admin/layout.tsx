@@ -13,8 +13,14 @@ export default async function AdminLayout({
 }) {
   const pathname = headers().get("x-pathname") ?? "";
 
-  // /admin/login and /admin/reset-password render without sidebar + auth check
-  if (pathname === "/admin/login" || pathname === "/admin/reset-password") {
+  // Auth surfaces render without sidebar + auth check. /admin/password-reset is
+  // the spelling alias and only redirects, so it must bypass the gate too or the
+  // layout sends it to /admin/login before the redirect can run.
+  if (
+    pathname === "/admin/login" ||
+    pathname === "/admin/reset-password" ||
+    pathname === "/admin/password-reset"
+  ) {
     return <>{children}</>;
   }
 

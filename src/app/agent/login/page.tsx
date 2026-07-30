@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { requestMagicLink } from "@/lib/auth/magic-link";
 
 async function browserClient() {
   const { createBrowserClient } = await import("@supabase/ssr");
@@ -48,14 +49,20 @@ export default function AgentLoginPage() {
     setMsg(null);
     try {
       const supabase = await browserClient();
-      const { error } = await supabase.auth.signInWithOtp({
-        email: email.trim(),
-        options: { emailRedirectTo: `${window.location.origin}/agent` },
-      });
+      const outcome = await requestMagicLink(
+        supabase,
+        email,
+        `${window.location.origin}/agent`,
+      );
       setMsg(
-        error
-          ? { type: "error", text: error.message }
-          : { type: "info", text: "Check your email for a magic sign-in link." },
+        outcome.kind === "error"
+          ? { type: "error", text: outcome.message }
+          : outcome.kind === "throttled"
+            ? { type: "info", text: outcome.message }
+            : {
+                type: "info",
+                text: "If that address has an agent account, a magic sign-in link is on its way. Check your email.",
+              },
       );
     } finally {
       setBusy(false);
