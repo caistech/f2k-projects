@@ -59,7 +59,15 @@ export default async function AdminLayout({
               </span>
             </div>
           </header>
-          <main className="p-6 flex-1">{children}</main>
+          {/*
+            min-w-0 is load-bearing. A flex child defaults to min-width:auto, so
+            wide content (the registrations table) forces this column wider than
+            the viewport and the whole PAGE scrolls sideways instead of the table
+            scrolling inside its own container. Measured before the fix: /admin
+            871px wide at a 375px viewport, /admin/registrations 1335px at 375px
+            and 1591px at 1440px — i.e. broken on a laptop too, not just a phone.
+          */}
+          <main className="p-6 flex-1 min-w-0">{children}</main>
         </div>
       </div>
     </PreviewModeProvider>

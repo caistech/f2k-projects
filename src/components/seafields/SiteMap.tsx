@@ -140,6 +140,30 @@ export default function SiteMap({ selectedLots, onToggleLot }: SiteMapProps) {
   const [filterPrice, setFilterPrice] = useState<PriceFilter>("any");
   const [availableOnly, setAvailableOnly] = useState<boolean>(true);
 
+  /**
+   * On a phone, default to the schematic grid instead of the plan view.
+   *
+   * "plan" is the right default with a mouse, but each lot on that SVG is a
+   * ~17x8px hit region — about a thirtieth of the 44px minimum — and selecting a
+   * lot is how a buyer registers, i.e. the primary conversion action was
+   * effectively unreachable by thumb. The schematic grid already renders all 145
+   * lots as real, thumb-sized buttons grouped by stage; it was simply the
+   * inactive tab, behind a label ("Schematic grid") that doesn't tell a phone
+   * user it's the one that works for them.
+   *
+   * Runs after mount rather than in the initial state so the server and client
+   * agree on the first paint (no hydration mismatch), and matches coarse
+   * pointers as well as narrow widths so a touch tablet gets it too.
+   */
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    if (window.matchMedia("(max-width: 767px), (pointer: coarse)").matches) {
+      setViewMode((current) => (current === "plan" ? "schematic" : current));
+    }
+    // Mount-only: this is a default, not a live response to resizing. Re-running
+    // on resize would yank the view out from under someone who had chosen one.
+  }, []);
+
   useEffect(() => {
     (async () => {
       try {
