@@ -74,11 +74,32 @@ export default function ResetPasswordPage() {
           </div>
         </div>
 
-        {hasSession === false && (
-          <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded p-3 mb-4">
-            No active reset session. Open this page from the password-reset email link, or
-            request a new one from the login page.
+        {hasSession === null && (
+          <p className="text-sm text-gray-500" role="status">
+            Checking your reset link…
           </p>
+        )}
+
+        {/*
+          With no recovery session the form is unusable, so don't render it.
+          Showing enabled, fillable password fields invites someone to type a new
+          password and only find out it can't be saved once they submit — and
+          leaves them on a page with no way onward. Give them the next action
+          instead (PRODUCT_STANDARDS §9, zero dead ends).
+        */}
+        {hasSession === false && (
+          <>
+            <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded p-3 mb-4">
+              This page needs the link from your password-reset email. The link opens it with
+              an active reset session; on its own it can&apos;t change a password.
+            </p>
+            <a
+              href="/admin/login"
+              className="block w-full text-center bg-navy hover:bg-gray-800 text-white py-2.5 rounded-lg font-semibold transition-colors"
+            >
+              Request a new reset link
+            </a>
+          </>
         )}
 
         {hasSession && sessionEmail && (
@@ -89,7 +110,10 @@ export default function ResetPasswordPage() {
           </p>
         )}
 
-        <form onSubmit={handleReset} className="space-y-4">
+        <form
+          onSubmit={handleReset}
+          className={`space-y-4 ${hasSession === true ? "" : "hidden"}`}
+        >
           <PasswordField
             id="new-password"
             label="New password"

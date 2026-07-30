@@ -4,6 +4,10 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 const ADMIN_PUBLIC_ROUTES = new Set([
   "/admin/login",
   "/admin/reset-password",
+  // Pure redirect to /admin/reset-password — the other spelling people type.
+  // Public because it renders nothing; gating it would turn the alias back into
+  // the dead end it exists to remove.
+  "/admin/password-reset",
 ]);
 
 // Agent portal public routes — reachable without a session (agents aren't

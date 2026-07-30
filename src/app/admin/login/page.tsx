@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import { useCanonicalOrigin } from "@/lib/use-canonical-origin";
 import { PasswordField } from "@/components/admin/PasswordField";
+import { requestMagicLink, throttleMessageFor } from "@/lib/auth/magic-link";
 
 function LoginInner() {
   useCanonicalOrigin();
@@ -55,19 +56,27 @@ function LoginInner() {
     setLoading("magic");
 
     const supabase = getClient();
-    const { error: otpError } = await supabase.auth.signInWithOtp({
+    const outcome = await requestMagicLink(
+      supabase,
       email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/api/auth/callback?next=/admin`,
-      },
-    });
+      `${window.location.origin}/api/auth/callback?next=/admin`,
+    );
 
-    if (otpError) {
-      setError(otpError.message);
+    if (outcome.kind === "throttled") {
+      // Not a credential problem — keep it out of the login-error slot so it
+      // doesn't read as "your sign-in is blocked".
+      setInfo(outcome.message);
       setLoading(null);
       return;
     }
-    setInfo(`Magic link sent to ${email}. Check your inbox (and spam folder).`);
+    if (outcome.kind === "error") {
+      setError(outcome.message);
+      setLoading(null);
+      return;
+    }
+    setInfo(
+      `If ${email} has an admin account, a magic link is on its way. Check your inbox (and spam folder).`,
+    );
     setLoading(null);
   }
 
@@ -86,11 +95,17 @@ function LoginInner() {
     });
 
     if (resetError) {
-      setError(resetError.message);
+      // The cooldown is shared with the magic-link button — not a credential
+      // problem, so it belongs in the info slot, not the error slot.
+      const throttled = throttleMessageFor(resetError);
+      if (throttled) setInfo(throttled);
+      else setError(resetError.message);
       setLoading(null);
       return;
     }
-    setInfo(`Password reset link sent to ${email}. Check your inbox.`);
+    setInfo(
+      `If ${email} has an admin account, a password reset link is on its way. Check your inbox (and spam folder).`,
+    );
     setLoading(null);
   }
 
