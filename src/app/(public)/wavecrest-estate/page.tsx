@@ -4,6 +4,8 @@ import EstateArchivedNotice from "@/components/estate/EstateArchivedNotice";
 import RegistrationForm from "@/components/wavecrest/RegistrationForm";
 import SiteMap from "@/components/wavecrest/SiteMap";
 import LotList from "@/components/wavecrest/LotList";
+import { DesignGallery } from "@caistech/property-launch-kit/components";
+import { getEstateDesigns } from "@/lib/estates/home-designs";
 
 export const metadata: Metadata = {
   title: "Wavecrest Estate — Register Your Interest | F2K",
@@ -36,6 +38,10 @@ export default async function WavecrestEstatePage() {
   if (await isEstateArchived("wavecrest")) {
     return <EstateArchivedNotice estateName="Wavecrest Estate" />;
   }
+  // Operator-managed at /admin/estates/wavecrest/designs. Wavecrest has no cards yet, and there is
+  // no code fallback for it, so this section stays invisible until someone adds one — the editor is
+  // live from day one rather than waiting on a deploy to become useful.
+  const designs = await getEstateDesigns("wavecrest");
   return (
     <>
       {/* ===== HERO ===== */}
@@ -427,6 +433,34 @@ export default async function WavecrestEstatePage() {
           </div>
         </div>
       </section>
+
+      {/* ===== HOME DESIGNS =====
+          Hidden entirely while there are no published cards, so the section appears the moment the
+          first design is added in admin and never shows an empty shelf before that. */}
+      {designs.length > 0 && (
+        <section className="py-16 px-4 bg-off-white">
+          <div className="max-w-[1100px] mx-auto">
+            <p className="font-ibm-mono text-[0.65rem] tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
+              Factory2Key Home Designs
+            </p>
+            <h2 className="font-playfair text-[2rem] font-black text-deep-blue leading-tight mb-3">
+              Modular Homes Built to Plan
+            </h2>
+            <p className="text-slate font-archivo leading-relaxed mb-8 max-w-[760px]">
+              Every Factory2Key home is a factory-built modular dwelling delivered to site as
+              complete modules and assembled on a prepared slab. Pick a design at registration time
+              and we&apos;ll quote you against your selected lot.
+            </p>
+            <div className="mb-8">
+              <DesignGallery designs={designs} />
+            </div>
+            <p className="font-archivo text-xs text-slate/60 leading-relaxed">
+              Indicative pricing only. Final price depends on lot size, site-works, finish
+              selections, and any approved variations.
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* ===== MARKET CONTEXT ===== */}
       <section className="py-16 px-4 bg-white">

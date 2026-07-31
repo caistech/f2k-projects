@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * Home-design card editor for a public estate page.
@@ -373,6 +373,7 @@ export default function EstateDesignEditor({
           <h3 className="text-lg font-bold text-slate-900 mb-3">New design</h3>
           <DesignFields
             draft={createDraft}
+            uploadUrl={`${apiBase}/upload`}
             onChange={(k, v) => setCreateDraft((prev) => ({ ...prev, [k]: v }))}
           />
           <div className="mt-4 flex flex-wrap gap-3">
@@ -468,6 +469,7 @@ export default function EstateDesignEditor({
                   <div className="border-t p-4 sm:p-5 bg-slate-50/60">
                     <DesignFields
                       draft={draft}
+                      uploadUrl={`${apiBase}/upload`}
                       onChange={(k, v) => setDraft(row.id, k, v)}
                     />
                     <div className="mt-4 flex flex-wrap gap-3 items-center">
@@ -526,13 +528,138 @@ export default function EstateDesignEditor({
   );
 }
 
+/**
+ * Upload-or-paste control for an image / plan field.
+ *
+ * The URL box stays editable because plenty of the existing assets already live under /public and
+ * are referenced by path — the upload is an addition, not a replacement, and hiding the path would
+ * make an existing card's image un-fixable.
+ */
+function AssetField({
+  id,
+  label,
+  help,
+  value,
+  accept,
+  uploadUrl,
+  showPreview,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  help: React.ReactNode;
+  value: string;
+  accept: string;
+  uploadUrl: string;
+  showPreview: boolean;
+  onChange: (value: string) => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const inputClass =
+    "w-full min-h-[44px] border border-slate-300 rounded px-3 py-2 text-base text-slate-900 bg-white";
+
+  async function upload(file: File) {
+    setUploading(true);
+    setError(null);
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const res = await fetch(uploadUrl, { method: "POST", body });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Upload failed");
+        return;
+      }
+      onChange(data.url as string);
+    } catch {
+      setError("Network error — the file wasn't uploaded.");
+    } finally {
+      setUploading(false);
+      // Clear the input so choosing the SAME file again still fires a change event.
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
+
+  const isPdf = /\.pdf($|\?)/i.test(value);
+
+  return (
+    <div>
+      <label className="block text-sm font-semibold text-slate-700 mb-1" htmlFor={id}>
+        {label}
+      </label>
+      <input
+        id={id}
+        className={inputClass}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="/seafields/designs/koala.png"
+      />
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <input
+          ref={fileRef}
+          type="file"
+          accept={accept}
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) upload(f);
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          className="min-h-[44px] px-4 rounded border border-slate-300 bg-white text-base text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+        >
+          {uploading ? "Uploading…" : "Upload a file"}
+        </button>
+        {value.trim() !== "" && (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            disabled={uploading}
+            className="min-h-[44px] px-3 rounded text-base text-slate-600 hover:bg-slate-100 disabled:opacity-50"
+          >
+            Clear
+          </button>
+        )}
+      </div>
+      {error && <p className="mt-1 text-sm text-red-700">{error}</p>}
+      <p className="mt-1 text-xs text-slate-500">{help}</p>
+      {showPreview && value.trim() !== "" && !isPdf && (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={value}
+          alt={`${label} preview`}
+          className="mt-2 h-24 w-auto max-w-full border rounded object-contain bg-slate-100"
+        />
+      )}
+      {value.trim() !== "" && isPdf && (
+        <a
+          href={value}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-block text-sm text-blue-700 underline"
+        >
+          Open the PDF to check it ↗
+        </a>
+      )}
+    </div>
+  );
+}
+
 /** The field set, shared by the create block and each card's edit panel. */
 function DesignFields({
   draft,
   onChange,
+  uploadUrl,
 }: {
   draft: Draft;
   onChange: <K extends keyof Draft>(key: K, value: Draft[K]) => void;
+  uploadUrl: string;
 }) {
   const input =
     "w-full min-h-[44px] border border-slate-300 rounded px-3 py-2 text-base text-slate-900 bg-white";
@@ -658,44 +785,26 @@ function DesignFields({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className={label} htmlFor="d-hero">
-            Card image
-          </label>
-          <input
-            id="d-hero"
-            className={input}
-            value={draft.hero_url}
-            onChange={(e) => onChange("hero_url", e.target.value)}
-            placeholder="/seafields/designs/koala.png"
-          />
-          <p className={help}>
-            Leave blank to show a “Floor plan pending” placeholder instead.
-          </p>
-          {draft.hero_url.trim() !== "" && (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={draft.hero_url}
-              alt="Card image preview"
-              className="mt-2 h-24 w-auto max-w-full border rounded object-contain bg-slate-100"
-            />
-          )}
-        </div>
-        <div>
-          <label className={label} htmlFor="d-plan">
-            Floor plan link
-          </label>
-          <input
-            id="d-plan"
-            className={input}
-            value={draft.plan_url}
-            onChange={(e) => onChange("plan_url", e.target.value)}
-            placeholder="/seafields/designs/koala.png"
-          />
-          <p className={help}>
-            Opened by “View plan”. Leave blank to hide that link.
-          </p>
-        </div>
+        <AssetField
+          id="d-hero"
+          label="Card image"
+          value={draft.hero_url}
+          accept="image/*"
+          uploadUrl={uploadUrl}
+          showPreview
+          onChange={(v) => onChange("hero_url", v)}
+          help="Upload a picture or paste a link. Leave it empty to show a “Floor plan pending” placeholder instead."
+        />
+        <AssetField
+          id="d-plan"
+          label="Floor plan link"
+          value={draft.plan_url}
+          accept="image/*,application/pdf"
+          uploadUrl={uploadUrl}
+          showPreview={false}
+          onChange={(v) => onChange("plan_url", v)}
+          help="Opened by “View plan” on the card. A picture or a PDF. Leave it empty to hide that link."
+        />
       </div>
 
       <details className="border border-slate-200 rounded bg-white">

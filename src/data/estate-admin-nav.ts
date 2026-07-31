@@ -33,6 +33,7 @@ export const ESTATE_ADMIN_SECTIONS: Record<string, EstateSection[]> = {
   wavecrest: [
     { label: "Blog", href: "/admin/wavecrest/posts" },
     { label: "Media", href: "/admin/wavecrest/media" },
+    { label: "Home Designs", href: "/admin/estates/wavecrest/designs" },
     { label: "Stages", href: "/admin/wavecrest-stages" },
     { label: "Lots", href: "/admin/wavecrest-lots" },
     { label: "Import", href: "/admin/wavecrest-import" },
