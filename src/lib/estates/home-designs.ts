@@ -148,13 +148,11 @@ export function rowToDesign(row: DesignRow): Design {
 /**
  * Read the rows for an estate. Deliberately NOT wrapped in `unstable_cache`.
  *
- * It was, and that second cache layer was exactly what made a saved change invisible: measured
- * against production, an admin save produced `x-vercel-cache: REVALIDATED` — the page really did
- * re-render — and the re-render still read the stale cached rows, so the operator's change never
- * appeared. The route cache IS the cache here: the estate pages are ISR (`revalidate = 300`) and
- * every write calls `revalidatePath` on the estate, so this query runs at most once per re-render.
- * Six rows on a page that re-renders on save or every five minutes is not worth a second cache
- * layer, let alone one that can silently serve last week's copy.
+ * It was removed during a misdiagnosis (see revalidate-designs.ts — the symptom was actually an
+ * ARCHIVED estate short-circuiting its own page before this ever ran), so the removal is not backed
+ * by the evidence its commit message claimed. It stays out on its own merits: these pages render
+ * per request, this is one small indexed query returning a handful of rows, and a cache layer that
+ * can serve a stale PRICE to a buyer should have to earn its place rather than be the default.
  */
 async function loadRows(estateSlug: string): Promise<DesignRow[] | null> {
   {

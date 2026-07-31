@@ -4,16 +4,14 @@ import { estateBySlug } from "@/data/estates";
 /**
  * Publish a design change to the public site.
  *
- * `revalidatePath` is the whole mechanism, and that is the conclusion of measuring rather than
- * reasoning. The first attempt used `revalidateTag` against an `unstable_cache`-wrapped read; a
- * card created through the API stayed invisible on the live page through 60s of polling. Adding
- * `revalidatePath` produced `x-vercel-cache: REVALIDATED` — proving the page really did re-render —
- * and the card STILL did not appear, because the re-render read the stale tagged cache entry. The
- * data-cache layer was removed rather than fought: the route cache is sufficient, and a second
- * layer that can silently serve stale copy to buyers is a liability, not an optimisation.
+ * The estate pages currently render per request (`force-dynamic`), so this is belt-and-braces
+ * rather than the load-bearing mechanism — it is kept so the pages can go back to static caching
+ * without the publish path silently becoming a no-op.
  *
- * The failure mode this closes is not cosmetic. The operator saves, sees the page unchanged, and
- * concludes the editor does not work.
+ * Historical note, because the commit messages around this are misleading: a long hunt for a
+ * "changes never reach the page" bug was chasing a phantom. The test estate (Wavecrest) is
+ * ARCHIVED, so its page returns the archived notice and never reaches the designs read at all.
+ * Propagation was subsequently verified properly against Seafields — an edit was live in 3s.
  */
 export function revalidateEstateDesigns(estateSlug: string): void {
   const estate = estateBySlug(estateSlug);

@@ -20,12 +20,14 @@ import { getEstateDesigns } from "@/lib/estates/home-designs";
 // Rendered per request, deliberately.
 //
 // This page is operator-editable (design cards, archive status) and the promise attached to that is
-// "save it and it is live". Static prerendering could not keep that promise: measured against
-// production, a save produced x-vercel-cache: REVALIDATED — the page really was regenerated — and
-// the new content still did not appear, with the data read never running. Rather than keep guessing
-// at which cache layer was holding the stale copy, the page reads its own data on every request.
-// The cost is one small indexed query per view on a lead-gen page; the alternative is an operator
-// who saves a price change and cannot see it, which is worse than a few milliseconds.
+// "save it and it is live". That promise should not depend on cache invalidation landing: the cost
+// here is one small indexed query per view on a lead-gen page, and the alternative is an operator
+// who changes a price, reloads, sees the old one and concludes the tool is broken.
+//
+// Honest caveat: this was originally justified by a measurement that turned out to be contaminated
+// (the test estate was ARCHIVED, so its page returned the archived notice and never read designs at
+// all). Static + revalidatePath may well work fine and was never validly tested — revisit if these
+// pages ever need the caching back.
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
