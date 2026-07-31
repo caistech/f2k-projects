@@ -163,6 +163,14 @@ async function loadRows(estateSlug: string): Promise<DesignRow[] | null> {
         !process.env.NEXT_PUBLIC_SUPABASE_URL ||
         !process.env.SUPABASE_SERVICE_ROLE_KEY
       ) {
+        // Say so. This branch returning null silently is indistinguishable from "the estate has no
+        // designs", and that ambiguity cost real time: a card that was demonstrably in the database
+        // never appeared on the page, with nothing anywhere to say why.
+        console.error(
+          `[estate-designs] ${estateSlug}: Supabase env missing at render (url=${Boolean(
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+          )} serviceKey=${Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY)}) — falling back`,
+        );
         return null;
       }
       const supabase = createSupabaseService();
@@ -176,7 +184,11 @@ async function loadRows(estateSlug: string): Promise<DesignRow[] | null> {
         console.error("[estate-designs] load failed:", error.message);
         return null;
       }
-      return (data ?? []) as DesignRow[];
+      const rows = (data ?? []) as DesignRow[];
+      console.log(
+        `[estate-designs] ${estateSlug}: ${rows.length} row(s), ${rows.filter((r) => r.is_published).length} published`,
+      );
+      return rows;
     } catch (e) {
       console.error("[estate-designs] load threw:", e);
       return null;
