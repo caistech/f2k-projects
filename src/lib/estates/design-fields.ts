@@ -59,7 +59,10 @@ export function pickDesignFields(
   if (!partial || "is_published" in body) {
     values.is_published = body.is_published !== false;
   }
-  if (!partial || "sort_order" in body) {
+  // sort_order is OPTIONAL on create — a caller that doesn't care about position gets the column
+  // default. Requiring it made a create without one fail with "sort_order must be a number", which
+  // also MASKED the duplicate-name error the caller actually needed to see.
+  if ("sort_order" in body && body.sort_order !== null && body.sort_order !== undefined) {
     const n = Number(body.sort_order);
     if (!Number.isFinite(n)) {
       return { values: {}, error: "sort_order must be a number" };

@@ -17,6 +17,11 @@ import { getEstateDesigns } from "@/lib/estates/home-designs";
 // both point at the cropped PNG so the "View plan" link never serves a manufacturer-branded PDF
 // (Uwe 2026-06-15 crop request).
 
+// Safety net for the operator-editable content on this page (designs, archive status): an admin
+// save republishes it immediately, but if that invalidation ever fails to land, the page self-heals
+// within 5 minutes instead of serving stale copy until the next deploy.
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: "Seafields Estate — Register Your Interest | F2K",
   description:

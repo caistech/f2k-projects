@@ -7,6 +7,11 @@ import LotList from "@/components/wavecrest/LotList";
 import { DesignGallery } from "@caistech/property-launch-kit/components";
 import { getEstateDesigns } from "@/lib/estates/home-designs";
 
+// Safety net for the operator-editable content on this page (designs, archive status): an admin
+// save republishes it immediately, but if that invalidation ever fails to land, the page self-heals
+// within 5 minutes instead of serving stale copy until the next deploy.
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: "Wavecrest Estate — Register Your Interest | F2K",
   description:

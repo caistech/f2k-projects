@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { revalidateTag } from "next/cache";
 import { getAdminUser, hasPermission } from "@/lib/admin-auth";
 import { createSupabaseServiceWithActor } from "@/lib/supabase-service";
 import { estateBySlug } from "@/data/estates";
-import { DESIGN_SELECT, ESTATE_DESIGNS_TAG } from "@/lib/estates/home-designs";
+import { DESIGN_SELECT } from "@/lib/estates/home-designs";
+import { revalidateEstateDesigns } from "@/lib/estates/revalidate-designs";
 import { pickDesignFields } from "@/lib/estates/design-fields";
 
 /** Update or delete a single home-design card. See ../route.ts for the shared field rules. */
@@ -74,7 +74,7 @@ export async function PATCH(request: Request, { params }: RouteCtx) {
     return NextResponse.json({ error: "Design not found" }, { status: 404 });
   }
 
-  revalidateTag(ESTATE_DESIGNS_TAG);
+  revalidateEstateDesigns(params.estate);
   return NextResponse.json({ design: data });
 }
 
@@ -97,6 +97,6 @@ export async function DELETE(_request: Request, { params }: RouteCtx) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   if (!data) return NextResponse.json({ error: "Design not found" }, { status: 404 });
 
-  revalidateTag(ESTATE_DESIGNS_TAG);
+  revalidateEstateDesigns(params.estate);
   return NextResponse.json({ ok: true, deleted: data });
 }

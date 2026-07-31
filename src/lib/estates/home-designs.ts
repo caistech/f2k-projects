@@ -176,7 +176,11 @@ const loadRows = unstable_cache(
     }
   },
   ["estate-home-designs"],
-  { tags: [ESTATE_DESIGNS_TAG] },
+  // The tag is the fast path (an admin save republishes immediately). The time limit is the safety
+  // net: an invalidation that silently fails to land must self-heal in minutes, not persist until
+  // the next deploy — which is exactly the failure this loop was caught in during testing, and it
+  // presents to the operator as "I saved it and nothing happened".
+  { tags: [ESTATE_DESIGNS_TAG], revalidate: 300 },
 );
 
 /**

@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
-import { revalidateTag } from "next/cache";
 import { getAdminUser, hasPermission } from "@/lib/admin-auth";
 import { createSupabaseServiceWithActor } from "@/lib/supabase-service";
 import { estateBySlug } from "@/data/estates";
-import { DESIGN_SELECT, ESTATE_DESIGNS_TAG } from "@/lib/estates/home-designs";
+import { DESIGN_SELECT } from "@/lib/estates/home-designs";
+import { revalidateEstateDesigns } from "@/lib/estates/revalidate-designs";
 import { pickDesignFields } from "@/lib/estates/design-fields";
 
 /**
  * Home-design cards for an estate's public page — list + create.
  *
  * Every write here changes a live public marketing page, so it goes through the actor-stamped
- * service client (the 0008 audit trigger records who changed what) and busts the estate-designs
- * cache tag so the change is visible immediately, without a deploy.
+ * service client (the 0008 audit trigger records who changed what) and republishes the affected
+ * page via revalidateEstateDesigns, so the change is visible immediately, without a deploy.
  */
 
 export const dynamic = "force-dynamic";
@@ -87,6 +87,6 @@ export async function POST(request: Request, { params }: RouteCtx) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
-  revalidateTag(ESTATE_DESIGNS_TAG);
+  revalidateEstateDesigns(params.estate);
   return NextResponse.json({ design: data }, { status: 201 });
 }
