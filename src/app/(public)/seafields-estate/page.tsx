@@ -16,7 +16,7 @@ import {
 const SEAFIELDS_DESIGNS: Design[] = [
   {
     name: "Joey",
-    size: "≈61m² internal · ~100m² with verandah",
+    size: "≈61m² internal · ~100m² with verandah & carport",
     beds: "2 bed · 2 bath",
     tag: "ANCILLARY / DOWNSIZER",
     detail:
@@ -28,7 +28,7 @@ const SEAFIELDS_DESIGNS: Design[] = [
   },
   {
     name: "Koala",
-    size: "≈72m² overall",
+    size: "≈71m² internal · ~110m² with verandah & carport",
     beds: "2 bed · 1 bath",
     tag: "ANCILLARY / DUAL-OCC",
     detail:
@@ -40,7 +40,7 @@ const SEAFIELDS_DESIGNS: Design[] = [
   },
   {
     name: "3x2 Modular",
-    size: "158m²",
+    size: "158m² internal · ~181m² with verandah",
     beds: "3 bed · 2 bath",
     tag: "GROH ELIGIBLE",
     detail:
@@ -52,14 +52,15 @@ const SEAFIELDS_DESIGNS: Design[] = [
   },
   {
     name: "4x2 Modular",
-    size: "162m²",
+    size: "162m² · ~192m² with verandah",
     beds: "4 bed · 2 bath",
     tag: "GROH ELIGIBLE",
     detail:
       "GROH-approved 4-bedroom 2-bathroom modular home. Larger family layout with the same modular delivery economics.",
     hero: "/seafields/designs/4x2.png",
     plan: "/seafields/designs/4x2.png",
-    priceFrom: "$680,000",
+    priceFrom: "Price on application",
+    priceLabel: "",
   },
   {
     name: "EMU",
@@ -70,7 +71,7 @@ const SEAFIELDS_DESIGNS: Design[] = [
       "Elevate-series 4-bedroom 2-bathroom family home with theatre, study and walk-in robe, plus upgraded elevations, claddings, windows and entry. Optional alfresco and carport. House & land pricing on application.",
     hero: "/seafields/designs/emu.png",
     plan: "/seafields/designs/emu.png",
-    priceFrom: "Pricing on application",
+    priceFrom: "Price on application",
     priceLabel: "",
   },
   {
@@ -82,7 +83,8 @@ const SEAFIELDS_DESIGNS: Design[] = [
       "Premium ≈310m² modular with dedicated theatre room and walk-in robes. Architect-designed kitchen feature. The flagship family home.",
     hero: "/seafields/designs/bigroo.png",
     plan: "/seafields/designs/bigroo.png",
-    priceFrom: "$829,700",
+    priceFrom: "Price on application",
+    priceLabel: "",
   },
 ];
 
