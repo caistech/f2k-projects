@@ -5,88 +5,17 @@ import HeroSitePlan from "@/components/seafields/HeroSitePlan";
 import RegistrationForm from "@/components/seafields/RegistrationForm";
 import BuyerVoiceAgent from "@/components/estate/BuyerVoiceAgent";
 import JoeyRenderGallery from "@/components/seafields/JoeyRenderGallery";
-import {
-  DesignGallery,
-  type Design,
-} from "@caistech/property-launch-kit/components";
+import { DesignGallery } from "@caistech/property-launch-kit/components";
+import { getEstateDesigns } from "@/lib/estates/home-designs";
 
-// Floor-plan images are de-branded crops (manufacturer marks removed, F2K/WABI
-// kept) — hero + plan both point at the cropped PNG so the "View plan" link
-// never serves a manufacturer-branded PDF (Uwe 2026-06-15 crop request).
-const SEAFIELDS_DESIGNS: Design[] = [
-  {
-    name: "Joey",
-    size: "≈61m² internal · ~100m² with verandah & carport",
-    beds: "2 bed · 2 bath",
-    tag: "ANCILLARY / DOWNSIZER",
-    detail:
-      "Compact 2-bedroom 2-bathroom ancillary dwelling — master with ensuite, second bedroom, open living/kitchen, optional carport + verandah. Ideal as a downsizer, holiday let, or second dwelling on a larger lot.",
-    hero: "/seafields/designs/joey/coastal.jpg",
-    plan: "/seafields/designs/joey.png",
-    priceFrom: "$297,900",
-    priceLabel: "House only — from",
-  },
-  {
-    name: "Koala",
-    size: "≈71m² internal · ~110m² with verandah & carport",
-    beds: "2 bed · 1 bath",
-    tag: "ANCILLARY / DUAL-OCC",
-    detail:
-      "Two-bedroom one-bathroom ancillary dwelling with carport + verandah — a slightly larger footprint suited to granny-flat / dual-occupancy use on lots ≥600m² under R20.",
-    hero: "/seafields/designs/koala.png",
-    plan: "/seafields/designs/koala.png",
-    priceFrom: "$327,700",
-    priceLabel: "House only — from",
-  },
-  {
-    name: "3x2 Modular",
-    size: "158m² internal · ~181m² with verandah",
-    beds: "3 bed · 2 bath",
-    tag: "GROH ELIGIBLE",
-    detail:
-      "GROH-approved 3-bedroom 2-bathroom modular home. Government Regional Officer Housing eligible. Suitable for first-home buyers and small families. House & land pricing on application.",
-    hero: "/seafields/designs/3x2.png",
-    plan: "/seafields/designs/3x2.png",
-    priceFrom: "Price on application",
-    priceLabel: "",
-  },
-  {
-    name: "4x2 Modular",
-    size: "162m² · ~192m² with verandah",
-    beds: "4 bed · 2 bath",
-    tag: "GROH ELIGIBLE",
-    detail:
-      "GROH-approved 4-bedroom 2-bathroom modular home. Larger family layout with the same modular delivery economics.",
-    hero: "/seafields/designs/4x2.png",
-    plan: "/seafields/designs/4x2.png",
-    priceFrom: "Price on application",
-    priceLabel: "",
-  },
-  {
-    name: "EMU",
-    size: "191m² home · 218m² with alfresco",
-    beds: "4 bed · 2 bath",
-    tag: "FAMILY HOME",
-    detail:
-      "Elevate-series 4-bedroom 2-bathroom family home with theatre, study and walk-in robe, plus upgraded elevations, claddings, windows and entry. Optional alfresco and carport. House & land pricing on application.",
-    hero: "/seafields/designs/emu.png",
-    plan: "/seafields/designs/emu.png",
-    priceFrom: "Price on application",
-    priceLabel: "",
-  },
-  {
-    name: "BigRoo",
-    size: "≈310m²",
-    beds: "4 bed · 2 bath + Theatre",
-    tag: "PREMIUM",
-    detail:
-      "Premium ≈310m² modular with dedicated theatre room and walk-in robes. Architect-designed kitchen feature. The flagship family home.",
-    hero: "/seafields/designs/bigroo.png",
-    plan: "/seafields/designs/bigroo.png",
-    priceFrom: "Price on application",
-    priceLabel: "",
-  },
-];
+// The design cards are operator-editable rows (migration 0074), edited at
+// /admin/estates/seafields/designs — Uwe changes a floor area or moves a price to "Price on
+// application" without a deploy. src/lib/estates/home-designs.ts holds the code fallback used only
+// when the table is unreachable or unseeded.
+//
+// Floor-plan images are de-branded crops (manufacturer marks removed, F2K/WABI kept) — hero + plan
+// both point at the cropped PNG so the "View plan" link never serves a manufacturer-branded PDF
+// (Uwe 2026-06-15 crop request).
 
 export const metadata: Metadata = {
   title: "Seafields Estate — Register Your Interest | F2K",
@@ -119,6 +48,7 @@ export default async function SeafieldsEstatePage() {
   if (await isEstateArchived("seafields")) {
     return <EstateArchivedNotice estateName="Seafields Estate" />;
   }
+  const designs = await getEstateDesigns("seafields");
   return (
     <div className="sf-page">
       {/* ===== HERO ===== */}
@@ -444,7 +374,10 @@ export default async function SeafieldsEstatePage() {
         </div>
       </section>
 
-      {/* ===== HOME DESIGNS ===== */}
+      {/* ===== HOME DESIGNS =====
+          Hidden entirely when the operator has unpublished every card: an intro promising a range
+          to "pick a design from", above nothing, is a dead end rather than an honest empty state. */}
+      {designs.length > 0 && (
       <section className="py-16 px-4 bg-off-white">
         <div className="max-w-[1100px] mx-auto">
           <p className="font-ibm-mono text-xs tracking-[0.4em] uppercase text-[#00B5AD] mb-4">
@@ -463,7 +396,7 @@ export default async function SeafieldsEstatePage() {
           </p>
 
           <div className="mb-8 sf-designs">
-            <DesignGallery designs={SEAFIELDS_DESIGNS} />
+            <DesignGallery designs={designs} />
           </div>
 
           <JoeyRenderGallery />
@@ -477,6 +410,7 @@ export default async function SeafieldsEstatePage() {
           </p>
         </div>
       </section>
+      )}
 
       {/* ===== PURCHASE TERMS ===== */}
       <section className="py-16 px-4 bg-white">

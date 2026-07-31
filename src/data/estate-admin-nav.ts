@@ -17,6 +17,9 @@ export const ESTATE_ADMIN_SECTIONS: Record<string, EstateSection[]> = {
   seafields: [
     { label: "Blog", href: "/admin/estates/seafields/posts" },
     { label: "Media", href: "/admin/estates/seafields/media" },
+    // Home Designs edits the public estate page's design gallery. Listed only for estates whose
+    // public page actually renders one — elsewhere it would be an editor with no visible effect.
+    { label: "Home Designs", href: "/admin/estates/seafields/designs" },
     { label: "Stages", href: "/admin/seafields-stages" },
     { label: "Lots", href: "/admin/seafields-lots" },
     { label: "Import", href: "/admin/seafields-import" },
