@@ -22,11 +22,31 @@ const TEXT_FIELDS = [
 
 type TextField = (typeof TEXT_FIELDS)[number];
 
-/** Columns where "" is a meaningful value distinct from NULL (see migration 0074 on price_label). */
-const EMPTY_STRING_IS_MEANINGFUL = new Set<TextField>(["price_label"]);
-
-/** Columns that must never be blank — a card with no name has no identity in the gallery. */
+/**
+ * Columns that must never be blank — a card with no name has no identity in the gallery.
+ */
 const REQUIRED = new Set<TextField>(["name", "price_from"]);
+
+/**
+ * Columns that actually accept NULL in the schema (migration 0074). Everything else is
+ * `NOT NULL DEFAULT ''`, so a cleared field must become "" — writing NULL there fails the
+ * constraint, which surfaced as a raw Postgres error the moment an operator cleared the category
+ * label, and additionally masked the duplicate-name message on create.
+ */
+const NULLABLE = new Set<TextField>([
+  "hero_url",
+  "plan_url",
+  "secondary_label",
+  "secondary_href",
+  "price_label",
+]);
+
+/**
+ * price_label carries THREE distinct states and "" is one of them ("show the price with no
+ * prefix"), so a blank string must survive here rather than collapsing to NULL, which means
+ * "use the gallery default". Only an explicit null selects the default.
+ */
+const EMPTY_STRING_IS_MEANINGFUL = new Set<TextField>(["price_label"]);
 
 /**
  * Validate + normalise an admin payload into column values.
@@ -46,14 +66,24 @@ export function pickDesignFields(
     if (raw !== undefined && raw !== null && typeof raw !== "string") {
       return { values: {}, error: `${field} must be a string` };
     }
+
+    // An EXPLICIT null is a deliberate choice, not a blank — for price_label it is how the caller
+    // selects the gallery's default prefix. Treating it as "" would silently store "no prefix".
+    if (raw === null && NULLABLE.has(field)) {
+      values[field] = null;
+      continue;
+    }
+
     const trimmed = typeof raw === "string" ? raw.trim() : "";
     if (REQUIRED.has(field) && trimmed === "") {
       return { values: {}, error: `${field.replace(/_/g, " ")} is required` };
     }
-    values[field] =
-      trimmed === "" && !EMPTY_STRING_IS_MEANINGFUL.has(field) && !REQUIRED.has(field)
-        ? null
-        : trimmed;
+    if (trimmed !== "" || EMPTY_STRING_IS_MEANINGFUL.has(field) || !NULLABLE.has(field)) {
+      values[field] = trimmed;
+    } else {
+      // Cleared, and the column accepts NULL — an empty link is absent, not an empty string.
+      values[field] = null;
+    }
   }
 
   if (!partial || "is_published" in body) {

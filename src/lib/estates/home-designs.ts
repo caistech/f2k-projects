@@ -1,4 +1,3 @@
-import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import type { Design } from "@caistech/property-launch-kit/components";
 import { createSupabaseService } from "@/lib/supabase-service";
@@ -15,9 +14,6 @@ import { createSupabaseService } from "@/lib/supabase-service";
  * time, a DB hiccup, or an unseeded table must degrade to the code fallback below — never an empty
  * gallery and never a thrown build.
  */
-
-/** revalidateTag() target — bust after an admin edits a design so the public page updates. */
-export const ESTATE_DESIGNS_TAG = "estate-home-designs";
 
 export interface DesignRow {
   id: string;
@@ -149,8 +145,19 @@ export function rowToDesign(row: DesignRow): Design {
   };
 }
 
-const loadRows = unstable_cache(
-  async (estateSlug: string): Promise<DesignRow[] | null> => {
+/**
+ * Read the rows for an estate. Deliberately NOT wrapped in `unstable_cache`.
+ *
+ * It was, and that second cache layer was exactly what made a saved change invisible: measured
+ * against production, an admin save produced `x-vercel-cache: REVALIDATED` — the page really did
+ * re-render — and the re-render still read the stale cached rows, so the operator's change never
+ * appeared. The route cache IS the cache here: the estate pages are ISR (`revalidate = 300`) and
+ * every write calls `revalidatePath` on the estate, so this query runs at most once per re-render.
+ * Six rows on a page that re-renders on save or every five minutes is not worth a second cache
+ * layer, let alone one that can silently serve last week's copy.
+ */
+async function loadRows(estateSlug: string): Promise<DesignRow[] | null> {
+  {
     try {
       if (
         !process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -174,14 +181,8 @@ const loadRows = unstable_cache(
       console.error("[estate-designs] load threw:", e);
       return null;
     }
-  },
-  ["estate-home-designs"],
-  // The tag is the fast path (an admin save republishes immediately). The time limit is the safety
-  // net: an invalidation that silently fails to land must self-heal in minutes, not persist until
-  // the next deploy — which is exactly the failure this loop was caught in during testing, and it
-  // presents to the operator as "I saved it and nothing happened".
-  { tags: [ESTATE_DESIGNS_TAG], revalidate: 300 },
-);
+  }
+}
 
 /**
  * Published design cards for an estate, in display order.
