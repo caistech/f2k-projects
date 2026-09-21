@@ -58,6 +58,19 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  // Manual kill switch (2026-09-21): the f2k-projects Supabase project (zzajvnhsesqrrepflrrx) is
+  // currently INACTIVE/paused, so every DB read below fails and degrades fail-soft — including
+  // isEstateCommsPaused(), which is deliberately fail-OPEN on a DB error (see comms.ts) so a real
+  // outage doesn't look like "estate archived" and freeze a live estate's comms. That's the right
+  // call for a live estate, but it means a paused DB currently defeats the archived-estate guard
+  // below and lets this digest re-fire with all-zero counts regardless of the estate/recipients
+  // config. Set back to false once the project is restored AND the recipients/estate-status config
+  // is confirmed correct.
+  const DIGEST_MANUALLY_DISABLED = true;
+  if (DIGEST_MANUALLY_DISABLED) {
+    return NextResponse.json({ ok: true, skipped: "manually_disabled" });
+  }
+
   // Estate deactivated => the daily digest stops with everything else. A frozen estate produces a
   // digest of zeroes every morning, which trains recipients to ignore the one that matters when it
   // comes back. Resumes automatically on reactivation.
