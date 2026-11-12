@@ -124,6 +124,8 @@ export default function EmployerVoiceAgent({
       <div className="emp-voice-widget">
         <VoiceWidget
           {...employerVoiceConfig}
+          // Seafields is WA — the estate's day, not the employer's browser zone.
+          timeZone="Australia/Perth"
           coachName="Morgan"
           avatarUrl="/female_avatar.jpeg"
           title="Talk to Morgan — F2K's guide, who explains take-or-pay and helps you complete the registration below."

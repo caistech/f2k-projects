@@ -103,6 +103,8 @@ export default function ReportsVoiceAgent({ transcript, onTranscriptChange, onSp
 
       <VoiceWidget
         {...reportsVoiceConfig}
+        // F2K operates from WA — the operator's day, not the viewer's.
+        timeZone="Australia/Perth"
         coachName="Morgan"
         avatarUrl="/female_avatar.jpeg"
         title="Talk to Morgan — your reports consultant. She builds the exact report you ask for."

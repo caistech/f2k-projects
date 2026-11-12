@@ -102,6 +102,8 @@ export default async function HomePage({
           <BuyerVoiceAgent
             estate={{
               name: "the Factory2Key estates",
+              // Portfolio-level guide: F2K operates from WA, so that is the tenant's day here.
+              timeZone: "Australia/Perth",
               extra:
                 "F2K has several estates across WA, SA and TAS at different stages. Ask which suits your budget and location, the difference between buying land or a house-and-land package, and how registering your interest works (it's an expression of interest only — no deposit, no obligation).",
             }}
