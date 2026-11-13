@@ -143,6 +143,8 @@ export default function FunderVoiceAgent({
           unified transcript below it so voice turns AND typed-fallback turns show in one place. */}
       <VoiceWidget
         {...funderVoiceConfig}
+        // F2K operates from WA — the operator's day, not the viewer's.
+        timeZone="Australia/Perth"
         coachName="Sloane"
         // TODO(avatar): reusing Morgan's avatar as a placeholder — provide a dedicated funder
         // avatar in /public (e.g. /sterling_avatar.jpeg) and point avatarUrl at it.

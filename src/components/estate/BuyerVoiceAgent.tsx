@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { VoiceWidget } from "@caistech/elevenlabs-convai/react";
 import { estateVoiceConfig } from "@/voice.config";
+import { DEFAULT_TIME_ZONE } from "@/lib/au-time-zone";
 import {
   CONCIERGE_NAME,
   buildEstatePrompt,
@@ -29,6 +30,12 @@ export interface EstateVoiceContext {
   pricing?: string;
   model?: "lot-map" | "waitlist";
   extra?: string;
+  /**
+   * IANA zone the estate is in, for the agent's `today`. Pass `timeZoneForStateAbbr(estate.stateAbbr)`
+   * — the estate's state decides the day, not the buyer's browser. Omitted falls back to the F2K
+   * operating zone rather than to the browser.
+   */
+  timeZone?: string;
 }
 
 export default function BuyerVoiceAgent({ estate }: { estate: EstateVoiceContext }) {
@@ -110,6 +117,8 @@ export default function BuyerVoiceAgent({ estate }: { estate: EstateVoiceContext
 
       <VoiceWidget
         {...estateVoiceConfig}
+        // The estate's state decides "today" — not the buyer's browser zone.
+        timeZone={estate.timeZone ?? DEFAULT_TIME_ZONE}
         coachName={CONCIERGE_NAME}
         avatarUrl="/female_avatar.jpeg"
         title={`Talk to ${CONCIERGE_NAME} — your guide to ${estate.name}. She explains what's on offer and how to register your interest.`}

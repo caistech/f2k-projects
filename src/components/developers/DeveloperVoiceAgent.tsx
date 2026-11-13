@@ -114,6 +114,8 @@ export default function DeveloperVoiceAgent({
           in the same place (the widget's own transcript only covers the live voice path). */}
       <VoiceWidget
         {...developerVoiceConfig}
+        // F2K operates from WA — the operator's day, not the viewer's.
+        timeZone="Australia/Perth"
         coachName="Morgan"
         avatarUrl="/female_avatar.jpeg"
         title="Talk to Morgan — your F2K onboarding guide. She'll help you complete the form below."

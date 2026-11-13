@@ -167,6 +167,8 @@ export default async function DuttonTerraceEstatePage() {
             estate={{
               name: "Dutton Terrace",
               location: "Tumby Bay, SA",
+              // Tumby Bay is South Australia — the estate's state decides the agent's "today".
+              timeZone: "Australia/Adelaide",
               stage: "Concept stage — land division still to be approved; register your interest",
               extra:
                 "A concept-stage community (residential + childcare + aged-care). Nothing is for sale yet — registering simply tells us you're interested.",
